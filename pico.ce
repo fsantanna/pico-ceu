@@ -3,6 +3,10 @@ type Bool {
     True:  ()
 }
 
+func bool: Int -> Bool {
+    return _(arg ? (Bool){True} : (Bool){False})
+}
+
 func not: Bool -> Bool {
     if arg {
         return False
@@ -43,6 +47,7 @@ type Output {
 }
 
 type Event_ {
+    Any:     ()
     KeyDown: Int
 }
 
@@ -59,43 +64,28 @@ func output: Output -> () {
 }
 
 func input: Input -> Bool {
+    if arg.Delay? {
+        return bool _(pico_input(*(Pico_Input*)&arg))
+    }
+    call check arg.Event?
+
     native _(
-        if (arg.sub == Delay) {
-            int ret = pico_input(*(Pico_Input*)&arg);
-            return (ret ? (Bool){True} : (Bool){False});
-        }
-    )
-    native _(
-        // inp.Event.type = ...
-        assert(arg.sub == Event);
         SDL_Event e;
         Pico_Input inp = {PICO_EVENT,.Event={0,arg._Event._2,&e}};
     )
-    native _(
-        switch (arg._Event._1->sub) {
-            case KeyDown:
-                inp.Event.type = SDL_KEYDOWN;
-                break;
-            default:
-                assert(0);
-        }
-    )
-    native _(
-        int ret = pico_input(inp);
-        if (!ret) {
-            return (Bool){False};
-        }
-    )
-    native _(
-        switch (arg._Event._1->sub) {
-            case KeyDown:
-                arg._Event._1->_KeyDown = 10;
-                break;
-            default:
-                assert(0);
-        }
-        return (Bool){True};
-    )
+
+    if arg.Event!.1.KeyDown? {
+        native _{ inp.Event.type = SDL_KEYDOWN; }
+    }
+
+    if not bool _pico_input _inp {
+        return False
+    }
+
+    if arg.Event!.1.KeyDown? {
+        native _{ arg._Event._1->_KeyDown = 10 }
+    }
+    return True
 }
 
 call _pico_init()
