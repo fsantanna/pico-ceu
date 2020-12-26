@@ -83,7 +83,7 @@ func input: Input -> Bool {
     }
 
     if arg.Event!.1.KeyDown? {
-        native _{ arg._Event._1->_KeyDown = 10 }
+        native _{ arg._Event._1->_KeyDown = 10; }
     }
     return True
 }
