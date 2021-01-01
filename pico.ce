@@ -31,7 +31,8 @@ type Color_ {
 
 type Set_ {
     Color: Color_
-    Size:  (Int,Int,Int,Int)
+    Font:  (_{char*},Int)
+    Size:  ((Int,Int),(Int,Int))
     Title: _(char*)
 }
 

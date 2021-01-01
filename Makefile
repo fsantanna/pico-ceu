@@ -1,6 +1,6 @@
 all:
 	cat pico.ce tst/$(SRC).ce > /tmp/x.ce
-	ce -o $(SRC) -cc "-lSDL2 -lSDL2_ttf -include ../pico-sdl/src/pico.c" /tmp/x.ce
+	ce -o $(SRC) -cc "-g -lSDL2 -lSDL2_ttf -include ../pico-sdl/src/pico.c" /tmp/x.ce
 	sleep 1
 	./$(SRC)
 
