@@ -83,7 +83,7 @@ func input: Input -> Bool {
         }
         call _pico_input _inp
         if arg.Event!.KeyDown? {
-            native _{ arg._Event->_KeyDown = 10; }
+            native _{ arg._Event->_KeyDown = e.key.keysym.sym; }
         }
         return True
     } else {
@@ -98,7 +98,7 @@ func input: Input -> Bool {
             return False
         }
         if arg.Event_Timeout!.1.KeyDown? {
-            native _{ arg._Event_Timeout._1->_KeyDown = 10; }
+            native _{ arg._Event_Timeout._1->_KeyDown = e.key.keysym.sym; }
         }
         return True
     }

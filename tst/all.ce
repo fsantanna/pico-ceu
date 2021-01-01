@@ -2,13 +2,13 @@
 call output Set Title _("pico-Ce")
 
 -- CLEAR
-call output Set Color Color_Clear (255,255,255,0)
+call output Set Color Color_Clear (255,255,255,255)
 call output Clear
 call input Delay 2000
 
 -- DRAW_PIXEL
-call output Set Color Color_Clear (0,0,0,0)
-call output Set Color Color_Draw (255,255,255,0)
+call output Set Color Color_Clear (0,0,0,255)
+call output Set Color Color_Draw (255,255,255,255)
 call output Clear
 call output Draw Pixel (0,0)
 call input  Delay 2000

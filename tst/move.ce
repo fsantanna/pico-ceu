@@ -1,0 +1,28 @@
+call output Set Title _("pico-Ce: Moving Around")
+
+var x: Int = 0
+var y: Int = 0
+
+loop {
+    call output Set Color Color_Draw (255,255,255,255)
+    call output Draw Pixel (x,y)
+
+    var e: Event_ = KeyDown 0
+    call input Event &e
+
+    --call output Set Color Color_Draw (0,0,0,255)
+    --call output Draw Pixel (x,y)
+    
+    var key: Int = e.KeyDown!;
+    if bool _(key == SDLK_LEFT) {
+        set x = _(x-1)
+    } else { if bool _(key == SDLK_RIGHT) {
+        set x = _(x+1)
+    } else { if bool _(key == SDLK_UP) {
+        set y = _(y+1)
+    } else { if bool _(key == SDLK_DOWN) {
+        set y = _(y-1)
+    } else {
+        -- ok
+    } } } }
+}
