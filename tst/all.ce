@@ -1,18 +1,19 @@
 -- TITLE
 call output Set Title _("pico-Ce")
 
-call show ()
-
 -- CLEAR
 call output Set Color Color_Clear (255,255,255,0)
 call output Clear
-call show ()
 call input Delay 2000
-call show ()
 
 -- DRAW_PIXEL
 call output Set Color Color_Clear (0,0,0,0)
 call output Set Color Color_Draw (255,255,255,0)
 call output Clear
 call output Draw Pixel (0,0)
+call input  Delay 2000
+
+-- DRAW_TEXT
+var txt: _(char*) = _("Hello!")
+call output Draw Text ((0,5), txt)
 call input  Delay 2000

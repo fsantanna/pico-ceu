@@ -1,18 +1,16 @@
 call output Set Title _("pico-Ce: Across")
 
 var e: Event_ = KeyDown 0
-var ok: Bool = input Event (&e,2000)
-call check ok
+call input Event (&e,0)
 
-call show ()
+var i: Int = _(-25)
+loop {
+    call output Draw Pixel (i,i)
+    call input Delay 100
+    if bool _(i == 25) {
+        break
+    }
+    set i = _(i + 1)
+}
 
---emit SOUND_PLAY("res/click1.wav");  // plays a starting sound
---
---var integer i;
---loop i in [-25 -> 25] do            // executes 51 times, varying i from -25 to 25
---    emit GRAPHICS_DRAW_PIXEL(i,i);  //   draws a pixel at (i,i)
---    await 100ms;                    //   waits for 100 milliseconds
---end
---
---emit SOUND_PLAY("res/click1.wav");  // plays a terminating sound
---await KEY_PRESS;                    // waits for a key press (any key)
+call input Event (&e,0)

@@ -37,13 +37,13 @@ type Set_ {
 
 type Draw_ {
     Pixel: (Int,Int)
+    Text:  ((Int,Int),_{char*})
 }
 
 type Output {
     Clear:  ()
     Draw:   Draw_
     Set:    Set_
-    Update: ()
 }
 
 type Event_ {
@@ -53,7 +53,7 @@ type Event_ {
 
 type Input {
     Delay: Int
-    Event: (&Event_,Int)
+    Event: (&Event_,Int)    -- TODO: Event / Event_With_Delay
 }
 
 func output: Output -> () {
