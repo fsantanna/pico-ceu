@@ -10,8 +10,8 @@ loop {
     var e: Event_ = KeyDown 0
     call input Event &e
 
-    --call output Set Color Color_Draw (0,0,0,255)
-    --call output Draw Pixel (x,y)
+    call output Set Color Color_Draw (0,0,0,255)
+    call output Draw Pixel (x,y)
     
     var key: Int = e.KeyDown!;
     if bool _(key == SDLK_LEFT) {
