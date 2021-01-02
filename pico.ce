@@ -50,6 +50,12 @@ type Output {
     WriteLn: _(char*)
 }
 
+type Events {
+    ANY:             ()
+    KEYDOWN:         ()
+    MOUSEBUTTONDOWN: ()
+}
+
 type Event_ {
     Any:     ()
     KeyDown: Int
@@ -58,8 +64,8 @@ type Event_ {
 
 type Input {
     Delay: Int
-    Event: &Event_
-    Event_Timeout: (&Event_,Int)
+    Event: (Events,&Event_)
+    Event_Timeout: (Events,&Event_,Int)
 }
 
 func output: Output -> () {
@@ -78,40 +84,46 @@ func input: Input -> Bool {
             SDL_Event e;
     }
 
+    func tosdl: Events -> Int {
+        if arg.ANY? {
+            return _SDL_ANY
+        }
+        if arg.KEYDOWN? {
+            return _SDL_KEYDOWN
+        }
+        if arg.MOUSEBUTTONDOWN? {
+            return _SDL_MOUSEBUTTONDOWN
+        }
+        call _assert 0
+    }
+
     if arg.Event? {
+        var sdl: Int = tosdl arg.Event!.1
         native _(
-            Pico_Input inp = {PICO_EVENT,.Event={0,&e}};
+            Pico_Input inp = {PICO_EVENT,.Event={sdl,&e}};
         )
-        if arg.Event!.KeyDown? {
-            native _{ inp.Event.type = SDL_KEYDOWN; }
-        }
-        if arg.Event!.MouseButtonDown? {
-            native _{ inp.Event.type = SDL_MOUSEBUTTONDOWN; }
-        }
         call _pico_input _inp
-        if arg.Event!.KeyDown? {
-            set arg.Event!.KeyDown! = _(e.key.keysym.sym)
+        if arg.Event!.2.KeyDown? {
+            set arg.Event!.2.KeyDown! = _(e.key.keysym.sym)
         }
-        if arg.Event!.MouseButtonDown? {
+        if arg.Event!.2.MouseButtonDown? {
             var bt: Int = _(e.button.button)
             var x:  Int = _(e.button.x)
             var y:  Int = _(e.button.y)
-            set arg.Event!.MouseButtonDown! = (bt, (x,y))
+            set arg.Event!.2.MouseButtonDown! = (bt, (x,y))
         }
         return True
     } else {
         call check arg.Event_Timeout?
+        var sdl: Int = tosdl arg.Event_Timeout!.1
         native _(
-            Pico_Input inp = {PICO_EVENT_TIMEOUT,.Event_Timeout={0,arg._Event_Timeout._2,&e}};
+            Pico_Input inp = {PICO_EVENT_TIMEOUT,.Event_Timeout={sdl,arg._Event_Timeout._3,&e}};
         )
-        if arg.Event_Timeout!.1.KeyDown? {
-            native _{ inp.Event_Timeout.type = SDL_KEYDOWN; }
-        }
         if not bool _pico_input _inp {
             return False
         }
-        if arg.Event_Timeout!.1.KeyDown? {
-            native _{ arg._Event_Timeout._1->_KeyDown = e.key.keysym.sym; }
+        if arg.Event_Timeout!.2.KeyDown? {
+            native _{ arg._Event_Timeout._2->_KeyDown = e.key.keysym.sym; }
         }
         return True
     }

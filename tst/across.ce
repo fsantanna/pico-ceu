@@ -1,7 +1,7 @@
 call output Set Title _("pico-Ce: Across")
 
 var e: Event_ = KeyDown 0
-call input Event_Timeout (&e,2000)
+call input Event_Timeout (KEYDOWN,&e,2000)
 
 var i: Int = _(-25)
 loop {
@@ -13,4 +13,4 @@ loop {
     set i = _(i + 1)
 }
 
-call input Event &e
+call input Event (KEYDOWN,&e)

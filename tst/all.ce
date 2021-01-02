@@ -35,7 +35,7 @@ call input Delay 2000
 
 -- MOUSE
 var e: Event_ = MouseButtonDown (0,(0,0))
-call input Event &e
+call input Event (MOUSEBUTTONDOWN,&e)
 call output Draw Pixel e.MouseButtonDown!.2
 
 call input Delay 2000
