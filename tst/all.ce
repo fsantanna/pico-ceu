@@ -33,9 +33,9 @@ call output WriteLn _("pico")
 
 call input Delay 2000
 
---    // MOUSE
---    SDL_Event e2;
---    pico_input((Pico_Input){ PICO_EVENT, .Event={SDL_MOUSEBUTTONDOWN,&e2} });
---    pico_output((Pico_Output) { PICO_DRAW,
---        .Draw = { PICO_PIXEL, .Pixel={e2.button.x,e2.button.y} }
---    });
+-- MOUSE
+var e: Event_ = MouseButtonDown (0,(0,0))
+call input Event &e
+call output Draw Pixel e.MouseButtonDown!.2
+
+call input Delay 2000
