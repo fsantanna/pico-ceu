@@ -87,13 +87,13 @@ func input: Input -> Bool {
         }
         call _pico_input _inp
         if arg.Event!.KeyDown? {
-            --set arg.Event!.KeyDown! = _(e.key.keysym.sym)
-            native _{ arg._Event->_KeyDown = e.key.keysym.sym; }
+            set arg.Event!.KeyDown! = _(e.key.keysym.sym)
         }
         if arg.Event!.MouseButtonDown? {
-            native _{ arg._Event->_MouseButtonDown._1    = e.button.button; }
-            native _{ arg._Event->_MouseButtonDown._2._1 = e.button.x; }
-            native _{ arg._Event->_MouseButtonDown._2._2 = e.button.y; }
+            var bt: Int = _(e.button.button)
+            var x:  Int = _(e.button.x)
+            var y:  Int = _(e.button.y)
+            set arg.Event!.MouseButtonDown! = (bt, (x,y))
         }
         return True
     } else {
