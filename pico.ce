@@ -81,7 +81,7 @@ func input: Input -> Bool {
     }
 
     native _{
-            SDL_Event e;
+        SDL_Event e;
     }
 
     func tosdl: Events -> Int {
@@ -97,36 +97,39 @@ func input: Input -> Bool {
         call _assert 0
     }
 
-    if arg.Event? {
-        var sdl: Int = tosdl arg.Event!.1
-        native _(
-            Pico_Input inp = {PICO_EVENT,.Event={sdl,&e}};
-        )
-        call _pico_input _inp
-        if arg.Event!.2.KeyDown? {
-            set arg.Event!.2.KeyDown! = _(e.key.keysym.sym)
+    func toce: &Event_ -> () {
+        if bool _(e.type == SDL_KEYDOWN) {
+            set arg = KeyDown _(e.key.keysym.sym)
         }
-        if arg.Event!.2.MouseButtonDown? {
+        if bool _(e.type == SDL_MOUSEBUTTONDOWN) {
             var bt: Int = _(e.button.button)
             var x:  Int = _(e.button.x)
             var y:  Int = _(e.button.y)
-            set arg.Event!.2.MouseButtonDown! = (bt, (x,y))
+            set arg = MouseButtonDown (bt, (x,y))
         }
-        return True
-    } else {
-        call check arg.Event_Timeout?
-        var sdl: Int = tosdl arg.Event_Timeout!.1
-        native _(
-            Pico_Input inp = {PICO_EVENT_TIMEOUT,.Event_Timeout={sdl,arg._Event_Timeout._3,&e}};
-        )
-        if not bool _pico_input _inp {
-            return False
-        }
-        if arg.Event_Timeout!.2.KeyDown? {
-            native _{ arg._Event_Timeout._2->_KeyDown = e.key.keysym.sym; }
-        }
+        return ()
+    }
+
+    if arg.Event? {
+        var sdl: Int = tosdl arg.Event!.1
+        call _pico_input _{(Pico_Input) {PICO_EVENT,.Event={sdl,&e}}}
+        call toce &arg.Event!.2
         return True
     }
+
+    if arg.Event_Timeout? {
+        var sdl: Int = tosdl arg.Event_Timeout!.1
+        var ret: Int = _pico_input _{(Pico_Input) {PICO_EVENT_TIMEOUT,.Event_Timeout={sdl,arg._Event_Timeout._3,&e}}}
+        if bool ret {
+            call toce &arg.Event_Timeout!.2
+            return True
+        } else {
+            return False
+        }
+    }
+
+    call _assert 0
+    --return True
 }
 
 call _pico_init()

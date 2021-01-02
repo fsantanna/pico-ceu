@@ -1,7 +1,7 @@
 call output Set Title _("pico-Ce: Mouse")
 
 loop {
-    var e: Event_ = MouseButtonDown (0,(0,0))
+    var e: Event_ = Any
     call input Event (MOUSEBUTTONDOWN,&e)
     var button: Int = e.MouseButtonDown!.1
     if bool _(button == SDL_BUTTON_LEFT) {
