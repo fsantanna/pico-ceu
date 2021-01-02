@@ -16,13 +16,14 @@ loop {
     var key: Int = e.KeyDown!;
     if bool _(key == SDLK_LEFT) {
         set x = _(x-1)
-    } else { if bool _(key == SDLK_RIGHT) {
+    }
+    if bool _(key == SDLK_RIGHT) {
         set x = _(x+1)
-    } else { if bool _(key == SDLK_UP) {
+    }
+    if bool _(key == SDLK_UP) {
         set y = _(y+1)
-    } else { if bool _(key == SDLK_DOWN) {
+    }
+    if bool _(key == SDLK_DOWN) {
         set y = _(y-1)
-    } else {
-        -- ok
-    } } } }
+    }
 }

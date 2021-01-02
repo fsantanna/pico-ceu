@@ -1,0 +1,7 @@
+call output Set Title _("pico-Ce: Mouse")
+
+loop {
+    var e: Event_ = MouseButtonDown (0,0)
+    call input Event &e
+    call output Draw Pixel e.MouseButtonDown!
+}

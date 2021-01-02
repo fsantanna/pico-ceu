@@ -50,6 +50,7 @@ type Output {
 type Event_ {
     Any:     ()
     KeyDown: Int
+    MouseButtonDown: (Int,Int)
 }
 
 type Input {
@@ -81,9 +82,17 @@ func input: Input -> Bool {
         if arg.Event!.KeyDown? {
             native _{ inp.Event.type = SDL_KEYDOWN; }
         }
+        if arg.Event!.MouseButtonDown? {
+            native _{ inp.Event.type = SDL_MOUSEBUTTONDOWN; }
+        }
         call _pico_input _inp
         if arg.Event!.KeyDown? {
+            --set arg.Event!.KeyDown! = _(e.key.keysym.sym)
             native _{ arg._Event->_KeyDown = e.key.keysym.sym; }
+        }
+        if arg.Event!.MouseButtonDown? {
+            native _{ arg._Event->_MouseButtonDown._1 = e.button.x; }
+            native _{ arg._Event->_MouseButtonDown._2 = e.button.y; }
         }
         return True
     } else {
