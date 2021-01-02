@@ -1,7 +1,13 @@
 call output Set Title _("pico-Ce: Mouse")
 
 loop {
-    var e: Event_ = MouseButtonDown (0,0)
+    var e: Event_ = MouseButtonDown (0,(0,0))
     call input Event &e
-    call output Draw Pixel e.MouseButtonDown!
+    var button: Int = e.MouseButtonDown!.1
+    if bool _(button == SDL_BUTTON_LEFT) {
+        call output Set Color Color_Draw (255,255,255,255)
+    } else {
+        call output Set Color Color_Draw (0,0,0,255)
+    }
+    call output Draw Pixel e.MouseButtonDown!.2
 }
