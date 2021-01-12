@@ -1,16 +1,16 @@
-call output Set Title _("pico-Ce: Across")
+output sdl Set Title _("pico-Ce: Across")
 
 var e: Event_ = KeyDown 0
-call input Event_Timeout (KEYDOWN,&e,2000)
+input sdl Event_Timeout (KEYDOWN,&e,2000)
 
-var i: Int = _(-25)
+var i: Int = -25
 loop {
-    call output Draw Pixel (i,i)
-    call input Delay 100
+    output sdl Draw Pixel (i,i)
+    input sdl Delay 100
     if bool _(i == 25) {
         break
     }
     set i = _(i + 1)
 }
 
-call input Event (KEYDOWN,&e)
+input sdl Event (KEYDOWN,&e)
