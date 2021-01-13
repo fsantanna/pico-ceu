@@ -68,14 +68,14 @@ type Input {
     Event_Timeout: (Events,&Event_,Int)
 }
 
-func sdl_output: Output -> () {
+func output_pico: Output -> () {
     native _{
         pico_output(*(Pico_Output*)&arg);
     }
     return ()
 }
 
-func sdl_input: Input -> Bool {
+func input_pico: Input -> Bool {
     if arg.Delay? {
         return bool _(pico_input(*(Pico_Input*)&arg))
     }

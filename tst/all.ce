@@ -1,40 +1,40 @@
 -- TITLE
-output sdl Set Title _("pico-Ce")
+output pico Set Title _("pico-Ce")
 
 -- CLEAR
-output sdl Set Color Color_Clear (255,255,255,255)
-output sdl Clear
+output pico Set Color Color_Clear (255,255,255,255)
+output pico Clear
 
-input sdl Delay 2000
+input pico Delay 2000
 
 -- DRAW_PIXEL
-output sdl Set Color Color_Clear (0,0,0,255)
-output sdl Set Color Color_Draw (255,255,255,255)
-output sdl Clear
-output sdl Draw Pixel (0,0)
+output pico Set Color Color_Clear (0,0,0,255)
+output pico Set Color Color_Draw (255,255,255,255)
+output pico Clear
+output pico Draw Pixel (0,0)
 
-input sdl Delay 2000
+input pico Delay 2000
 
 -- DRAW_TEXT
 var txt: _(char*) = _("Hello!")
-output sdl Draw Text ((0,5), txt)
+output pico Draw Text ((0,5), txt)
 
-input sdl Delay 2000
-output sdl Clear
+input pico Delay 2000
+output pico Clear
 
 -- WRITE
-output sdl Set Cursor (-25,25)
-output sdl Write   _("1 ")
-output sdl Write   _("2 ")
-output sdl WriteLn _("3")
-output sdl WriteLn _("")
-output sdl WriteLn _("pico")
+output pico Set Cursor (-25,25)
+output pico Write   _("1 ")
+output pico Write   _("2 ")
+output pico WriteLn _("3")
+output pico WriteLn _("")
+output pico WriteLn _("pico")
 
-input sdl Delay 2000
+input pico Delay 2000
 
 -- MOUSE
 var e: Event_ = MouseButtonDown (0,(0,0))
-input sdl Event (MOUSEBUTTONDOWN,&e)
-output sdl Draw Pixel e.MouseButtonDown!.2
+input pico Event (MOUSEBUTTONDOWN,&e)
+output pico Draw Pixel e.MouseButtonDown!.2
 
-input sdl Delay 2000
+input pico Delay 2000
