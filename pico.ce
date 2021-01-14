@@ -24,32 +24,6 @@ func check: Bool -> () {
 
 -------------------------------------------------------------------------------
 
-type Color_ {
-    Color_Clear: (Int,Int,Int,Int)
-    Color_Draw:  (Int,Int,Int,Int)
-}
-
-type Set_ {
-    Color:  Color_
-    Cursor: (Int,Int)
-    Font:   (_{char*},Int)
-    Size:   ((Int,Int),(Int,Int))
-    Title:  _(char*)
-}
-
-type Draw_ {
-    Pixel: (Int,Int)
-    Text:  ((Int,Int),_{char*})
-}
-
-type Output {
-    Clear:   ()
-    Draw:    Draw_
-    Set:     Set_
-    Write:   _(char*)
-    WriteLn: _(char*)
-}
-
 type Events {
     ANY:             ()
     KEYDOWN:         ()
@@ -62,22 +36,39 @@ type Event_ {
     MouseButtonDown: (Int,(Int,Int))
 }
 
-type Input {
-    Delay: Int
-    Event: (Events,&Event_)
-    Event_Timeout: (Events,&Event_,Int)
+type IO_Pico {
+    Delay:              Int
+    Event:              (Events,&Event_)
+    Event_Timeout:      (Events,&Event_,Int)
+
+    Clear:              ()
+
+    Draw_Pixel:         (Int,Int)
+    Draw_Text:          ((Int,Int),_{char*})
+
+    --Get_Size:           &((Int,Int),(Int,Int))
+
+    Set_Color_Clear:    (Int,Int,Int,Int)
+    Set_Color_Draw:     (Int,Int,Int,Int)
+    Set_Cursor:         (Int,Int)
+    Set_Font:           (_{char*},Int)
+    Set_Size:           ((Int,Int),(Int,Int))
+    Set_Title:          _(char*)
+
+    Write:              _(char*)
+    WriteLn:            _(char*)
 }
 
-func output_pico: Output -> () {
+func output_pico: IO_Pico -> () {
     native _{
-        pico_output(*(Pico_Output*)&arg);
+        pico_output(*(Pico_IO*)&arg);
     }
     return ()
 }
 
-func input_pico: Input -> Bool {
+func input_pico: IO_Pico -> Bool {
     if arg.Delay? {
-        return bool _(pico_input(*(Pico_Input*)&arg))
+        return bool _(pico_input(*(Pico_IO*)&arg))
     }
 
     native _{
@@ -112,14 +103,14 @@ func input_pico: Input -> Bool {
 
     if arg.Event? {
         var sdl: Int = tosdl arg.Event!.1
-        call _pico_input _{(Pico_Input) {PICO_EVENT,.Event={sdl,&e}}}
+        call _pico_input _{(Pico_IO) {PICO_EVENT,.Event={sdl,&e}}}
         call toce &arg.Event!.2
         return True
     }
 
     if arg.Event_Timeout? {
         var sdl: Int = tosdl arg.Event_Timeout!.1
-        var ret: Int = _pico_input _{(Pico_Input) {PICO_EVENT_TIMEOUT,.Event_Timeout={sdl,arg._Event_Timeout._3,&e}}}
+        var ret: Int = _pico_input _{(Pico_IO) {PICO_EVENT_TIMEOUT,.Event_Timeout={sdl,arg._Event_Timeout._3,&e}}}
         if bool ret {
             call toce &arg.Event_Timeout!.2
             return True

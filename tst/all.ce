@@ -1,29 +1,29 @@
 -- TITLE
-output pico Set Title _("pico-Ce")
+output pico Set_Title _("pico-Ce")
 
 -- CLEAR
-output pico Set Color Color_Clear (255,255,255,255)
+output pico Set_Color_Clear (255,255,255,255)
 output pico Clear
 
 input pico Delay 2000
 
 -- DRAW_PIXEL
-output pico Set Color Color_Clear (0,0,0,255)
-output pico Set Color Color_Draw (255,255,255,255)
+output pico Set_Color_Clear (0,0,0,255)
+output pico Set_Color_Draw (255,255,255,255)
 output pico Clear
-output pico Draw Pixel (0,0)
+output pico Draw_Pixel (0,0)
 
 input pico Delay 2000
 
 -- DRAW_TEXT
 var txt: _(char*) = _("Hello!")
-output pico Draw Text ((0,5), txt)
+output pico Draw_Text ((0,5), txt)
 
 input pico Delay 2000
 output pico Clear
 
 -- WRITE
-output pico Set Cursor (-25,25)
+output pico Set_Cursor (-25,25)
 output pico Write   _("1 ")
 output pico Write   _("2 ")
 output pico WriteLn _("3")
@@ -35,6 +35,6 @@ input pico Delay 2000
 -- MOUSE
 var e: Event_ = MouseButtonDown (0,(0,0))
 input pico Event (MOUSEBUTTONDOWN,&e)
-output pico Draw Pixel e.MouseButtonDown!.2
+output pico Draw_Pixel e.MouseButtonDown!.2
 
 input pico Delay 2000

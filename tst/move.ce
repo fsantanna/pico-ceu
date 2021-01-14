@@ -1,17 +1,17 @@
-output pico Set Title _("pico-Ce: Moving Around")
+output pico Set_Title _("pico-Ce: Moving Around")
 
 var x: Int = 0
 var y: Int = 0
 
 loop {
-    output pico Set Color Color_Draw (255,255,255,255)
-    output pico Draw Pixel (x,y)
+    output pico Set_Color_Draw (255,255,255,255)
+    output pico Draw_Pixel (x,y)
 
     var e: Event_ = KeyDown 0
     input pico Event (KEYDOWN,&e)
 
-    output pico Set Color Color_Draw (0,0,0,255)
-    output pico Draw Pixel (x,y)
+    output pico Set_Color_Draw (0,0,0,255)
+    output pico Draw_Pixel (x,y)
     
     var key: Int = e.KeyDown!;
     if bool _(key == SDLK_LEFT) {
