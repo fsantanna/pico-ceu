@@ -30,7 +30,6 @@ loop {
     var y: Int = _(random()%101 -  50)
     set last\.House!.2 = House ((x,y), $Houses)
     set last = \last\.House!.2
-    --set last\.House!.2 = House ((x,y), last\)
 
     input pico Delay 2000
 }
