@@ -2,7 +2,7 @@ output pico Set_Title _("pico-Ce: Mouse")
 
 loop {
     var e: Event_ = Any
-    input pico Event (MOUSEBUTTONDOWN,&e)
+    input pico Event (MOUSEBUTTONDOWN,\e)
     var button: Int = e.MouseButtonDown!.1
     if bool _(button == SDL_BUTTON_LEFT) {
         output pico Set_Color_Draw (255,255,255,255)

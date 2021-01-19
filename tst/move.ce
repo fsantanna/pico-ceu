@@ -8,7 +8,7 @@ loop {
     output pico Draw_Pixel (x,y)
 
     var e: Event_ = KeyDown 0
-    input pico Event (KEYDOWN,&e)
+    input pico Event (KEYDOWN,\e)
 
     output pico Set_Color_Draw (0,0,0,255)
     output pico Draw_Pixel (x,y)

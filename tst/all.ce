@@ -34,7 +34,7 @@ input pico Delay 2000
 
 -- MOUSE
 var e: Event_ = MouseButtonDown (0,(0,0))
-input pico Event (MOUSEBUTTONDOWN,&e)
+input pico Event (MOUSEBUTTONDOWN,\e)
 output pico Draw_Pixel e.MouseButtonDown!.2
 
 input pico Delay 2000
