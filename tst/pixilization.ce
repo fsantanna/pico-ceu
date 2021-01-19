@@ -1,6 +1,4 @@
--- nao permitir ciclo: last\ vira strong
 -- depois como ordenar? fazer fc de ordenacao
--- nao adicionar se ja existe o ponto
 -- output pico Set_Auto=false
 -- window, world, logical (pan, zoom)
 
@@ -17,19 +15,48 @@ var last: \Houses = \houses
 loop {
     output pico Clear
 
-    var cur: \Houses = \houses
-    loop {
-        output pico Draw_Pixel (cur\.House!.1)
-        set cur = \ cur\.House!.2
-        if cur\.$Houses? {
-            break
+    -- draw all pixels
+    {
+        var cur: \Houses = \houses
+        loop {
+            output pico Draw_Pixel (cur\.House!.1)
+            set cur = \ cur\.House!.2
+            if cur\.$Houses? {
+                break
+            }
         }
     }
 
-    var x: Int = _(random()%201 - 100)
-    var y: Int = _(random()%101 -  50)
-    set last\.House!.2 = House ((x,y), $Houses)
-    set last = \last\.House!.2
+    -- add random pixel
+    {
+        var x: Int = ?
+        var y: Int = ?
+        loop {
+            set x = _(random()%201 - 100)
+            set y = _(random()%101 -  50)
 
-    input pico Delay 2000
+            var ok: Bool = True
+            var cur: \Houses = \houses
+            loop {
+                var xx: Int = cur\.House!.1.1
+                var yy: Int = cur\.House!.1.2
+                if bool _(x==xx && y==yy) {
+                    set ok = False
+                    native _{printf("IGUAL\n");}
+                    break
+                }
+                set cur = \ cur\.House!.2
+                if cur\.$Houses? {
+                    break
+                }
+            }
+            if ok {
+                break
+            }
+        }
+        set last\.House!.2 = House ((x,y), $Houses)
+        set last = \last\.House!.2
+    }
+
+    input pico Delay 20
 }
