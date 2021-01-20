@@ -36,6 +36,18 @@ type Event_ {
     MouseButtonDown: (Int,(Int,Int))
 }
 
+type HAnchor {
+    Left:   ()
+    Center: ()
+    Right:  ()
+}
+
+type VAnchor {
+    Top:    ()
+    Middle: ()
+    Bottom: ()
+}
+
 type IO_Pico {
     -- INPUT
 
@@ -48,19 +60,23 @@ type IO_Pico {
     Clear:              ()
 
     Draw_Pixel:         (Int,Int)
+    Draw_Rect:          ((Int,Int),(Int,Int))
     Draw_Text:          ((Int,Int),_{char*})
 
     Get_Size:           \((Int,Int),(Int,Int))
 
     Present:            ()
 
+    Set_Anchor:         (HAnchor,VAnchor)
     Set_Auto:           Bool
     Set_Color_Clear:    (Int,Int,Int,Int)
     Set_Color_Draw:     (Int,Int,Int,Int)
     Set_Cursor:         (Int,Int)
     Set_Font:           (_{char*},Int)
+    Set_Pan:            (Int,Int)
     Set_Size:           ((Int,Int),(Int,Int))
     Set_Title:          _(char*)
+    Set_Zoom:           (Int,Int)
 
     Write:              _(char*)
     WriteLn:            _(char*)

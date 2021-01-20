@@ -1,6 +1,5 @@
--- depois como ordenar? fazer fc de ordenacao
--- output pico Set_Auto=false
 -- window, world, logical (pan, zoom)
+    -- CTRL-(-+), CTRL-setas
 
 output pico Set_Title _("Pixilization")
 output pico Set_Size ((804,404),(201,101))
