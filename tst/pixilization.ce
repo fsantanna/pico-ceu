@@ -4,6 +4,7 @@
 
 output pico Set_Title _("Pixilization")
 output pico Set_Size ((804,404),(201,101))
+output pico Set_Auto False
 
 type rec Houses {
     House: ((Int,Int), Houses)
@@ -58,5 +59,6 @@ loop {
         set last = \last\.House!.2
     }
 
-    input pico Delay 20
+    output pico Present
+    input pico Delay 100
 }

@@ -52,6 +52,9 @@ type IO_Pico {
 
     Get_Size:           \((Int,Int),(Int,Int))
 
+    Present:            ()
+
+    Set_Auto:           Bool
     Set_Color_Clear:    (Int,Int,Int,Int)
     Set_Color_Draw:     (Int,Int,Int,Int)
     Set_Cursor:         (Int,Int)
