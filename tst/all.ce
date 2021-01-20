@@ -21,6 +21,7 @@ output pico Draw_Text ((0,5), txt)
 
 input pico Delay 2000
 output pico Clear
+output pico Set_Grid False
 
 -- WRITE
 output pico Set_Cursor (-25,25)

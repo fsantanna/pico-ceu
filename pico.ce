@@ -73,6 +73,7 @@ type IO_Pico {
     Set_Color_Draw:     (Int,Int,Int,Int)
     Set_Cursor:         (Int,Int)
     Set_Font:           (_{char*},Int)
+    Set_Grid:           Bool
     Set_Pan:            (Int,Int)
     Set_Size:           ((Int,Int),(Int,Int))
     Set_Title:          _(char*)
@@ -146,4 +147,5 @@ func input_pico: IO_Pico -> Bool {
     return True
 }
 
-call _pico_init()
+call _pico_open()
+-- TODO: pico_close()
