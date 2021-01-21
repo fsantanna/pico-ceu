@@ -1,0 +1,78 @@
+native _{
+    #define SIDE 14
+}
+
+output pico Set_Title _("pico-Ce: Hex Map")
+
+func asint: Int -> Int { return arg }
+
+func draw_hex: (Int,Int) -> () {
+    var x: Int = arg.1
+    var y: Int = arg.2
+
+    func draw_horiz: (Int,Int) -> () {
+        var x: Int = arg.1
+        var y: Int = arg.2
+        var i: Int = 1
+        loop {
+            output pico Draw_Pixel (x,y)
+            set x = _(x + 1)
+            if asbool _(i == SIDE+1) {
+                break
+            }
+            set i = _(i + 1)
+        }
+    }
+
+    func draw_diag: (Int,Int,Int) -> () {
+        var x: Int = arg.1
+        var y: Int = arg.2
+        var s: Int = arg.3
+        var i: Int = 1
+        loop {
+            output pico Draw_Pixel (x,y)
+            set x = _(x + 1)
+            set y = _(y + 1*s)
+            if asbool _(i == SIDE+1) {
+                break
+            }
+            set i = _(i + 1)
+        }
+    }
+
+    output pico Draw_Pixel (x,y)
+
+    var xx: Int = _(-SIDE/2*3)
+    call draw_diag  (asint _(x + xx), asint _(y + 0),  1)
+    call draw_diag  (asint _(x + xx), asint _(y + 0), -1)
+
+    set xx = _(xx + SIDE)
+    call draw_horiz (asint _(x + xx), asint _(y + SIDE))
+    call draw_horiz (asint _(x + xx), asint _(y - SIDE))
+
+    set xx = _(xx + SIDE)
+    call draw_diag  (asint _(x + xx), asint _(y - SIDE),  1)
+    call draw_diag  (asint _(x + xx), asint _(y + SIDE), -1)
+}
+
+output pico Set_Grid False
+output pico Set_Color_Draw (127,127,127,255)
+
+loop {
+    call draw_hex (asint _(-SIDE*2), asint _(-SIDE*3))
+    call draw_hex (asint _(-SIDE*2), asint _(-SIDE*1))
+    call draw_hex (asint _(-SIDE*2), asint _( SIDE*1))
+    call draw_hex (asint _(-SIDE*2), asint _( SIDE*3))
+
+    call draw_hex (0, asint _(-SIDE*2))
+    call draw_hex (0,  0)
+    call draw_hex (0, asint _( SIDE*2))
+
+    call draw_hex (asint _(SIDE*2), asint _(-SIDE*3))
+    call draw_hex (asint _(SIDE*2), asint _(-SIDE*1))
+    call draw_hex (asint _(SIDE*2), asint _( SIDE*1))
+    call draw_hex (asint _(SIDE*2), asint _( SIDE*3))
+
+    var e: Event_ = Any
+    input pico Event (MOUSEBUTTONDOWN,\e)
+}

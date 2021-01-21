@@ -3,7 +3,7 @@ type Bool {
     True:  ()
 }
 
-func bool: Int -> Bool {
+func asbool: Int -> Bool {
     return _(arg ? (Bool){True} : (Bool){False})
 }
 
@@ -59,6 +59,7 @@ type IO_Pico {
 
     Clear:              ()
 
+    Draw_Line:          ((Int,Int),(Int,Int))
     Draw_Pixel:         (Int,Int)
     Draw_Rect:          ((Int,Int),(Int,Int))
     Draw_Text:          ((Int,Int),_{char*})
@@ -92,7 +93,7 @@ func output_pico: IO_Pico -> () {
 
 func input_pico: IO_Pico -> Bool {
     if arg.Delay? {
-        return bool _(pico_input(*(Pico_IO*)&arg))
+        return asbool _(pico_input(*(Pico_IO*)&arg))
     }
 
     native _{
@@ -113,10 +114,10 @@ func input_pico: IO_Pico -> Bool {
     }
 
     func toce: \Event_ -> () {
-        if bool _(e.type == SDL_KEYDOWN) {
+        if asbool _(e.type == SDL_KEYDOWN) {
             set arg\ = KeyDown _(e.key.keysym.sym)
         }
-        if bool _(e.type == SDL_MOUSEBUTTONDOWN) {
+        if asbool _(e.type == SDL_MOUSEBUTTONDOWN) {
             var bt: Int = _(e.button.button)
             var x:  Int = _(e.button.x)
             var y:  Int = _(e.button.y)
@@ -135,7 +136,7 @@ func input_pico: IO_Pico -> Bool {
     if arg.Event_Timeout? {
         var sdl: Int = tosdl arg.Event_Timeout!.1
         var ret: Int = _pico_input _{(Pico_IO) {PICO_EVENT_TIMEOUT,.Event_Timeout={sdl,arg._Event_Timeout._3,&e}}}
-        if bool ret {
+        if asbool ret {
             call toce (arg.Event_Timeout!.2)
             return True
         } else {
