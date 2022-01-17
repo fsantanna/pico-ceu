@@ -1,41 +1,47 @@
+#include "../pico.ce"
+
 -- TITLE
-output pico Set_Title _("pico-Ce")
+output pico <.USet_Title _("pico-Ce")>: TPico
 
 -- CLEAR
-output pico Set_Color_Clear (255,255,255,255)
-output pico Clear
+output pico <.USet_Color_Clear [_255,_255,_255,_255]>: TPico
+output pico <.UClear>: TPico
 
-input pico Delay 2000
+input pico <.UDelay _2000>: TPico
 
 -- DRAW_PIXEL
-output pico Set_Color_Clear (0,0,0,255)
-output pico Set_Color_Draw (255,255,255,255)
-output pico Clear
-output pico Draw_Pixel (0,0)
+output pico <.USet_Color_Clear [_0,_0,_0,_255]>: TPico
+output pico <.USet_Color_Draw [_255,_255,_255,_255]>: TPico
+output pico <.UClear>: TPico
+output pico <.UDraw_Pixel [_0,_0]>: TPico
 
-input pico Delay 2000
+input pico <.UDelay _2000>: TPico
 
 -- DRAW_TEXT
-var txt: _(char*) = _("Hello!")
-output pico Draw_Text ((0,5), txt)
+output pico <.UDraw_Text [[_0,_5], _("Hello!")]>: TPico
 
-input pico Delay 2000
-output pico Clear
-output pico Set_Grid False
+input pico <.UDelay _2000>: TPico
+
+-- SET_GRID
+output pico <.UClear>: TPico
+output pico <.USet_Grid _0>: TPico
 
 -- WRITE
-output pico Set_Cursor (-25,25)
-output pico Write   _("1 ")
-output pico Write   _("2 ")
-output pico WriteLn _("3")
-output pico WriteLn _("")
-output pico WriteLn _("pico")
+output pico <.USet_Cursor [_(-25),_25]>: TPico
+output pico <.UWrite   _("1 ")>: TPico
+output pico <.UWrite   _("2 ")>: TPico
+output pico <.UWriteLn _("3")>: TPico
+output pico <.UWriteLn _("")>: TPico
+output pico <.UWriteLn _("pico")>: TPico
 
-input pico Delay 2000
+input pico <.UDelay _2000>: TPico
+
+#if 0
 
 -- MOUSE
-var e: Event_ = MouseButtonDown (0,(0,0))
+var e: Event_ = MouseButtonDown (_0,(_0,_0))
 input pico Event (MOUSEBUTTONDOWN,\e)
 output pico Draw_Pixel e.MouseButtonDown!.2
 
 input pico Delay 2000
+#endif

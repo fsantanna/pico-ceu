@@ -4,27 +4,43 @@
     [_int,[_int,_int]]  -- UMouseButtonDown  \
 >
 
-#define TPico <                         \
-    _int            , -- UDelay         \
-    /TEvent         , -- UEvent         \
-    [/TEvent,_int]  , -- UEvent_Timeout \
-    [_int,_int]     , -- UDraw_Pixel    \
-    _(char*)          -- USet_Title     \
+#define TPico <                                     \
+    _int                    , -- UDelay             \
+    /TEvent                 , -- UEvent             \
+    [/TEvent,_int]          , -- UEvent_Timeout     \
+    ()                      , -- UClear             \
+    [_int,_int]             , -- UDraw_Pixel        \
+    [[_int,_int],_(char*)]  , -- UDraw_Text         \
+    _(char*)                , -- USet_Title         \
+    [_int,_int,_int,_int]   , -- USet_Color_Clear   \
+    [_int,_int,_int,_int]   , -- USet_Color_Draw    \
+    [_int,_int]             , -- USet_Cursor        \
+    _int                    , -- USet_Grid          \
+    _(char*)                , -- UWrite             \
+    _(char*)                  -- UWriteLn           \
 >
 
 -- xTPico
-#define UDelay          1
-#define UEvent          2
-#define UEvent_Timeout  3
-#define UDraw_Pixel     4
-#define USet_Title      5
+#define UDelay              1
+#define UEvent              2
+#define UEvent_Timeout      3
+#define UClear              4
+#define UDraw_Pixel         5
+#define UDraw_Text          6
+#define USet_Title          7
+#define USet_Color_Clear    8
+#define USet_Color_Draw     9
+#define USet_Cursor         10
+#define USet_Grid           11
+#define UWrite              12
+#define UWriteLn            13
 
 -- xTEvent
-#define UAny             1
-#define UKeyDown         2
-#define UMouseButtonDown 3
+#define UAny                1
+#define UKeyDown            2
+#define UMouseButtonDown    3
 
-#define SPico U_int_P_U_Unit_int_T_int_T_int_int_T_T_U_P_T_P_U_Unit_int_T_int_T_int_int_T_T_U_P_int_T_T_int_int_T_char__U
+#define SPico U_int_P_U_Unit_int_T_int_T_int_int_T_T_U_P_T_P_U_Unit_int_T_int_T_int_int_T_T_U_P_int_T_Unit_T_int_int_T_T_T_int_int_T_char__T_char__T_int_int_int_int_T_T_int_int_int_int_T_T_int_int_T_int_char__char__U
 
 -------------------------------------------------------------------------------
 
