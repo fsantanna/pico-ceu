@@ -23,6 +23,7 @@
     [_int,_int,_int,_int]       , -- USet_Color_Clear   \
     [_int,_int,_int,_int]       , -- USet_Color_Draw    \
     [_int,_int]                 , -- USet_Cursor        \
+    [_(char*),_int]             , -- USet_Font          \
     _int                        , -- USet_Grid          \
     _(char*)                    , -- UWrite             \
     _(char*)                      -- UWriteLn           \
@@ -42,9 +43,10 @@
 #define USet_Color_Clear    11
 #define USet_Color_Draw     12
 #define USet_Cursor         13
-#define USet_Grid           14
-#define UWrite              15
-#define UWriteLn            16
+#define USet_Font           14
+#define USet_Grid           15
+#define UWrite              16
+#define UWriteLn            17
 
 -- xTEvent
 #define UAny                1
@@ -59,7 +61,7 @@
 #define UMiddle     2
 #define UTop        3
 
-#define SPico U_int_int_T_int_int_T_Unit_T_int_int_T_T_T_int_int_T_T_int_int_T_T_T_T_int_int_T_T_int_int_T_T_T_T_int_int_T_char__T_T_U_Unit_Unit_Unit_U_U_Unit_Unit_Unit_U_T_char__T_int_int_int_int_T_T_int_int_int_int_T_T_int_int_T_int_char__char__U
+#define SPico U_int_int_T_int_int_T_Unit_T_int_int_T_T_T_int_int_T_T_int_int_T_T_T_T_int_int_T_T_int_int_T_T_T_T_int_int_T_char__T_T_U_Unit_Unit_Unit_U_U_Unit_Unit_Unit_U_T_char__T_int_int_int_int_T_T_int_int_int_int_T_T_int_int_T_T_char__int_T_int_char__char__U
 
 #define SEvent U_Unit_int_T_int_T_int_int_T_T_U
 

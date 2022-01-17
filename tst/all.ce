@@ -34,6 +34,10 @@ output pico <.UWriteLn _("3")>: TPico
 output pico <.UWriteLn _("")>: TPico
 output pico <.UWriteLn _("pico")>: TPico
 
+-- SET_FONT
+output pico <.USet_Font [_("tiny.ttf"),_5]>: TPico
+output pico <.UWriteLn _("pico")>: TPico
+
 input pico <.UDelay _2000>: TPico
 
 -- MOUSE
