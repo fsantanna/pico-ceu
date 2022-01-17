@@ -1,16 +1,16 @@
-output pico Set_Title _("pico-Ce: Across")
+#include "../pico.ce"
 
-var e: Event_ = KeyDown 0
-input pico Event_Timeout (KEYDOWN,\e,2000)
+output pico <.USet_Title _("pico-Ce: Across")>: TPico
 
-var i: Int = -25
+var i: _int = _(-25)
 loop {
-    output pico Draw_Pixel (i,i)
-    input pico Delay 100
-    if bool _(i == 25) {
+    output pico <.UDraw_Pixel [i,i]>: TPico
+    input pico <.UDelay _100>: TPico
+    if _(i == 25) {
         break
     }
     set i = _(i + 1)
 }
 
-input pico Event (KEYDOWN,\e)
+var e: TEvent = <.UKeyDown _0>
+input pico <.UEvent /e>: TPico

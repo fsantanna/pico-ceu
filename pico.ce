@@ -1,152 +1,68 @@
-type Bool {
-    False: ()
-    True:  ()
-}
+#define TEvent <                             \
+    ()                , -- UAny              \
+    _int              , -- UKeyDown          \
+    [_int,[_int,_int]]  -- UMouseButtonDown  \
+>
 
-func asbool: Int -> Bool {
-    return _(arg ? (Bool){True} : (Bool){False})
-}
+#define TPico <                         \
+    _int            , -- UDelay         \
+    /TEvent         , -- UEvent         \
+    [/TEvent,_int]  , -- UEvent_Timeout \
+    [_int,_int]     , -- UDraw_Pixel    \
+    _(char*)          -- USet_Title     \
+>
 
-func not: Bool -> Bool {
-    if arg {
-        return False
-    } else {
-        return True
-    }
-}
+-- xTPico
+#define UDelay          1
+#define UEvent          2
+#define UEvent_Timeout  3
+#define UDraw_Pixel     4
+#define USet_Title      5
 
-func check: Bool -> () {
-    if not arg {
-        call _assert 0
-    }
-    return ()
-}
+-- xTEvent
+#define UAny             1
+#define UKeyDown         2
+#define UMouseButtonDown 3
+
+#define SPico U_int_P_U_Unit_int_T_int_T_int_int_T_T_U_P_T_P_U_Unit_int_T_int_T_int_int_T_T_U_P_int_T_T_int_int_T_char__U
 
 -------------------------------------------------------------------------------
 
-type Events {
-    ANY:             ()
-    KEYDOWN:         ()
-    MOUSEBUTTONDOWN: ()
-}
-
-type Event_ {
-    Any:     ()
-    KeyDown: Int
-    MouseButtonDown: (Int,(Int,Int))
-}
-
-type HAnchor {
-    Left:   ()
-    Center: ()
-    Right:  ()
-}
-
-type VAnchor {
-    Top:    ()
-    Middle: ()
-    Bottom: ()
-}
-
-type IO_Pico {
-    -- INPUT
-
-    Delay:              Int
-    Event:              (Events,\Event_)
-    Event_Timeout:      (Events,\Event_,Int)
-
-    -- OUTPUT
-
-    Clear:              ()
-
-    Draw_Line:          ((Int,Int),(Int,Int))
-    Draw_Pixel:         (Int,Int)
-    Draw_Rect:          ((Int,Int),(Int,Int))
-    Draw_Text:          ((Int,Int),_{char*})
-
-    Get_Size:           \((Int,Int),(Int,Int))
-
-    Present:            ()
-
-    Set_Anchor:         (HAnchor,VAnchor)
-    Set_Auto:           Bool
-    Set_Color_Clear:    (Int,Int,Int,Int)
-    Set_Color_Draw:     (Int,Int,Int,Int)
-    Set_Cursor:         (Int,Int)
-    Set_Font:           (_{char*},Int)
-    Set_Grid:           Bool
-    Set_Pan:            (Int,Int)
-    Set_Size:           ((Int,Int),(Int,Int))
-    Set_Title:          _(char*)
-    Set_Zoom:           (Int,Int)
-
-    Write:              _(char*)
-    WriteLn:            _(char*)
-}
-
-func output_pico: IO_Pico -> () {
-    native _{
+native _{
+    void output_pico (struct SPico arg) {
         pico_output(*(Pico_IO*)&arg);
     }
-    return ()
-}
 
-func input_pico: IO_Pico -> Bool {
-    if arg.Delay? {
-        return asbool _(pico_input(*(Pico_IO*)&arg))
+    int tosdl (int e) {
+        switch (e) {
+            case UAny:               return SDL_ANY;
+            case UKeyDown:           return SDL_KEYDOWN;
+            case UMouseButtonDown:   return SDL_MOUSEBUTTONDOWN;
+        }
+        assert(0);
     }
 
-    native _{
+    void input_pico_Unit (struct SPico arg) {
+        Pico_IO* pico = (Pico_IO*) &arg;
         SDL_Event e;
-    }
-
-    func tosdl: Events -> Int {
-        if arg.ANY? {
-            return _SDL_ANY
-        }
-        if arg.KEYDOWN? {
-            return _SDL_KEYDOWN
-        }
-        if arg.MOUSEBUTTONDOWN? {
-            return _SDL_MOUSEBUTTONDOWN
-        }
-        call _assert 0
-    }
-
-    func toce: \Event_ -> () {
-        if asbool _(e.type == SDL_KEYDOWN) {
-            set arg\ = KeyDown _(e.key.keysym.sym)
-        }
-        if asbool _(e.type == SDL_MOUSEBUTTONDOWN) {
-            var bt: Int = _(e.button.button)
-            var x:  Int = _(e.button.x)
-            var y:  Int = _(e.button.y)
-            set arg\ = MouseButtonDown (bt, (x,y))
-        }
-        return ()
-    }
-
-    if arg.Event? {
-        var sdl: Int = tosdl arg.Event!.1
-        call _pico_input _{(Pico_IO) {PICO_EVENT,.Event={sdl,&e}}}
-        call toce (arg.Event!.2)
-        return True
-    }
-
-    if arg.Event_Timeout? {
-        var sdl: Int = tosdl arg.Event_Timeout!.1
-        var ret: Int = _pico_input _{(Pico_IO) {PICO_EVENT_TIMEOUT,.Event_Timeout={sdl,arg._Event_Timeout._3,&e}}}
-        if asbool ret {
-            call toce (arg.Event_Timeout!.2)
-            return True
-        } else {
-            return False
+        switch (arg.tag) {
+            case UDelay:
+                pico_input(*pico);
+                break;
+            case UEvent: {
+                pico_input((Pico_IO) {PICO_EVENT,.Event={tosdl(arg._2->tag),&e}});
+                //toce(arg.Event!.2)
+                break;
+            }
+            case UEvent_Timeout: {
+                pico_input((Pico_IO) {
+                    PICO_EVENT_TIMEOUT,
+                    .Event_Timeout = { tosdl(arg._3._1->tag), &e, arg._3._2 }
+                });
+            }
         }
     }
-
-    call _assert 0
-    return True
 }
 
-call _pico_open()
+call _pico_open ()
 -- TODO: pico_close()
