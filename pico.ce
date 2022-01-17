@@ -18,6 +18,7 @@
     [[_int,_int],[_int,_int]]   , -- UDraw_Line         \
     [[_int,_int],[_int,_int]]   , -- UDraw_Rect         \
     [[_int,_int],_(char*)]      , -- UDraw_Text         \
+    /[_int,_int]                , -- UGet_Size          \
     [THAnchor,TVAnchor]         , -- USet_Anchor        \
     _(char*)                    , -- USet_Title         \
     [_int,_int,_int,_int]       , -- USet_Color_Clear   \
@@ -38,15 +39,16 @@
 #define UDraw_Line          6
 #define UDraw_Rect          7
 #define UDraw_Text          8
-#define USet_Anchor         9
-#define USet_Title          10
-#define USet_Color_Clear    11
-#define USet_Color_Draw     12
-#define USet_Cursor         13
-#define USet_Font           14
-#define USet_Grid           15
-#define UWrite              16
-#define UWriteLn            17
+#define UGet_Size           9
+#define USet_Anchor         10
+#define USet_Title          11
+#define USet_Color_Clear    12
+#define USet_Color_Draw     13
+#define USet_Cursor         14
+#define USet_Font           15
+#define USet_Grid           16
+#define UWrite              17
+#define UWriteLn            18
 
 -- xTEvent
 #define UAny                1
@@ -61,7 +63,7 @@
 #define UMiddle     2
 #define UTop        3
 
-#define SPico U_int_int_T_int_int_T_Unit_T_int_int_T_T_T_int_int_T_T_int_int_T_T_T_T_int_int_T_T_int_int_T_T_T_T_int_int_T_char__T_T_U_Unit_Unit_Unit_U_U_Unit_Unit_Unit_U_T_char__T_int_int_int_int_T_T_int_int_int_int_T_T_int_int_T_T_char__int_T_int_char__char__U
+#define SPico U_int_int_T_int_int_T_Unit_T_int_int_T_T_T_int_int_T_T_int_int_T_T_T_T_int_int_T_T_int_int_T_T_T_T_int_int_T_char__T_P_T_int_int_T_P_T_U_Unit_Unit_Unit_U_U_Unit_Unit_Unit_U_T_char__T_int_int_int_int_T_T_int_int_int_int_T_T_int_int_T_T_char__int_T_int_char__char__U
 
 #define SEvent U_Unit_int_T_int_T_int_int_T_T_U
 
@@ -73,8 +75,8 @@ native _{
     void output_pico (struct SPico arg) {
         switch (arg.tag) {
             case USet_Anchor: {
-                // TODO: _9
-                Pico_IO io = { PICO_SET_ANCHOR, .Set_Anchor = {arg._9._1.tag,arg._9._2.tag} };
+                // TODO: _10
+                Pico_IO io = { PICO_SET_ANCHOR, .Set_Anchor = {arg._10._1.tag,arg._10._2.tag} };
                 pico_output(io);
                 break;
             }

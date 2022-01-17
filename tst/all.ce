@@ -3,6 +3,11 @@
 -- TITLE
 output pico <.USet_Title _("pico-Ce")>: TPico
 
+-- GET_SIZE
+var x: [_int,_int]
+output pico <.UGet_Size /x>: TPico
+output std /x
+
 -- CLEAR
 output pico <.USet_Color_Clear [_255,_255,_255,_255]>: TPico
 output pico <.UClear>: TPico
