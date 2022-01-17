@@ -40,4 +40,19 @@ input pico <.UDelay _2000>: TPico
 var e = input pico <.UEvent _SDL_MOUSEBUTTONDOWN>: TPico: TEvent
 output pico <.UDraw_Pixel e!UMouseButtonDown.2>: TPico
 
+-- SET_GRID
+output pico <.UClear>: TPico
+output pico <.USet_Grid _1>: TPico
+
+-- DRAW_LINE
+output pico <.UDraw_Line [[_(-25),_(-25)],[_25,_25]]>: TPico
+output pico <.UDraw_Line [[_(-25),_25],[_25,_(-25)]]>: TPico
+
+-- DRAW_RECT
+output pico <.UDraw_Rect [[_0,_0],[_21,_21]]>: TPico
+
+-- SET_ANCHOR
+output pico <.USet_Anchor [<.URight>,<.UTop>]>: TPico
+output pico <.UDraw_Rect [[_25,_25],[_5,_5]]>: TPico
+
 input pico <.UDelay _2000>: TPico

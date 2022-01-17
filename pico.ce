@@ -1,23 +1,31 @@
+-- ULeft,   UCenter, URight
+-- UBottom, UMiddle, UTop
+#define THAnchor <(),(),()>
+#define TVAnchor <(),(),()>
+
 #define TEvent <                             \
     ()                , -- UAny              \
     _int              , -- UKeyDown          \
     [_int,[_int,_int]]  -- UMouseButtonDown  \
 >
 
-#define TPico <                                     \
-    _int                    , -- UDelay             \
-    _int                    , -- UEvent             \
-    [_int,_int]             , -- UEvent_Timeout     \
-    ()                      , -- UClear             \
-    [_int,_int]             , -- UDraw_Pixel        \
-    [[_int,_int],_(char*)]  , -- UDraw_Text         \
-    _(char*)                , -- USet_Title         \
-    [_int,_int,_int,_int]   , -- USet_Color_Clear   \
-    [_int,_int,_int,_int]   , -- USet_Color_Draw    \
-    [_int,_int]             , -- USet_Cursor        \
-    _int                    , -- USet_Grid          \
-    _(char*)                , -- UWrite             \
-    _(char*)                  -- UWriteLn           \
+#define TPico <                                         \
+    _int                        , -- UDelay             \
+    _int                        , -- UEvent             \
+    [_int,_int]                 , -- UEvent_Timeout     \
+    ()                          , -- UClear             \
+    [_int,_int]                 , -- UDraw_Pixel        \
+    [[_int,_int],[_int,_int]]   , -- UDraw_Line         \
+    [[_int,_int],[_int,_int]]   , -- UDraw_Rect         \
+    [[_int,_int],_(char*)]      , -- UDraw_Text         \
+    [THAnchor,TVAnchor]         , -- USet_Anchor        \
+    _(char*)                    , -- USet_Title         \
+    [_int,_int,_int,_int]       , -- USet_Color_Clear   \
+    [_int,_int,_int,_int]       , -- USet_Color_Draw    \
+    [_int,_int]                 , -- USet_Cursor        \
+    _int                        , -- USet_Grid          \
+    _(char*)                    , -- UWrite             \
+    _(char*)                      -- UWriteLn           \
 >
 
 -- xTPico
@@ -26,21 +34,32 @@
 #define UEvent_Timeout      3
 #define UClear              4
 #define UDraw_Pixel         5
-#define UDraw_Text          6
-#define USet_Title          7
-#define USet_Color_Clear    8
-#define USet_Color_Draw     9
-#define USet_Cursor         10
-#define USet_Grid           11
-#define UWrite              12
-#define UWriteLn            13
+#define UDraw_Line          6
+#define UDraw_Rect          7
+#define UDraw_Text          8
+#define USet_Anchor         9
+#define USet_Title          10
+#define USet_Color_Clear    11
+#define USet_Color_Draw     12
+#define USet_Cursor         13
+#define USet_Grid           14
+#define UWrite              15
+#define UWriteLn            16
 
 -- xTEvent
 #define UAny                1
 #define UKeyDown            2
 #define UMouseButtonDown    3
 
-#define SPico U_int_int_T_int_int_T_Unit_T_int_int_T_T_T_int_int_T_char__T_char__T_int_int_int_int_T_T_int_int_int_int_T_T_int_int_T_int_char__char__U
+-- xAnchor
+#define ULeft       1
+#define UCenter     2
+#define URight      3
+#define UBottom     1
+#define UMiddle     2
+#define UTop        3
+
+#define SPico U_int_int_T_int_int_T_Unit_T_int_int_T_T_T_int_int_T_T_int_int_T_T_T_T_int_int_T_T_int_int_T_T_T_T_int_int_T_char__T_T_U_Unit_Unit_Unit_U_U_Unit_Unit_Unit_U_T_char__T_int_int_int_int_T_T_int_int_int_int_T_T_int_int_T_int_char__char__U
 
 #define SEvent U_Unit_int_T_int_T_int_int_T_T_U
 
@@ -50,7 +69,17 @@ var xxx: TEvent
 
 native _{
     void output_pico (struct SPico arg) {
-        pico_output(*(Pico_IO*)&arg);
+        switch (arg.tag) {
+            case USet_Anchor: {
+                // TODO: _9
+                Pico_IO io = { PICO_SET_ANCHOR, .Set_Anchor = {arg._9._1.tag,arg._9._2.tag} };
+                pico_output(io);
+                break;
+            }
+            default:
+                pico_output(*(Pico_IO*)&arg);
+                break;
+        }
     }
 
     int tosdl (int e) {
@@ -65,12 +94,14 @@ native _{
     void toce (SDL_Event* e, struct SEvent* arg) {
         switch (e->type) {
             case SDL_KEYDOWN:
+                // TODO: _2
                 *arg = (struct SEvent) { UKeyDown, { ._2 = e->key.keysym.sym } };
                 break;
             case SDL_MOUSEBUTTONDOWN: {
                 int bt = e->button.button;
                 int x  = e->button.x;
                 int y  = e->button.y;
+                // TODO: _3
                 *arg = (struct SEvent) { UMouseButtonDown, { ._3 = {bt,{x,y}} } };
                 break;
             }
@@ -81,12 +112,14 @@ native _{
         SDL_Event e;
         switch (arg.tag) {
             case UEvent: {
+                // TODO: _2
                 pico_input(&e, (Pico_IO) {PICO_EVENT,.Event=arg._2});
                 struct SEvent s;
                 toce(&e, &s);
                 return s;
             }
             case UEvent_Timeout: {
+                // TODO: _3
                 int ok = pico_input(&e, (Pico_IO) {
                     PICO_EVENT_TIMEOUT,
                     .Event_Timeout = { arg._3._1, arg._3._2 }
