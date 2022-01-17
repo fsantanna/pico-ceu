@@ -42,6 +42,8 @@
 
 #define SPico U_int_P_U_Unit_int_T_int_T_int_int_T_T_U_P_T_P_U_Unit_int_T_int_T_int_int_T_T_U_P_int_T_Unit_T_int_int_T_T_T_int_int_T_char__T_char__T_int_int_int_int_T_T_int_int_int_int_T_T_int_int_T_int_char__char__U
 
+#define SEvent U_Unit_int_T_int_T_int_int_T_T_U
+
 -------------------------------------------------------------------------------
 
 native _{
@@ -58,6 +60,21 @@ native _{
         assert(0);
     }
 
+    void toce (SDL_Event* e, struct SEvent* arg) {
+        switch (e->type) {
+            case SDL_KEYDOWN:
+                *arg = (struct SEvent) { UKeyDown, { ._2 = e->key.keysym.sym } };
+                break;
+            case SDL_MOUSEBUTTONDOWN: {
+                int bt = e->button.button;
+                int x  = e->button.x;
+                int y  = e->button.y;
+                *arg = (struct SEvent) { UMouseButtonDown, { ._3 = {bt,{x,y}} } };
+                break;
+            }
+        }
+    }
+
     void input_pico_Unit (struct SPico arg) {
         Pico_IO* pico = (Pico_IO*) &arg;
         SDL_Event e;
@@ -67,14 +84,18 @@ native _{
                 break;
             case UEvent: {
                 pico_input((Pico_IO) {PICO_EVENT,.Event={tosdl(arg._2->tag),&e}});
-                //toce(arg.Event!.2)
+                toce(&e, arg._2);
                 break;
             }
             case UEvent_Timeout: {
-                pico_input((Pico_IO) {
+                int ok = pico_input((Pico_IO) {
                     PICO_EVENT_TIMEOUT,
                     .Event_Timeout = { tosdl(arg._3._1->tag), &e, arg._3._2 }
                 });
+                if (ok) {
+                    toce(&e, arg._2);
+                }
+                break;
             }
         }
     }
