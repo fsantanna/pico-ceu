@@ -37,8 +37,7 @@ output pico <.UWriteLn _("pico")>: TPico
 input pico <.UDelay _2000>: TPico
 
 -- MOUSE
-var e: TEvent = <.UMouseButtonDown [_0,[_0,_0]]>
-input pico <.UEvent /e>: TPico
+var e = input pico <.UEvent _SDL_MOUSEBUTTONDOWN>: TPico: TEvent
 output pico <.UDraw_Pixel e!UMouseButtonDown.2>: TPico
 
 input pico <.UDelay _2000>: TPico

@@ -12,5 +12,4 @@ loop {
     set i = _(i + 1)
 }
 
-var e: TEvent = <.UKeyDown _0>
-input pico <.UEvent /e>: TPico
+input pico <.UEvent _SDL_ANY>: TPico

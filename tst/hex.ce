@@ -1,8 +1,12 @@
+#include "../pico.ce"
+
+output pico <.USet_Title _("pico-Ce: Hex Map")>: TPico
+
 native _{
     #define SIDE 14
 }
 
-output pico Set_Title _("pico-Ce: Hex Map")
+output pico Set_Title _("pico-Ce:")
 
 func asint: Int -> Int { return arg }
 
