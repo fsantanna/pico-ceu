@@ -1,29 +1,31 @@
-output pico Set_Title _("pico-Ce: Moving Around")
+#include "../pico.ce"
 
-var x: Int = 0
-var y: Int = 0
+output pico <.USet_Title _("pico-Ce: Moving Around")>: TPico
+
+var x: _int = _0
+var y: _int = _0
 
 loop {
-    output pico Set_Color_Draw (255,255,255,255)
-    output pico Draw_Pixel (x,y)
+    output pico <.USet_Color_Draw [_255,_255,_255,_255]>: TPico
+    output pico <.UDraw_Pixel [x,y]>: TPico
 
-    var e: Event_ = KeyDown 0
-    input pico Event (KEYDOWN,\e)
+    var e: TEvent = <.UKeyDown _0>
+    input pico <.UEvent /e>: TPico
 
-    output pico Set_Color_Draw (0,0,0,255)
-    output pico Draw_Pixel (x,y)
-    
-    var key: Int = e.KeyDown!;
-    if bool _(key == SDLK_LEFT) {
+    output pico <.USet_Color_Draw [_0,_0,_0,_255]>: TPico
+    output pico <.UDraw_Pixel [x,y]>: TPico
+
+    var key = e!UKeyDown;
+    if _(key == SDLK_LEFT) {
         set x = _(x-1)
     }
-    if bool _(key == SDLK_RIGHT) {
+    if _(key == SDLK_RIGHT) {
         set x = _(x+1)
     }
-    if bool _(key == SDLK_UP) {
+    if _(key == SDLK_UP) {
         set y = _(y+1)
     }
-    if bool _(key == SDLK_DOWN) {
+    if _(key == SDLK_DOWN) {
         set y = _(y-1)
     }
 }

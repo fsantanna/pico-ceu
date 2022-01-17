@@ -1,13 +1,16 @@
-output pico Set_Title _("pico-Ce: Mouse")
+#include "../pico.ce"
+
+output pico <.USet_Title _("pico-Ce: Mouse")>: TPico
 
 loop {
-    var e: Event_ = Any
-    input pico Event (MOUSEBUTTONDOWN,\e)
-    var button: Int = e.MouseButtonDown!.1
-    if bool _(button == SDL_BUTTON_LEFT) {
-        output pico Set_Color_Draw (255,255,255,255)
+    var e: TEvent = <.UMouseButtonDown [_0,[_0,_0]]>
+    input pico <.UEvent /e>: TPico
+
+    var button = e!UMouseButtonDown.1
+    if _(button == SDL_BUTTON_LEFT) {
+        output pico <.USet_Color_Draw [_255,_255,_255,_255]>: TPico
     } else {
-        output pico Set_Color_Draw (0,0,0,255)
+        output pico <.USet_Color_Draw [_0,_0,_0,_255]>: TPico
     }
-    output pico Draw_Pixel e.MouseButtonDown!.2
+    output pico <.UDraw_Pixel e!UMouseButtonDown.2>: TPico
 }
