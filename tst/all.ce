@@ -65,3 +65,69 @@ output pico <.USet_Anchor [<.URight>,<.UTop>]>: TPico
 output pico <.UDraw_Rect [[_25,_25],[_5,_5]]>: TPico
 
 input pico <.UDelay _2000>: TPico
+
+-- SET_ZOOM
+
+output pico <.UClear>: TPico
+output pico <.USet_Zoom [_10,_10]>: TPico
+output pico <.UDraw_Pixel [_0,_0]>: TPico
+output pico <.UPresent>: TPico
+input pico <.UDelay _500>: TPico
+
+output pico <.UClear>: TPico
+output pico <.USet_Zoom [_15,_15]>: TPico
+output pico <.UDraw_Pixel [_0,_0]>: TPico
+output pico <.UPresent>: TPico
+input pico <.UDelay _500>: TPico
+
+output pico <.UClear>: TPico
+output pico <.USet_Zoom [_20,_20]>: TPico
+output pico <.UDraw_Pixel [_0,_0]>: TPico
+output pico <.UPresent>: TPico
+input pico <.UDelay _500>: TPico
+
+output pico <.UClear>: TPico
+output pico <.USet_Zoom [_15,_15]>: TPico
+output pico <.UDraw_Pixel [_0,_0]>: TPico
+output pico <.UPresent>: TPico
+input pico <.UDelay _500>: TPico
+
+output pico <.UClear>: TPico
+output pico <.USet_Zoom [_10,_10]>: TPico
+output pico <.UDraw_Pixel [_0,_0]>: TPico
+output pico <.UPresent>: TPico
+input pico <.UDelay _500>: TPico
+
+-- SET_PAN
+
+output pico <.UClear>: TPico
+output pico <.USet_Pan [_0,_0]>: TPico
+output pico <.UDraw_Pixel [_0,_0]>: TPico
+output pico <.UPresent>: TPico
+input pico <.UDelay _500>: TPico
+
+output pico <.UClear>: TPico
+output pico <.USet_Pan [_5,_5]>: TPico
+output pico <.UDraw_Pixel [_0,_0]>: TPico
+output pico <.UPresent>: TPico
+input pico <.UDelay _500>: TPico
+
+output pico <.UClear>: TPico
+output pico <.USet_Pan [_10,_10]>: TPico
+output pico <.UDraw_Pixel [_0,_0]>: TPico
+output pico <.UPresent>: TPico
+input pico <.UDelay _500>: TPico
+
+output pico <.UClear>: TPico
+output pico <.USet_Pan [_5,_5]>: TPico
+output pico <.UDraw_Pixel [_0,_0]>: TPico
+output pico <.UPresent>: TPico
+input pico <.UDelay _500>: TPico
+
+output pico <.UClear>: TPico
+output pico <.USet_Pan [_0,_0]>: TPico
+output pico <.UDraw_Pixel [_0,_0]>: TPico
+output pico <.UPresent>: TPico
+input pico <.UDelay _500>: TPico
+
+input pico <.UDelay _2000>: TPico
