@@ -13,22 +13,24 @@
     _int                        , -- UDelay             \
     _int                        , -- UEvent             \
     [_int,_int]                 , -- UEvent_Timeout     \
+    ()                          , -- UPresent           \
     ()                          , -- UClear             \
     [_int,_int]                 , -- UDraw_Pixel        \
     [[_int,_int],[_int,_int]]   , -- UDraw_Line         \
     [[_int,_int],[_int,_int]]   , -- UDraw_Rect         \
     [[_int,_int],_(char*)]      , -- UDraw_Text         \
-    ()                          , -- UPresent           \
     /[_int,_int]                , -- UGet_Size          \
     [THAnchor,TVAnchor]         , -- USet_Anchor        \
+    ()                          , -- USet_Auto          \
     _(char*)                    , -- USet_Title         \
     [_int,_int,_int,_int]       , -- USet_Color_Clear   \
     [_int,_int,_int,_int]       , -- USet_Color_Draw    \
     [_int,_int]                 , -- USet_Cursor        \
     [_(char*),_int]             , -- USet_Font          \
     _int                        , -- USet_Grid          \
-    [_int,_int]                 , -- USet_Zoom          \
     [_int,_int]                 , -- USet_Pan           \
+    [_int,_int]                 , -- USet_Size          \
+    [_int,_int]                 , -- USet_Zoom          \
     _(char*)                    , -- UWrite             \
     _(char*)                      -- UWriteLn           \
 >
@@ -37,24 +39,26 @@
 #define UDelay              1
 #define UEvent              2
 #define UEvent_Timeout      3
-#define UClear              4
-#define UDraw_Pixel         5
-#define UDraw_Line          6
-#define UDraw_Rect          7
-#define UDraw_Text          8
-#define UPresent            9
+#define UPresent            4
+#define UClear              5
+#define UDraw_Pixel         6
+#define UDraw_Line          7
+#define UDraw_Rect          8
+#define UDraw_Text          9
 #define UGet_Size           10
 #define USet_Anchor         11
-#define USet_Title          12
-#define USet_Color_Clear    13
-#define USet_Color_Draw     14
-#define USet_Cursor         15
-#define USet_Font           16
-#define USet_Grid           17
-#define USet_Pan            18
-#define USet_Zoom           19
-#define UWrite              20
-#define UWriteLn            21
+#define USet_Auto           12
+#define USet_Title          13
+#define USet_Color_Clear    14
+#define USet_Color_Draw     15
+#define USet_Cursor         16
+#define USet_Font           17
+#define USet_Grid           18
+#define USet_Pan            19
+#define USet_Size           20
+#define USet_Zoom           21
+#define UWrite              22
+#define UWriteLn            23
 
 -- xTEvent
 #define UAny                1
@@ -69,7 +73,7 @@
 #define UMiddle     2
 #define UTop        3
 
-#define SPico U_int_int_T_int_int_T_Unit_T_int_int_T_T_T_int_int_T_T_int_int_T_T_T_T_int_int_T_T_int_int_T_T_T_T_int_int_T_char__T_Unit_P_T_int_int_T_P_T_U_Unit_Unit_Unit_U_U_Unit_Unit_Unit_U_T_char__T_int_int_int_int_T_T_int_int_int_int_T_T_int_int_T_T_char__int_T_int_T_int_int_T_T_int_int_T_char__char__U
+#define SPico U_int_int_T_int_int_T_Unit_Unit_T_int_int_T_T_T_int_int_T_T_int_int_T_T_T_T_int_int_T_T_int_int_T_T_T_T_int_int_T_char__T_P_T_int_int_T_P_T_U_Unit_Unit_Unit_U_U_Unit_Unit_Unit_U_T_Unit_char__T_int_int_int_int_T_T_int_int_int_int_T_T_int_int_T_T_char__int_T_int_T_int_int_T_T_int_int_T_T_int_int_T_char__char__U
 
 #define SEvent U_Unit_int_T_int_T_int_int_T_T_U
 
