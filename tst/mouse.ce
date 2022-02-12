@@ -6,7 +6,7 @@ loop {
     var e = input pico <.UEvent _SDL_MOUSEBUTTONDOWN>: TPico: TEvent
 
     var button = e!UMouseButtonDown.1
-    if _(button == SDL_BUTTON_LEFT) {
+    if _($button == SDL_BUTTON_LEFT) {
         output pico <.USet_Color_Draw [_255,_255,_255,_255]>: TPico
     } else {
         output pico <.USet_Color_Draw [_0,_0,_0,_255]>: TPico

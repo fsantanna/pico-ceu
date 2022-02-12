@@ -15,16 +15,16 @@ loop {
     output pico <.UDraw_Pixel [x,y]>: TPico
 
     var key = e!UKeyDown;
-    if _(key == SDLK_LEFT) {
-        set x = _(x-1)
+    if _($key == SDLK_LEFT) {
+        set x = _($x-1)
     }
-    if _(key == SDLK_RIGHT) {
-        set x = _(x+1)
+    if _($key == SDLK_RIGHT) {
+        set x = _($x+1)
     }
-    if _(key == SDLK_UP) {
-        set y = _(y+1)
+    if _($key == SDLK_UP) {
+        set y = _($y+1)
     }
-    if _(key == SDLK_DOWN) {
-        set y = _(y-1)
+    if _($key == SDLK_DOWN) {
+        set y = _($y-1)
     }
 }

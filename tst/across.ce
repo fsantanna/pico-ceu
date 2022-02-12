@@ -5,11 +5,11 @@ output pico <.USet_Title _("pico-Ce: Across")>: TPico
 var i: _int = _(-25)
 loop {
     output pico <.UDraw_Pixel [i,i]>: TPico
-    input pico <.UDelay _100>: TPico
-    if _(i == 25) {
+    input pico <.UDelay _100>:TPico
+    if _($i == 25) {
         break
     }
-    set i = _(i + 1)
+    set i = _($i + 1)
 }
 
 input pico <.UEvent _SDL_ANY>: TPico
