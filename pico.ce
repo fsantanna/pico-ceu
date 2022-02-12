@@ -5,6 +5,7 @@ type TVAnchor = <(),(),()>
 
 type TEvent = <
     ()                , -- UAny
+    ()                , -- UTimeout
     _int              , -- UKeyDown
     [_int,[_int,_int]]  -- UMouseButtonDown
 >
@@ -62,8 +63,9 @@ type TPico = <
 
 -- xTEvent
 #define UAny                1
-#define UKeyDown            2
-#define UMouseButtonDown    3
+#define UTimeout            2
+#define UKeyDown            3
+#define UMouseButtonDown    4
 
 -- xAnchor
 #define ULeft       1
@@ -136,6 +138,8 @@ native type _{
                     TEvent s;
                     toce(&e, &s);
                     return s;
+                } else {
+                    return (TEvent) { UTimeout };
                 }
                 break;
             }
