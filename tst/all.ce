@@ -14,6 +14,12 @@ output pico <.UClear>: TPico
 
 input pico <.UDelay _2000>: TPico
 
+-- DRAW_IMAGE
+output pico <.USet_Anchor [<.UCenter>,<.UMiddle>]>: TPico
+output pico <.UDraw_Image [[_0,_0], _("open.png")]>: TPico
+
+input pico <.UDelay _2000>: TPico
+
 -- DRAW_PIXEL
 output pico <.USet_Color_Clear [_0,_0,_0,_255]>: TPico
 output pico <.USet_Color_Draw [_255,_255,_255,_255]>: TPico

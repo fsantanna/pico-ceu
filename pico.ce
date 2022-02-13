@@ -20,6 +20,7 @@ type TPico = <
     [[_int,_int],[_int,_int]]   , -- UDraw_Line
     [[_int,_int],[_int,_int]]   , -- UDraw_Rect
     [[_int,_int],_(char*)]      , -- UDraw_Text
+    [[_int,_int],_(char*)]      , -- UDraw_Image
     /[_int,_int]                , -- UGet_Size
     [THAnchor,TVAnchor]         , -- USet_Anchor
     ()                          , -- USet_Auto
@@ -46,20 +47,21 @@ type TPico = <
 #define UDraw_Line          7
 #define UDraw_Rect          8
 #define UDraw_Text          9
-#define UGet_Size           10
-#define USet_Anchor         11
-#define USet_Auto           12
-#define USet_Color_Clear    13
-#define USet_Color_Draw     14
-#define USet_Cursor         15
-#define USet_Font           16
-#define USet_Grid           17
-#define USet_Pan            18
-#define USet_Size           19
-#define USet_Title          20
-#define USet_Zoom           21
-#define UWrite              22
-#define UWriteLn            23
+#define UDraw_Image         10
+#define UGet_Size           11
+#define USet_Anchor         12
+#define USet_Auto           13
+#define USet_Color_Clear    14
+#define USet_Color_Draw     15
+#define USet_Cursor         16
+#define USet_Font           17
+#define USet_Grid           18
+#define USet_Pan            19
+#define USet_Size           20
+#define USet_Title          21
+#define USet_Zoom           22
+#define UWrite              23
+#define UWriteLn            24
 
 -- xTEvent
 #define UAny                1
@@ -81,8 +83,8 @@ native type _{
     void output_pico (TPico arg) {
         switch (arg.tag) {
             case USet_Anchor: {
-                // TODO: _11
-                Pico_IO io = { PICO_SET_ANCHOR, .Set_Anchor = {arg._11._1.tag,arg._11._2.tag} };
+                // TODO: _12
+                Pico_IO io = { PICO_SET_ANCHOR, .Set_Anchor = {arg._12._1.tag,arg._12._2.tag} };
                 pico_output(io);
                 break;
             }
