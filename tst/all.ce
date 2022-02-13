@@ -52,7 +52,7 @@ output pico <.UWriteLn _("pico")>: TPico
 input pico <.UDelay _2000>: TPico
 
 -- MOUSE
-var e = input pico <.UEvent _SDL_MOUSEBUTTONDOWN>: TPico: TEvent
+var e = input pico <.UEvent _SDL_MOUSEBUTTONDOWN>: TPico: Event
 output pico <.UDraw_Pixel e!UMouseButtonDown.2>: TPico
 
 -- SET_GRID

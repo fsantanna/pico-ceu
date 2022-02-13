@@ -3,7 +3,7 @@
 output pico <.USet_Title _("pico-Ce: Mouse")>: TPico
 
 loop {
-    var e = input pico <.UEvent _SDL_MOUSEBUTTONDOWN>: TPico: TEvent
+    var e = input pico <.UEvent _SDL_MOUSEBUTTONDOWN>: TPico: Event
 
     var button = e!UMouseButtonDown.1
     if _($button == SDL_BUTTON_LEFT) {

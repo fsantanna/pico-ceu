@@ -3,7 +3,8 @@
 type THAnchor = <(),(),()>
 type TVAnchor = <(),(),()>
 
-type TEvent = <
+type Event = <
+    ()                , -- EVENT_KILL
     ()                , -- UAny
     ()                , -- UTimeout
     _int              , -- UKeyDown
@@ -63,11 +64,12 @@ type TPico = <
 #define UWrite              23
 #define UWriteLn            24
 
--- xTEvent
-#define UAny                1
-#define UTimeout            2
-#define UKeyDown            3
-#define UMouseButtonDown    4
+-- xEvent
+--#define KILL                1
+#define UAny                2
+#define UTimeout            3
+#define UKeyDown            4
+#define UMouseButtonDown    5
 
 -- xAnchor
 #define ULeft       1
@@ -104,30 +106,30 @@ native type _{
         assert(0);
     }
 
-    void toce (SDL_Event* e, TEvent* arg) {
+    void toce (SDL_Event* e, Event* arg) {
         switch (e->type) {
             case SDL_KEYDOWN:
-                // TODO: _3
-                *arg = (TEvent) { UKeyDown, { ._3 = e->key.keysym.sym } };
+                // TODO: _4
+                *arg = (Event) { UKeyDown, { ._4 = e->key.keysym.sym } };
                 break;
             case SDL_MOUSEBUTTONDOWN: {
                 int bt = e->button.button;
                 int x  = e->button.x;
                 int y  = e->button.y;
-                // TODO: _4
-                *arg = (TEvent) { UMouseButtonDown, { ._4 = {bt,{x,y}} } };
+                // TODO: _5
+                *arg = (Event) { UMouseButtonDown, { ._5 = {bt,{x,y}} } };
                 break;
             }
         }
     }
 
-    TEvent input_pico_TEvent (TPico arg) {
+    Event input_pico_Event (TPico arg) {
         SDL_Event e;
         switch (arg.tag) {
             case UEvent: {
                 // TODO: _2
                 pico_input(&e, (Pico_IO) {PICO_EVENT,.Event=arg._2});
-                TEvent s;
+                Event s;
                 toce(&e, &s);
                 return s;
             }
@@ -138,11 +140,11 @@ native type _{
                     .Event_Timeout = { arg._3._1, arg._3._2 }
                 });
                 if (ok) {
-                    TEvent s;
+                    Event s;
                     toce(&e, &s);
                     return s;
                 } else {
-                    return (TEvent) { UTimeout };
+                    return (Event) { UTimeout };
                 }
                 break;
             }
@@ -156,7 +158,7 @@ native type _{
                 pico_input(&e, *((Pico_IO*)&arg));
                 break;
             default:
-                input_pico_TEvent (arg);
+                input_pico_Event (arg);
                 break;
         }
     }

@@ -9,7 +9,7 @@ loop {
     output pico <.USet_Color_Draw [_255,_255,_255,_255]>: TPico
     output pico <.UDraw_Pixel [x,y]>: TPico
 
-    var e = input pico <.UEvent _SDL_KEYDOWN>: TPico: TEvent
+    var e = input pico <.UEvent _SDL_KEYDOWN>: TPico: Event
 
     output pico <.USet_Color_Draw [_0,_0,_0,_255]>: TPico
     output pico <.UDraw_Pixel [x,y]>: TPico
