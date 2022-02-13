@@ -97,6 +97,7 @@ native type _{
     int tosdl (int e) {
         switch (e) {
             case UAny:               return SDL_ANY;
+            //case UTimeout:           return ???;
             case UKeyDown:           return SDL_KEYDOWN;
             case UMouseButtonDown:   return SDL_MOUSEBUTTONDOWN;
         }
@@ -106,15 +107,15 @@ native type _{
     void toce (SDL_Event* e, TEvent* arg) {
         switch (e->type) {
             case SDL_KEYDOWN:
-                // TODO: _2
-                *arg = (TEvent) { UKeyDown, { ._2 = e->key.keysym.sym } };
+                // TODO: _3
+                *arg = (TEvent) { UKeyDown, { ._3 = e->key.keysym.sym } };
                 break;
             case SDL_MOUSEBUTTONDOWN: {
                 int bt = e->button.button;
                 int x  = e->button.x;
                 int y  = e->button.y;
-                // TODO: _3
-                *arg = (TEvent) { UMouseButtonDown, { ._3 = {bt,{x,y}} } };
+                // TODO: _4
+                *arg = (TEvent) { UMouseButtonDown, { ._4 = {bt,{x,y}} } };
                 break;
             }
         }
