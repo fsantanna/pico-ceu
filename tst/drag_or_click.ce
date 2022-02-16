@@ -46,10 +46,8 @@ spawn {
                     output std _("Dropped!"):_(char*)
                 } with {
                     loop {
-                        var mouse2 = mouse
-                        var dxy2 = dxy
                         set rect = [
-                            [ add [mouse2.1,dxy2.1], add [mouse2.2,dxy2.2] ],
+                            [ add [mouse.1,dxy.1], add [mouse.2,dxy.2] ],
                             rect.2
                         ]
                         await evt?UMouseMotion
