@@ -5,10 +5,13 @@ type TVAnchor = <(),(),()>
 
 type Event = <
     ()                , -- EVENT_KILL
+    _uint64_t         , -- EVENT_TASK
     ()                , -- UAny
     ()                , -- UTimeout
     _int              , -- UKeyDown
-    [_int,[_int,_int]]  -- UMouseButtonDown
+    [_int,[_int,_int]], -- UMouseButtonDown
+    [_int,[_int,_int]], -- UMouseButtonUp
+    [_int,_int]         -- UMouseMotion
 >
 
 type TPico = <
@@ -66,10 +69,13 @@ type TPico = <
 
 -- xEvent
 --#define KILL                1
-#define UAny                2
-#define UTimeout            3
-#define UKeyDown            4
-#define UMouseButtonDown    5
+--#define TASK                2
+#define UAny                3
+#define UTimeout            4
+#define UKeyDown            5
+#define UMouseButtonDown    6
+#define UMouseButtonUp      7
+#define UMouseMotion        8
 
 -- xAnchor
 #define ULeft       1
@@ -98,10 +104,12 @@ native type _{
 
     int tosdl (int e) {
         switch (e) {
-            case UAny:               return SDL_ANY;
-            //case UTimeout:           return ???;
-            case UKeyDown:           return SDL_KEYDOWN;
-            case UMouseButtonDown:   return SDL_MOUSEBUTTONDOWN;
+            case UAny:              return SDL_ANY;
+            //case UTimeout:          return ???;
+            case UKeyDown:          return SDL_KEYDOWN;
+            case UMouseButtonDown:  return SDL_MOUSEBUTTONDOWN;
+            case UMouseButtonUp:    return SDL_MOUSEBUTTONUP;
+            case UMouseMotion:      return SDL_MOUSEMOTION;
         }
         assert(0);
     }
@@ -109,15 +117,30 @@ native type _{
     void toce (SDL_Event* e, Event* arg) {
         switch (e->type) {
             case SDL_KEYDOWN:
-                // TODO: _4
-                *arg = (Event) { UKeyDown, { ._4 = e->key.keysym.sym } };
+                // TODO: _5
+                *arg = (Event) { UKeyDown, { ._5 = e->key.keysym.sym } };
                 break;
             case SDL_MOUSEBUTTONDOWN: {
                 int bt = e->button.button;
                 int x  = e->button.x;
                 int y  = e->button.y;
-                // TODO: _5
-                *arg = (Event) { UMouseButtonDown, { ._5 = {bt,{x,y}} } };
+                // TODO: _6
+                *arg = (Event) { UMouseButtonDown, { ._6 = {bt,{x,y}} } };
+                break;
+            }
+            case SDL_MOUSEBUTTONUP: {
+                int bt = e->button.button;
+                int x  = e->button.x;
+                int y  = e->button.y;
+                // TODO: _7
+                *arg = (Event) { UMouseButtonUp, { ._7 = {bt,{x,y}} } };
+                break;
+            }
+            case SDL_MOUSEMOTION: {
+                int x  = e->button.x;
+                int y  = e->button.y;
+                // TODO: _8
+                *arg = (Event) { UMouseMotion, { ._8 = {x,y} } };
                 break;
             }
         }
