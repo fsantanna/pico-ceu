@@ -12,6 +12,9 @@ var isPointInsideRect = func [[_int,_int],[[_int,_int],[_int,_int]]] -> _int {
     var rw = div [arg.2.2.1, _2]
     var rh = div [arg.2.2.2, _2]
 
+    --return not ([ [mx < [rx-rw]] or [mx > [rx+rw]] ] or
+    --            [ [my < [ry-rh]] or [my > [ry+rh]] ])
+
     return not (or [ lt [mx, sub [rx,rw]],
                 or [ gt [mx, add [rx,rw]],
                 or [ lt [my, sub [ry,rh]],
@@ -24,6 +27,7 @@ spawn {
     par {
         loop {
             var dxy: [_int,_int]
+#if 1
             loop {
                 await evt?UMouseButtonDown
                 var mouse = evt!UMouseButtonDown.2
@@ -32,6 +36,16 @@ spawn {
                     break
                 }
             }
+#else
+            await call {
+                if evt?UMouseButtonDown {
+                    var mouse = evt!UMouseButtonDown.2
+                    set dxy = [ sub [rect.1.1,mouse.1], sub [rect.1.2,mouse.2] ]
+                    return isPointInsideRect [mouse, rect]
+                }
+                return _0
+            }
+#endif
             paror {
                 var orig = rect
                 await evt?UKeyDown
