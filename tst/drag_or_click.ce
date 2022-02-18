@@ -1,90 +1,56 @@
 #include "int.ce"
 #include "pico.ce"
 
---type Point = [_int, _int]
-
-var isPointInsideRect = func [[_int,_int],[[_int,_int],[_int,_int]]] -> _int {
-    var mx = arg.1.1
-    var my = arg.1.2
-
-    var rx = arg.2.1.1
-    var ry = arg.2.1.2
-    var rw = div [arg.2.2.1, _2]
-    var rh = div [arg.2.2.2, _2]
-
-    --return not ([ [mx < [rx-rw]] or [mx > [rx+rw]] ] or
-    --            [ [my < [ry-rh]] or [my > [ry+rh]] ])
-
-    return not (or [ lt [mx, sub [rx,rw]],
-                or [ gt [mx, add [rx,rw]],
-                or [ lt [my, sub [ry,rh]],
-                     gt [my, add [ry,rh]]]]])
-}
-
-var rect: [[_int,_int],[_int,_int]] = [[_10,_10],[_5,_5]]
+var rect: Rect = [xy,wh]
+    where {
+        var xy: Point = [_10,_10]
+        var wh: Dims  = [_5,_5]
+    }
 
 spawn {
-    par {
-        loop {
-            var dxy: [_int,_int]
-#if 1
-            loop {
-                await evt?UMouseButtonDown
+    loop {
+        var dxy: Point
+        await evt?UMouseButtonDown until isPointInsideRect[mouse,rect]
+            where {
                 var mouse = evt!UMouseButtonDown.2
-                if isPointInsideRect [mouse, rect] {
-                    set dxy = [ sub [rect.1.1,mouse.1], sub [rect.1.2,mouse.2] ]
-                    break
-                }
+                set dxy = [ sub [rect.1.1,mouse.1], sub [rect.1.2,mouse.2] ]
             }
-#else
-            await call {
-                if evt?UMouseButtonDown {
-                    var mouse = evt!UMouseButtonDown.2
-                    set dxy = [ sub [rect.1.1,mouse.1], sub [rect.1.2,mouse.2] ]
-                    return isPointInsideRect [mouse, rect]
-                }
-                return _0
-            }
-#endif
+        paror {
+            var orig = rect
+            await evt?UKeyDown
+            set rect = orig
+            output std _("Cancelled!"):_(char*)
+        } with {
+            await evt?UMouseMotion
+            output std _("Dragging..."):_(char*)
+            var mouse = evt!UMouseMotion
             paror {
-                var orig = rect
-                await evt?UKeyDown
-                set rect = orig
-                output std _("Cancelled!"):_(char*)
-            } with {
-                await evt?UMouseMotion
-                output std _("Dragging..."):_(char*)
-                var mouse = evt!UMouseMotion
-                paror {
-                    await evt?UMouseButtonUp
-                    output std _("Dropped!"):_(char*)
-                } with {
-                    loop {
-                        set rect = [
-                            [ add [mouse.1,dxy.1], add [mouse.2,dxy.2] ],
-                            rect.2
-                        ]
-                        await evt?UMouseMotion
-                        set mouse = evt!UMouseMotion
-                    }
-                }
-            } with {
                 await evt?UMouseButtonUp
-                output std _("Clicked!"):_(char*)
+                output std _("Dropped!"):_(char*)
+            } with {
+                loop {
+                    set rect = [pt, rect.2]
+                        where {
+                            var pt: Point = [ add [mouse.1,dxy.1], add [mouse.2,dxy.2] ]
+                        }
+                    await evt?UMouseMotion
+                    set mouse = evt!UMouseMotion
+                }
             }
-        }
-    } with {
-        loop {
-            await _1 --evt?UTimeout
-            output pico <.UClear>: TPico
-            output pico <.UDraw_Rect rect>: TPico
-            output pico <.UPresent>: TPico
+        } with {
+            await evt?UMouseButtonUp
+            output std _("Clicked!"):_(char*)
         }
     }
 }
 
-output pico <.USet_Auto _0>: TPico
-loop {
-    var e: Event = input pico <.UEvent_Timeout [_SDL_ANY,_33]>: TPico
-    emit e
+spawn {
+    loop {
+        await _1
+        output pico <.UClear>: TPico
+        output pico <.UDraw_Rect rect>: TPico
+        output pico <.UPresent>: TPico
+    }
 }
+
+call pico_loop ()

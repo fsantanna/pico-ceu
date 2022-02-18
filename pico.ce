@@ -1,44 +1,48 @@
+type Point = [_int,_int]
+type Dims  = [_int,_int]
+type Rect  = [Point,Dims]
+
 -- ULeft,   UCenter, URight
 -- UBottom, UMiddle, UTop
 type THAnchor = <(),(),()>
 type TVAnchor = <(),(),()>
 
 type Event = <
-    ()                , -- EVENT_KILL
-    _uint64_t         , -- EVENT_TASK
-    ()                , -- UAny
-    ()                , -- UTimeout
-    _int              , -- UKeyDown
-    [_int,[_int,_int]], -- UMouseButtonDown
-    [_int,[_int,_int]], -- UMouseButtonUp
-    [_int,_int]         -- UMouseMotion
+    ()          ,   -- EVENT_KILL
+    _uint64_t   ,   -- EVENT_TASK
+    ()          ,   -- UAny
+    ()          ,   -- UTimeout
+    _int        ,   -- UKeyDown
+    [_int,Point],   -- UMouseButtonDown
+    [_int,Point],   -- UMouseButtonUp
+    [_int,_int]     -- UMouseMotion
 >
 
 type TPico = <
-    _int                        , -- UDelay
-    _int                        , -- UEvent
-    [_int,_int]                 , -- UEvent_Timeout
-    ()                          , -- UPresent
-    ()                          , -- UClear
-    [_int,_int]                 , -- UDraw_Pixel
-    [[_int,_int],[_int,_int]]   , -- UDraw_Line
-    [[_int,_int],[_int,_int]]   , -- UDraw_Rect
-    [[_int,_int],_(char*)]      , -- UDraw_Text
-    [[_int,_int],_(char*)]      , -- UDraw_Image
-    /[_int,_int]                , -- UGet_Size
-    [THAnchor,TVAnchor]         , -- USet_Anchor
-    ()                          , -- USet_Auto
-    [_int,_int,_int,_int]       , -- USet_Color_Clear
-    [_int,_int,_int,_int]       , -- USet_Color_Draw
-    [_int,_int]                 , -- USet_Cursor
-    [_(char*),_int]             , -- USet_Font
-    _int                        , -- USet_Grid
-    [_int,_int]                 , -- USet_Pan
-    [_int,_int]                 , -- USet_Size
-    _(char*)                    , -- USet_Title
-    [_int,_int]                 , -- USet_Zoom
-    _(char*)                    , -- UWrite
-    _(char*)                      -- UWriteLn 
+    _int                 , -- UDelay
+    _int                 , -- UEvent
+    [_int,_int]          , -- UEvent_Timeout
+    ()                   , -- UPresent
+    ()                   , -- UClear
+    [_int,_int]          , -- UDraw_Pixel
+    [Point,Point]        , -- UDraw_Line
+    Rect                 , -- UDraw_Rect
+    [Point,_(char*)]     , -- UDraw_Text
+    [Point,_(char*)]     , -- UDraw_Image
+    /Dims                , -- UGet_Size
+    [THAnchor,TVAnchor]  , -- USet_Anchor
+    ()                   , -- USet_Auto
+    [_int,_int,_int,_int], -- USet_Color_Clear
+    [_int,_int,_int,_int], -- USet_Color_Draw
+    Point                , -- USet_Cursor
+    [_(char*),_int]      , -- USet_Font
+    _int                 , -- USet_Grid
+    Point                , -- USet_Pan
+    Dims                 , -- USet_Size
+    _(char*)             , -- USet_Title
+    Dims                 , -- USet_Zoom
+    _(char*)             , -- UWrite
+    _(char*)               -- UWriteLn 
 >
 
 -- xTPico
@@ -84,6 +88,31 @@ type TPico = <
 #define UBottom     1
 #define UMiddle     2
 #define UTop        3
+
+-------------------------------------------------------------------------------
+
+var isPointInsideRect = func [Point,Rect] -> _int {
+    return not (or [ lt [mx, sub [rx,rw]],
+                or [ gt [mx, add [rx,rw]],
+                or [ lt [my, sub [ry,rh]],
+                     gt [my, add [ry,rh]]]]])
+        where {
+            var mx = arg.1.1
+            var my = arg.1.2
+            var rx = arg.2.1.1
+            var ry = arg.2.1.2
+            var rw = div [arg.2.2.1, _2]
+            var rh = div [arg.2.2.2, _2]
+        }
+}
+
+var pico_loop = func () -> () {
+    output pico <.USet_Auto _0>: TPico
+    loop {
+        var e: Event = input pico <.UEvent_Timeout [_SDL_ANY,_33]>: TPico
+        emit e
+    }
+}
 
 -------------------------------------------------------------------------------
 
