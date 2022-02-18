@@ -1,6 +1,8 @@
 #include "int.ce"
 #include "pico.ce"
 
+-- JS 42 lines
+
 var rect: Rect = [xy,wh]
     where {
         var xy: Point = [_10,_10]
@@ -9,12 +11,15 @@ var rect: Rect = [xy,wh]
 
 spawn {
     loop {
-        var dxy: Point
-        await evt?UMouseButtonDown until isPointInsideRect[mouse,rect]
-            where {
-                var mouse = evt!UMouseButtonDown.2
-                set dxy = [ sub [rect.1.1,mouse.1], sub [rect.1.2,mouse.2] ]
-            }
+        var dxy: Dims
+        {
+            var mouse: Point
+            await evt?UMouseButtonDown until isPointInsideRect[mouse,rect]
+                where {
+                    set mouse = evt!UMouseButtonDown.2
+                }
+            set dxy = [ sub [rect.1.1,mouse.1], sub [rect.1.2,mouse.2] ]
+        }
         paror {
             var orig = rect
             await evt?UKeyDown
@@ -24,10 +29,7 @@ spawn {
             await evt?UMouseMotion
             output std _("Dragging..."):_(char*)
             var mouse = evt!UMouseMotion
-            paror {
-                await evt?UMouseButtonUp
-                output std _("Dropped!"):_(char*)
-            } with {
+            watching evt?UMouseButtonUp {
                 loop {
                     set rect = [pt, rect.2]
                         where {
@@ -37,6 +39,7 @@ spawn {
                     set mouse = evt!UMouseMotion
                 }
             }
+            output std _("Dropped!"):_(char*)
         } with {
             await evt?UMouseButtonUp
             output std _("Clicked!"):_(char*)
