@@ -22,7 +22,7 @@ spawn {
         }
         paror {
             var orig = rect
-            await evt?UKeyDown
+            await evt?UKeyDown until eq [evt!UKeyDown,_SDLK_ESCAPE]
             set rect = orig
             output std _("Cancelled!"):_(char*)
         } with {
