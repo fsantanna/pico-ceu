@@ -1,13 +1,7 @@
 #include "int.ce"
 #include "pico.ce"
 
--- JS 42 lines
-
-var rect: Rect = [xy,wh]
-    where {
-        var xy: Point = [_10,_10]
-        var wh: Dims  = [_5,_5]
-    }
+var rect: Rect = [[_10,_10],[_5,_5]]
 
 spawn {
     loop {
@@ -50,9 +44,9 @@ spawn {
 spawn {
     loop {
         await _1
-        output pico <.UClear>: TPico
-        output pico <.UDraw_Rect rect>: TPico
-        output pico <.UPresent>: TPico
+        output pico TPico.UClear
+        output pico TPico.UDraw_Rect rect
+        output pico TPico.UPresent
     }
 }
 
