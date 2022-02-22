@@ -24,7 +24,7 @@ type TPico = <
     [_int,_int]          , -- UEvent_Timeout
     ()                   , -- UPresent
     ()                   , -- UClear
-    [_int,_int]          , -- UDraw_Pixel
+    Point                , -- UDraw_Pixel
     [Point,Point]        , -- UDraw_Line
     Rect                 , -- UDraw_Rect
     [Point,_(char*)]     , -- UDraw_Text
@@ -180,7 +180,8 @@ native type _{
         switch (arg.tag) {
             case UEvent: {
                 // TODO: _2
-                pico_input(&e, (Pico_IO) {PICO_EVENT,.Event=arg._2});
+                int ok = pico_input(&e, (Pico_IO) {PICO_EVENT,.Event=arg._2});
+                assert(ok);
                 Event s;
                 toce(&e, &s);
                 return s;
@@ -206,9 +207,11 @@ native type _{
     void input_pico_Unit (TPico arg) {
         SDL_Event e;
         switch (arg.tag) {
-            case UDelay:
-                pico_input(&e, *((Pico_IO*)&arg));
+            case UDelay: {
+                int ok = pico_input(&e, *((Pico_IO*)&arg));
+                assert(ok);
                 break;
+            }
             default:
                 input_pico_Event (arg);
                 break;

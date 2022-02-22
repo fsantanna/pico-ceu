@@ -1,18 +1,19 @@
-#include "../pico.ce"
+#include "int.ce"
+#include "pico.ce"
 
-output pico <.USet_Title _("pico-Ce: Moving Around")>: TPico
+output pico TPico.USet_Title _("pico-Ce: Moving Around")
 
 var x: _int = _0
 var y: _int = _0
 
 loop {
-    output pico <.USet_Color_Draw [_255,_255,_255,_255]>: TPico
-    output pico <.UDraw_Pixel [x,y]>: TPico
+    output pico TPico.USet_Color_Draw [_255,_255,_255,_255]
+    output pico TPico.UDraw_Pixel [x,y]
 
-    var e = input pico <.UEvent _SDL_KEYDOWN>: TPico: Event
+    var e: Event = input pico TPico.UEvent _SDL_KEYDOWN
 
-    output pico <.USet_Color_Draw [_0,_0,_0,_255]>: TPico
-    output pico <.UDraw_Pixel [x,y]>: TPico
+    output pico TPico.USet_Color_Draw [_0,_0,_0,_255]
+    output pico TPico.UDraw_Pixel [x,y]
 
     var key = e!UKeyDown;
     if _($key == SDLK_LEFT) {

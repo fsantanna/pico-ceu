@@ -8,11 +8,11 @@ spawn {
         var dxy: Dims
         {
             var mouse: Point
-            await evt?UMouseButtonDown until isPointInsideRect[mouse,rect]
+            await evt?UMouseButtonDown until isPointInsideRect [mouse,rect]
                 where {
                     set mouse = evt!UMouseButtonDown.2
                 }
-            set dxy = [ sub [rect.1.1,mouse.1], sub [rect.1.2,mouse.2] ]
+            set dxy = [sub [rect.1.1,mouse.1], sub [rect.1.2,mouse.2]]
         }
         paror {
             var orig = rect
@@ -27,7 +27,7 @@ spawn {
                 loop {
                     set rect = [pt, rect.2]
                         where {
-                            var pt: Point = [ add [mouse.1,dxy.1], add [mouse.2,dxy.2] ]
+                            var pt: Point = [add [mouse.1,dxy.1], add [mouse.2,dxy.2]]
                         }
                     await evt?UMouseMotion
                     set mouse = evt!UMouseMotion

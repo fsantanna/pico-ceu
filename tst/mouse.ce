@@ -1,15 +1,16 @@
-#include "../pico.ce"
+#include "int.ce"
+#include "pico.ce"
 
-output pico <.USet_Title _("pico-Ce: Mouse")>: TPico
+output pico TPico.USet_Title _("pico-Ce: Mouse")
 
 loop {
-    var e = input pico <.UEvent _SDL_MOUSEBUTTONDOWN>: TPico: Event
+    var e: Event = input pico TPico.UEvent _SDL_MOUSEBUTTONDOWN
 
     var button = e!UMouseButtonDown.1
     if _($button == SDL_BUTTON_LEFT) {
-        output pico <.USet_Color_Draw [_255,_255,_255,_255]>: TPico
+        output pico TPico.USet_Color_Draw [_255,_255,_255,_255]
     } else {
-        output pico <.USet_Color_Draw [_0,_0,_0,_255]>: TPico
+        output pico TPico.USet_Color_Draw [_0,_0,_0,_255]
     }
-    output pico <.UDraw_Pixel e!UMouseButtonDown.2>: TPico
+    output pico TPico.UDraw_Pixel e!UMouseButtonDown.2
 }
