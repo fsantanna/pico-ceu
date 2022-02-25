@@ -107,9 +107,9 @@ var isPointInsideRect = func [Point,Rect] -> _int {
 }
 
 var pico_loop = func () -> () {
-    output pico <.USet_Auto _0>: TPico
+    output pico TPico.USet_Auto _0
     loop {
-        var e: Event = input pico <.UEvent_Timeout [_SDL_ANY,_33]>: TPico
+        var e: Event = input pico TPico.UEvent_Timeout [_SDL_ANY,_33]
         emit e
     }
 }
