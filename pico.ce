@@ -16,7 +16,8 @@ type Event = <
     _int        ,   -- UKeyDown
     [_int,Point],   -- UMouseButtonDown
     [_int,Point],   -- UMouseButtonUp
-    [_int,_int]     -- UMouseMotion
+    [_int,_int],    -- UMouseMotion
+    ()              -- UCollided
 >
 
 type TPico = <
@@ -82,6 +83,7 @@ type TPico = <
 #define UMouseButtonDown    7
 #define UMouseButtonUp      8
 #define UMouseMotion        9
+#define UCollided           10
 
 -- xAnchor
 #define ULeft       1
@@ -93,7 +95,7 @@ type TPico = <
 
 -------------------------------------------------------------------------------
 
-var isPointInsideRect = func [Point,Rect] -> _int {
+var isPointVsRect = func [Point,Rect] -> _int {
     return not (or [ lt [mx, sub [rx,rw]],
                 or [ gt [mx, add [rx,rw]],
                 or [ lt [my, sub [ry,rh]],
@@ -108,22 +110,40 @@ var isPointInsideRect = func [Point,Rect] -> _int {
         }
 }
 
+var isRectVsRect = func [Rect,Rect] -> _int {
+    return (or [ isPointVsRect [p1,arg.1],
+            or [ isPointVsRect [p2,arg.1],
+            or [ isPointVsRect [p3,arg.1],
+                 isPointVsRect [p4,arg.1]]]])
+        where {
+            var xy: Point = arg.2.1
+            var wh: Dims  = arg.2.2
+            var w2: _int  = div [wh.1,_2]
+            var h2: _int  = div [wh.2,_2]
+            var p1: Point = [sub[xy.1,w2], sub[xy.2,h2]]
+            var p2: Point = [sub[xy.1,w2], add[xy.2,h2]]
+            var p3: Point = [add[xy.1,w2], add[xy.2,h2]]
+            var p4: Point = [add[xy.1,w2], sub[xy.2,h2]]
+        }
+}
+
 var pico_loop = func () -> () {
     output pico TPico.USet_Auto _0
     var old: _int = _SDL_GetTicks ()
     loop {
         var now: _int = _SDL_GetTicks ()
-        var dt = sub [now,old]
-        var togo = sub [_40, dt]
-        if lte [togo,_0] {
+        var dt   = sub [now,old]            -- dt   = now - old
+        var togo = sub [_40, dt]            -- togo = 40 - dt
+        if lte [togo,_0] {                  -- if togo<=0
             output pico TPico.UClear
-            emit Event.UFrame _40
+            emit @GLOBAL Event.UFrame _40
             output pico TPico.UPresent
             set old = add [togo,now]
-        }
-        var e: Event = input pico TPico.UEvent_Timeout [_SDL_ANY,_40]
-        if not e?UTimeout {
-            emit e
+        } else {
+            var e: Event = input pico TPico.UEvent_Timeout [_SDL_ANY,togo]
+            if not e?UTimeout {
+                emit @GLOBAL e
+            }
         }
     }
 }
