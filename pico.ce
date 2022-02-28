@@ -18,7 +18,9 @@ type Event = <
     [_int,Point],   -- UMouseButtonDown
     [_int,Point],   -- UMouseButtonUp
     [_int,_int],    -- UMouseMotion
-    ()              -- UCollided
+    (),             -- UCollided
+    _int,           -- UPause
+    _int            -- UHide
 >
 
 type TPico = <
@@ -86,6 +88,8 @@ type TPico = <
 #define UMouseButtonUp      9
 #define UMouseMotion        10
 #define UCollided           11
+#define UPause              12
+#define UHide               13
 
 -- xAnchor
 #define ULeft       1
