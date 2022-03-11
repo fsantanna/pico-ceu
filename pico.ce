@@ -107,9 +107,8 @@ var pico_loop = func () -> () {
 native type _{
     void output_pico (TPico arg) {
         switch (arg.tag) {
-            case USet_Anchor: {
-                // TODO: _12
-                Pico_IO io = { PICO_SET_ANCHOR, .Set_Anchor = {arg._12._1.tag,arg._12._2.tag} };
+            case USET_ANCHOR: {
+                Pico_IO io = { PICO_SET_ANCHOR, .Set_Anchor = {arg.USet_Anchor._1.tag,arg.USet_Anchor._2.tag} };
                 pico_output(io);
                 break;
             }
@@ -121,12 +120,12 @@ native type _{
 
     int tosdl (int e) {
         switch (e) {
-            case UAny:              return SDL_ANY;
-            //case UTimeout:          return ???;
-            case UKeyDown:          return SDL_KEYDOWN;
-            case UMouseButtonDown:  return SDL_MOUSEBUTTONDOWN;
-            case UMouseButtonUp:    return SDL_MOUSEBUTTONUP;
-            case UMouseMotion:      return SDL_MOUSEMOTION;
+            case UANY:              return SDL_ANY;
+            //case UTIMEOUT:          return ???;
+            case UKEYDOWN:          return SDL_KEYDOWN;
+            case UMOUSEBUTTONDOWN:  return SDL_MOUSEBUTTONDOWN;
+            case UMOUSEBUTTONUP:    return SDL_MOUSEBUTTONUP;
+            case UMOUSEMOTION:      return SDL_MOUSEMOTION;
         }
         assert(0);
     }
@@ -134,30 +133,26 @@ native type _{
     void toce (SDL_Event* e, Event* arg) {
         switch (e->type) {
             case SDL_KEYDOWN:
-                // TODO: _7
-                *arg = (Event) { UKeyDown, { ._7 = e->key.keysym.sym } };
+                *arg = (Event) { UKEYDOWN, { .UKeyDown = e->key.keysym.sym } };
                 break;
             case SDL_MOUSEBUTTONDOWN: {
                 int bt = e->button.button;
                 int x  = e->button.x;
                 int y  = e->button.y;
-                // TODO: _8
-                *arg = (Event) { UMouseButtonDown, { ._8 = {bt,{x,y}} } };
+                *arg = (Event) { UMOUSEBUTTONDOWN, { .UMouseButtonDown = {bt,{x,y}} } };
                 break;
             }
             case SDL_MOUSEBUTTONUP: {
                 int bt = e->button.button;
                 int x  = e->button.x;
                 int y  = e->button.y;
-                // TODO: _9
-                *arg = (Event) { UMouseButtonUp, { ._9 = {bt,{x,y}} } };
+                *arg = (Event) { UMOUSEBUTTONUP, { .UMouseButtonUp = {bt,{x,y}} } };
                 break;
             }
             case SDL_MOUSEMOTION: {
                 int x  = e->button.x;
                 int y  = e->button.y;
-                // TODO: _10
-                *arg = (Event) { UMouseMotion, { ._10 = {x,y} } };
+                *arg = (Event) { UMOUSEMOTION, { .UMouseMotion = {x,y} } };
                 break;
             }
         }
@@ -166,26 +161,24 @@ native type _{
     Event input_pico_Event (TPico arg) {
         SDL_Event e;
         switch (arg.tag) {
-            case UEvent: {
-                // TODO: _2
-                int ok = pico_input(&e, (Pico_IO) {PICO_EVENT,.Event=arg._2});
+            case UEVENT: {
+                int ok = pico_input(&e, (Pico_IO) {PICO_EVENT,.Event=arg.UEvent});
                 assert(ok);
                 Event s;
                 toce(&e, &s);
                 return s;
             }
-            case UEvent_Timeout: {
-                // TODO: _3
+            case UEVENT_TIMEOUT: {
                 int ok = pico_input(&e, (Pico_IO) {
                     PICO_EVENT_TIMEOUT,
-                    .Event_Timeout = { arg._3._1, arg._3._2 }
+                    .Event_Timeout = { arg.UEvent_Timeout._1, arg.UEvent_Timeout._2 }
                 });
                 if (ok) {
                     Event s;
                     toce(&e, &s);
                     return s;
                 } else {
-                    return (Event) { UTimeout };
+                    return (Event) { UTIMEOUT };
                 }
                 break;
             }
@@ -195,7 +188,7 @@ native type _{
     void input_pico_Unit (TPico arg) {
         SDL_Event e;
         switch (arg.tag) {
-            case UDelay: {
+            case UDELAY: {
                 int ok = pico_input(&e, *((Pico_IO*)&arg));
                 assert(ok);
                 break;
