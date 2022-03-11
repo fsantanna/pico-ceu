@@ -1,11 +1,11 @@
-^"int.ce"
-^"pico.ce"
+^"int.ceu"
+^"pico.ceu"
 
 -- TITLE
 output pico TPico.USet_Title _("pico-Ce")
 
 -- GET_SIZE
-var x: Dims
+var x: Size
 output pico TPico.UGet_Size /x
 output std /x
 

@@ -1,5 +1,5 @@
-^"int.ce"
-^"pico.ce"
+^"int.ceu"
+^"pico.ceu"
 
 output pico TPico.USet_Title _("pico-Ce: Mouse")
 

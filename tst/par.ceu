@@ -1,5 +1,5 @@
-^"int.ce"
-^"pico.ce"
+^"int.ceu"
+^"pico.ceu"
 
 output pico TPico.USet_Title _("pico-Ce: Parallel Across")
 
@@ -20,7 +20,7 @@ var x = spawn f [[_(-25),_( 25)],[_( 1),_(-1)]]
 var y = spawn f [[_(-25),_(-25)],[_( 1),_( 1)]]
 
 loop {
-    var e: Event = input pico TPico.UEvent_Timeout [_SDL_ANY,_1000]
-    output std /e
+    var e: Event = input pico TPico.UEvent_Timeout [_SDL_ANY,_100]
+    --output std /e
     emit @GLOBAL e
 }
