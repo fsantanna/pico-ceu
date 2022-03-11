@@ -1,18 +1,18 @@
-#include "int.ce"
-#include "pico.ce"
+^"int.ce"
+^"pico.ce"
 
 var rect: Rect = [[_10,_10],[_5,_5]]
 
 spawn {
     loop {
-        var dxy: Dims
+        var dxy: Size
         {
             var mouse: Point
-            await evt?UMouseButtonDown until isPointInsideRect [mouse,rect]
+            await evt?UMouseButtonDown until isPointVsRect [mouse,rect]
                 where {
-                    set mouse = evt!UMouseButtonDown.2
+                    set mouse = evt!UMouseButtonDown.pos
                 }
-            set dxy = [sub [rect.1.1,mouse.1], sub [rect.1.2,mouse.2]]
+            set dxy = [sub [rect.pos.x,mouse.x], sub [rect.pos.y,mouse.y]]
         }
         paror {
             var orig = rect
@@ -25,9 +25,9 @@ spawn {
             var mouse = evt!UMouseMotion
             watching evt?UMouseButtonUp {
                 loop {
-                    set rect = [pt, rect.2]
+                    set rect = [pt, rect.size]
                         where {
-                            var pt: Point = [add [mouse.1,dxy.1], add [mouse.2,dxy.2]]
+                            var pt: Point = [add [mouse.x,dxy.w], add [mouse.y,dxy.h]]
                         }
                     await evt?UMouseMotion
                     set mouse = evt!UMouseMotion

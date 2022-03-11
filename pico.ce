@@ -1,135 +1,82 @@
-type Point = [_int,_int]
-type Dims  = [_int,_int]
-type Rect  = [Point,Dims]
+type Point = [x:_int, y:_int]
+type Size  = [w:_int, h:_int]
+type Rect  = [pos:Point, size:Size]
 
--- ULeft,   UCenter, URight
--- UBottom, UMiddle, UTop
-type THAnchor = <(),(),()>
-type TVAnchor = <(),(),()>
+type THAnchor = <ULeft  =(),UCenter=(),URight=()>
+type TVAnchor = <UBottom=(),UMiddle=(),UTop  =()>
 
 type Event = <
-    ()          ,   -- EVENT_KILL
-    _uint64_t   ,   -- EVENT_TASK
-    ()          ,   -- UAny
-    ()          ,   -- UTimeout
-    _int        ,   -- UFrame
-    ()          ,   -- UDraw
-    _int        ,   -- UKeyDown
-    [_int,Point],   -- UMouseButtonDown
-    [_int,Point],   -- UMouseButtonUp
-    [_int,_int],    -- UMouseMotion
-    (),             -- UCollided
-    _int,           -- UPause
-    _int            -- UHide
+    UKill            = (),
+    UTask            = _uint64_t,
+    UAny             = (),
+    UTimeout         = (),
+    UFrame           = _int,
+    UDraw            = (),
+    UKeyDown         = _int,
+    UMouseButtonDown = [but:_int,pos:Point],
+    UMouseButtonUp   = [_int,Point],
+    UMouseMotion     = Point,
+    UCollided        = (),
+    UPause           = _int,
+    UHide            = _int
 >
 
 type TPico = <
-    _int                 , -- UDelay
-    _int                 , -- UEvent
-    [_int,_int]          , -- UEvent_Timeout
-    ()                   , -- UPresent
-    ()                   , -- UClear
-    Point                , -- UDraw_Pixel
-    [Point,Point]        , -- UDraw_Line
-    Rect                 , -- UDraw_Rect
-    [Point,_(char*)]     , -- UDraw_Text
-    [Point,_(char*)]     , -- UDraw_Image
-    /Dims                , -- UGet_Size
-    [THAnchor,TVAnchor]  , -- USet_Anchor
-    ()                   , -- USet_Auto
-    [_int,_int,_int,_int], -- USet_Color_Clear
-    [_int,_int,_int,_int], -- USet_Color_Draw
-    Point                , -- USet_Cursor
-    [_(char*),_int]      , -- USet_Font
-    _int                 , -- USet_Grid
-    Point                , -- USet_Pan
-    Dims                 , -- USet_Size
-    _(char*)             , -- USet_Title
-    Dims                 , -- USet_Zoom
-    _(char*)             , -- UWrite
-    _(char*)               -- UWriteLn 
+    UDelay           = _int,
+    UEvent           = _int,
+    UEvent_Timeout   = [_int,_int],
+    UPresent         = (),
+    UClear           = (),
+    UDraw_Pixel      = Point,
+    UDraw_Line       = [Point,Point],
+    UDraw_Rect       = Rect,
+    UDraw_Text       = [Point,_(char*)],
+    UDraw_Image      = [Point,_(char*)],
+    UGet_Size        = /Size,
+    USet_Anchor      = [THAnchor,TVAnchor],
+    USet_Auto        = (),
+    USet_Color_Clear = [_int,_int,_int,_int],
+    USet_Color_Draw  = [_int,_int,_int,_int],
+    USet_Cursor      = Point,
+    USet_Font        = [_(char*),_int],
+    USet_Grid        = _int,
+    USet_Pan         = Point,
+    USet_Size        = Size,
+    USet_Title       = _(char*),
+    USet_Zoom        = Size,
+    UWrite           = _(char*),
+    UWriteLn         = _(char*)
 >
-
--- xTPico
-#define UDelay              1
-#define UEvent              2
-#define UEvent_Timeout      3
-#define UPresent            4
-#define UClear              5
-#define UDraw_Pixel         6
-#define UDraw_Line          7
-#define UDraw_Rect          8
-#define UDraw_Text          9
-#define UDraw_Image         10
-#define UGet_Size           11
-#define USet_Anchor         12
-#define USet_Auto           13
-#define USet_Color_Clear    14
-#define USet_Color_Draw     15
-#define USet_Cursor         16
-#define USet_Font           17
-#define USet_Grid           18
-#define USet_Pan            19
-#define USet_Size           20
-#define USet_Title          21
-#define USet_Zoom           22
-#define UWrite              23
-#define UWriteLn            24
-
--- xEvent
---#define KILL                1
---#define TASK                2
-#define UAny                3
-#define UTimeout            4
-#define UFrame              5
-#define UDraw               6
-#define UKeyDown            7
-#define UMouseButtonDown    8
-#define UMouseButtonUp      9
-#define UMouseMotion        10
-#define UCollided           11
-#define UPause              12
-#define UHide               13
-
--- xAnchor
-#define ULeft       1
-#define UCenter     2
-#define URight      3
-#define UBottom     1
-#define UMiddle     2
-#define UTop        3
 
 -------------------------------------------------------------------------------
 
-var isPointVsRect = func [Point,Rect] -> _int {
-    return not (or [ lt [mx, sub [rx,rw]],
-                or [ gt [mx, add [rx,rw]],
-                or [ lt [my, sub [ry,rh]],
-                     gt [my, add [ry,rh]]]]])
+var isPointVsRect = func [pt:Point,r:Rect] -> _int {
+    return not (or [ lt [pt.x, sub [r.x,rw]],
+                or [ gt [pt.x, add [r.x,rw]],
+                or [ lt [pt.y, sub [r.y,rh]],
+                     gt [pt.y, add [r.y,rh]]]]])
         where {
-            var mx = arg.1.1
-            var my = arg.1.2
-            var rx = arg.2.1.1
-            var ry = arg.2.1.2
-            var rw = div [arg.2.2.1, _2]
-            var rh = div [arg.2.2.2, _2]
+            var pt = arg.pt
+            var r  = arg.r.pos
+            var rw = div [arg.r.size.w, _2]
+            var rh = div [arg.r.size.h, _2]
         }
 }
 
-var isRectVsRect = func [Rect,Rect] -> _int {
-    return (or [ isPointVsRect [p1,arg.1],
-            or [ isPointVsRect [p2,arg.1],
-            or [ isPointVsRect [p3,arg.1],
-                 isPointVsRect [p4,arg.1]]]])
+var isRectVsRect = func [r1:Rect,r2:Rect] -> _int {
+    return (or [ isPointVsRect [p1,r1],
+            or [ isPointVsRect [p2,r1],
+            or [ isPointVsRect [p3,r1],
+                 isPointVsRect [p4,r1]]]])
         where {
-            var xy: Point = arg.2.1
-            var wh: Dims  = arg.2.2
-            var w2: _int  = div [wh.1,_2]
-            var h2: _int  = div [wh.2,_2]
-            var p1: Point = [sub[xy.1,w2], sub[xy.2,h2]]
-            var p2: Point = [sub[xy.1,w2], add[xy.2,h2]]
-            var p3: Point = [add[xy.1,w2], add[xy.2,h2]]
-            var p4: Point = [add[xy.1,w2], sub[xy.2,h2]]
+            var r1 = arg.r1
+            var r2 = arg.r2
+            var w2 = div [r2.size.w,_2]
+            var h2 = div [r2.size.h,_2]
+            var p1 = Point [sub[r2.pos.x,w2], sub[r2.pos.y,h2]]
+            var p2 = Point [sub[r2.pos.x,w2], add[r2.pos.y,h2]]
+            var p3 = Point [add[r2.pos.x,w2], add[r2.pos.y,h2]]
+            var p4 = Point [add[r2.pos.x,w2], sub[r2.pos.y,h2]]
         }
 }
 

@@ -1,5 +1,5 @@
-#include "int.ce"
-#include "pico.ce"
+^"int.ce"
+^"pico.ce"
 
 output pico TPico.USet_Title _("pico-Ce: Mouse")
 

@@ -41,6 +41,10 @@ var lte = func [_int,_int] -> _int {
 
 -- ARITHMETIC
 
+var umn = func _int -> _int {
+    return _(-$arg)
+}
+
 var add = func [_int,_int] -> _int {
     return _($arg._1 + $arg._2)
 }

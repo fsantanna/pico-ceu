@@ -1,15 +1,15 @@
-#include "int.ce"
-#include "pico.ce"
+^"int.ce"
+^"pico.ce"
 
-output pico <.USet_Title _("pico-Ce: Parallel Across")>: TPico
+output pico TPico.USet_Title _("pico-Ce: Parallel Across")
 
-var f = task [[_int,_int],[_int,_int]]->()->() {
-    var  x = arg.1.1
-    var  y = arg.1.2
-    var dx = arg.2.1
-    var dy = arg.2.2
+var f = task [pos:Point,vel:[dx:_int,dy:_int]]->()->() {
+    var  x = arg.pos.x
+    var  y = arg.pos.y
+    var dx = arg.vel.dx
+    var dy = arg.vel.dy
     loop {
-        output pico <.UDraw_Pixel [x,y]>: TPico
+        output pico TPico.UDraw_Pixel [x,y]
         await evt?UTimeout
         set x = _($x + $dx)
         set y = _($y + $dy)
@@ -20,7 +20,7 @@ var x = spawn f [[_(-25),_( 25)],[_( 1),_(-1)]]
 var y = spawn f [[_(-25),_(-25)],[_( 1),_( 1)]]
 
 loop {
-    var e: Event = input pico <.UEvent_Timeout [_SDL_ANY,_1000]>: TPico
+    var e: Event = input pico TPico.UEvent_Timeout [_SDL_ANY,_1000]
     output std /e
-    emit e
+    emit @GLOBAL e
 }
