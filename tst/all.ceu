@@ -2,135 +2,135 @@
 ^"pico.ceu"
 
 -- TITLE
-output pico TPico.USet_Title _("pico-Ce")
+output pico Pico.Set_Title _("pico-Ce")
 
 -- GET_SIZE
 var x: Size
-output pico TPico.UGet_Size /x
+output pico Pico.Get_Size /x
 output std /x
 
 -- CLEAR
-output pico TPico.USet_Color_Clear [_255,_255,_255,_255]
-output pico TPico.UClear
+output pico Pico.Set_Color_Clear [_255,_255,_255,_255]
+output pico Pico.Clear
 
-input pico TPico.UDelay _2000
+input pico Pico.Delay _2000
 
 -- DRAW_IMAGE
-output pico TPico.USet_Anchor [THAnchor.UCenter,TVAnchor.UMiddle]
-output pico TPico.UDraw_Image [[_0,_0], _("open.png")]
+output pico Pico.Set_Anchor [HAnchor.Center,VAnchor.Middle]
+output pico Pico.Draw_Image [[_0,_0], _("open.png")]
 
-input pico TPico.UDelay _2000
+input pico Pico.Delay _2000
 
 -- DRAW_PIXEL
-output pico TPico.USet_Color_Clear [_0,_0,_0,_255]
-output pico TPico.USet_Color_Draw [_255,_255,_255,_255]
-output pico TPico.UClear
-output pico TPico.UDraw_Pixel [_0,_0]
+output pico Pico.Set_Color_Clear [_0,_0,_0,_255]
+output pico Pico.Set_Color_Draw [_255,_255,_255,_255]
+output pico Pico.Clear
+output pico Pico.Draw_Pixel [_0,_0]
 
-input pico TPico.UDelay _2000
+input pico Pico.Delay _2000
 
 -- DRAW_TEXT
-output pico TPico.UDraw_Text [[_0,_5], _("Hello!")]
+output pico Pico.Draw_Text [[_0,_5], _("Hello!")]
 
-input pico TPico.UDelay _2000
+input pico Pico.Delay _2000
 
 -- SET_GRID
-output pico TPico.UClear
-output pico TPico.USet_Grid _0
+output pico Pico.Clear
+output pico Pico.Set_Grid _0
 
 -- WRITE
-output pico TPico.USet_Cursor [_(-25),_25]
-output pico TPico.UWrite   _("1 ")
-output pico TPico.UWrite   _("2 ")
-output pico TPico.UWriteLn _("3")
-output pico TPico.UWriteLn _("")
-output pico TPico.UWriteLn _("pico")
+output pico Pico.Set_Cursor [_(-25),_25]
+output pico Pico.Write   _("1 ")
+output pico Pico.Write   _("2 ")
+output pico Pico.WriteLn _("3")
+output pico Pico.WriteLn _("")
+output pico Pico.WriteLn _("pico")
 
 -- SET_FONT
-output pico TPico.USet_Font [_("tiny.ttf"),_5]
-output pico TPico.UWriteLn _("pico")
+output pico Pico.Set_Font [_("tiny.ttf"),_5]
+output pico Pico.WriteLn _("pico")
 
-input pico TPico.UDelay _2000
+input pico Pico.Delay _2000
 
 -- MOUSE
-var e: Event = input pico TPico.UEvent _SDL_MOUSEBUTTONDOWN
-output pico TPico.UDraw_Pixel e!UMouseButtonDown.2
+var e: Event = input pico Pico.Event _SDL_MOUSEBUTTONDOWN
+output pico Pico.Draw_Pixel e!MouseButtonDown.2
 
 -- SET_GRID
-output pico TPico.UClear
-output pico TPico.USet_Grid _1
+output pico Pico.Clear
+output pico Pico.Set_Grid _1
 
 -- DRAW_LINE
-output pico TPico.UDraw_Line [[_(-25),_(-25)],[_25,_25]]
-output pico TPico.UDraw_Line [[_(-25),_25],[_25,_(-25)]]
+output pico Pico.Draw_Line [[_(-25),_(-25)],[_25,_25]]
+output pico Pico.Draw_Line [[_(-25),_25],[_25,_(-25)]]
 
 -- DRAW_RECT
-output pico TPico.UDraw_Rect [[_0,_0],[_21,_21]]
+output pico Pico.Draw_Rect [[_0,_0],[_21,_21]]
 
 -- SET_ANCHOR
-output pico TPico.USet_Anchor [THAnchor.URight,TVAnchor.UTop]
-output pico TPico.UDraw_Rect [[_25,_25],[_5,_5]]
+output pico Pico.Set_Anchor [HAnchor.Right,VAnchor.Top]
+output pico Pico.Draw_Rect [[_25,_25],[_5,_5]]
 
-input pico TPico.UDelay _2000
+input pico Pico.Delay _2000
 
 -- SET_ZOOM
 
-output pico TPico.UClear
-output pico TPico.USet_Zoom [_10,_10]
-output pico TPico.UDraw_Pixel [_0,_0]
-input pico TPico.UDelay _500
+output pico Pico.Clear
+output pico Pico.Set_Zoom [_10,_10]
+output pico Pico.Draw_Pixel [_0,_0]
+input pico Pico.Delay _500
 
-output pico TPico.UClear
-output pico TPico.USet_Zoom [_15,_15]
-output pico TPico.UDraw_Pixel [_0,_0]
-input pico TPico.UDelay _500
+output pico Pico.Clear
+output pico Pico.Set_Zoom [_15,_15]
+output pico Pico.Draw_Pixel [_0,_0]
+input pico Pico.Delay _500
 
-output pico TPico.UClear
-output pico TPico.USet_Zoom [_20,_20]
-output pico TPico.UDraw_Pixel [_0,_0]
-input pico TPico.UDelay _500
+output pico Pico.Clear
+output pico Pico.Set_Zoom [_20,_20]
+output pico Pico.Draw_Pixel [_0,_0]
+input pico Pico.Delay _500
 
-output pico TPico.UClear
-output pico TPico.USet_Zoom [_15,_15]
-output pico TPico.UDraw_Pixel [_0,_0]
-input pico TPico.UDelay _500
+output pico Pico.Clear
+output pico Pico.Set_Zoom [_15,_15]
+output pico Pico.Draw_Pixel [_0,_0]
+input pico Pico.Delay _500
 
-output pico TPico.UClear
-output pico TPico.USet_Zoom [_10,_10]
-output pico TPico.UDraw_Pixel [_0,_0]
-input pico TPico.UDelay _500
+output pico Pico.Clear
+output pico Pico.Set_Zoom [_10,_10]
+output pico Pico.Draw_Pixel [_0,_0]
+input pico Pico.Delay _500
 
 -- SET_PAN
 
-output pico TPico.UClear
-output pico TPico.USet_Pan [_0,_0]
-output pico TPico.UDraw_Pixel [_0,_0]
-input pico TPico.UDelay _500
+output pico Pico.Clear
+output pico Pico.Set_Pan [_0,_0]
+output pico Pico.Draw_Pixel [_0,_0]
+input pico Pico.Delay _500
 
-output pico TPico.UClear
-output pico TPico.USet_Pan [_5,_5]
-output pico TPico.UDraw_Pixel [_0,_0]
-input pico TPico.UDelay _500
+output pico Pico.Clear
+output pico Pico.Set_Pan [_5,_5]
+output pico Pico.Draw_Pixel [_0,_0]
+input pico Pico.Delay _500
 
-output pico TPico.UClear
-output pico TPico.USet_Pan [_10,_10]
-output pico TPico.UDraw_Pixel [_0,_0]
-input pico TPico.UDelay _500
+output pico Pico.Clear
+output pico Pico.Set_Pan [_10,_10]
+output pico Pico.Draw_Pixel [_0,_0]
+input pico Pico.Delay _500
 
-output pico TPico.UClear
-output pico TPico.USet_Pan [_5,_5]
-output pico TPico.UDraw_Pixel [_0,_0]
-input pico TPico.UDelay _500
+output pico Pico.Clear
+output pico Pico.Set_Pan [_5,_5]
+output pico Pico.Draw_Pixel [_0,_0]
+input pico Pico.Delay _500
 
-output pico TPico.UClear
-output pico TPico.USet_Pan [_0,_0]
-output pico TPico.UDraw_Pixel [_0,_0]
-input pico TPico.UDelay _500
+output pico Pico.Clear
+output pico Pico.Set_Pan [_0,_0]
+output pico Pico.Draw_Pixel [_0,_0]
+input pico Pico.Delay _500
 
-input pico TPico.UDelay _2000
+input pico Pico.Delay _2000
 
-output pico TPico.USet_Size [_101,_101]
-output pico TPico.UDraw_Pixel [_0,_0]
-output pico TPico.UPresent
+output pico Pico.Set_Size [_101,_101]
+output pico Pico.Draw_Pixel [_0,_0]
+output pico Pico.Present
 
-input pico TPico.UDelay _2000
+input pico Pico.Delay _2000

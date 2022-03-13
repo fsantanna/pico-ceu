@@ -1,16 +1,16 @@
 ^"int.ceu"
 ^"pico.ceu"
 
-output pico TPico.USet_Title _("pico-Ce: Across")
+output pico Pico.Set_Title _("pico-Ce: Across")
 
 var i: _int = _(-25)
 loop {
-    output pico TPico.UDraw_Pixel [i,i]
-    input pico TPico.UDelay _100
+    output pico Pico.Draw_Pixel [i,i]
+    input pico Pico.Delay _100
     if _($i == 25) {
         break
     }
     set i = _($i + 1)
 }
 
-input pico TPico.UEvent _SDL_ANY
+input pico Pico.Event _SDL_ANY

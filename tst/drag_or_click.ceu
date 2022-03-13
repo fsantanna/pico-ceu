@@ -8,34 +8,34 @@ spawn {
         var dxy: Size
         {
             var mouse: Point
-            await evt?UMouseButtonDown until isPointVsRect [mouse,rect]
+            await evt?MouseButtonDown until isPointVsRect [mouse,rect]
                 where {
-                    set mouse = evt!UMouseButtonDown.pos
+                    set mouse = evt!MouseButtonDown.pos
                 }
             set dxy = [sub [rect.pos.x,mouse.x], sub [rect.pos.y,mouse.y]]
         }
         paror {
             var orig = rect
-            await evt?UKeyDown until eq [evt!UKeyDown,_SDLK_ESCAPE]
+            await evt?KeyDown until eq [evt!KeyDown,_SDLK_ESCAPE]
             set rect = orig
             output std _("Cancelled!"):_(char*)
         } with {
-            await evt?UMouseMotion
+            await evt?MouseMotion
             output std _("Dragging..."):_(char*)
-            var mouse = evt!UMouseMotion
-            watching evt?UMouseButtonUp {
+            var mouse = evt!MouseMotion
+            watching evt?MouseButtonUp {
                 loop {
                     set rect = [pt, rect.size]
                         where {
                             var pt: Point = [add [mouse.x,dxy.w], add [mouse.y,dxy.h]]
                         }
-                    await evt?UMouseMotion
-                    set mouse = evt!UMouseMotion
+                    await evt?MouseMotion
+                    set mouse = evt!MouseMotion
                 }
             }
             output std _("Dropped!"):_(char*)
         } with {
-            await evt?UMouseButtonUp
+            await evt?MouseButtonUp
             output std _("Clicked!"):_(char*)
         }
     }
@@ -44,9 +44,9 @@ spawn {
 spawn {
     loop {
         await _1
-        output pico TPico.UClear
-        output pico TPico.UDraw_Rect rect
-        output pico TPico.UPresent
+        output pico Pico.Clear
+        output pico Pico.Draw_Rect rect
+        output pico Pico.Present
     }
 }
 
