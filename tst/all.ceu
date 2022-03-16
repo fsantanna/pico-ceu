@@ -10,7 +10,7 @@ output pico Pico.Output.Get.Size /x
 --output std /x
 
 -- CLEAR
-output pico Pico.Output.Set.Color_Clear [_255,_255,_255,_255]
+output pico Pico.Output.Set.Color.Clear [_255,_255,_255,_255]
 output pico Pico.Output.Clear
 
 input pico Pico.Input.Delay _2000
@@ -22,8 +22,8 @@ output pico Pico.Output.Draw.Image [[_0,_0], _("open.png")]
 input pico Pico.Input.Delay _2000
 
 -- DRAW_PIXEL
-output pico Pico.Output.Set.Color_Clear [_0,_0,_0,_255]
-output pico Pico.Output.Set.Color_Draw [_255,_255,_255,_255]
+output pico Pico.Output.Set.Color.Clear [_0,_0,_0,_255]
+output pico Pico.Output.Set.Color.Draw [_255,_255,_255,_255]
 output pico Pico.Output.Clear
 output pico Pico.Output.Draw.Pixel [_0,_0]
 

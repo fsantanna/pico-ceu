@@ -52,8 +52,10 @@ type Pico = <
         Set = <
             Anchor      = [HAnchor,VAnchor],
             Auto        = (),
-            Color_Clear = [_int,_int,_int,_int],
-            Color_Draw  = [_int,_int,_int,_int],
+            Color = [r:_int,g:_int,b:_int,a:_int] + <
+                Clear = (),
+                Draw  = ()
+            >,
             Cursor      = Point,
             Font        = [_(char*),_int],
             Grid        = _int,
