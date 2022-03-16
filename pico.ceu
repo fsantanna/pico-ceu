@@ -6,25 +6,36 @@ type HAnchor = <Left  =(),Center=(),Right=()>
 type VAnchor = <Bottom=(),Middle=(),Top  =()>
 
 type Event = <
-    Kill            = (),
-    Task            = _uint64_t,
-    Any             = (),
-    Timeout         = (),
-    Frame           = _int,
-    Draw            = (),
-    KeyDown         = _int,
-    MouseButtonDown = [but:_int,pos:Point],
-    MouseButtonUp   = [_int,Point],
-    MouseMotion     = Point,
-    Collided        = (),
-    Pause           = _int,
-    Hide            = _int
+    Kill    = (),
+    Task    = _uint64_t,
+    Any     = (),
+    Timeout = (),
+    Frame   = _int,
+    Draw    = (),
+    Key = [key:_int] + <
+        Down = (),
+        Up   = ()
+    >,
+    Mouse = [pt: Point] + <
+        Button = [but: _int] + <
+            Down = (),
+            Up   = ()
+        >,
+        Motion = ()
+    >,
+    Collided = (),
+    Pause    = _int,
+    Hide     = _int
 >
 
 type Pico = <
-    Delay           = _int,
-    Event           = _int,
-    Event_Timeout   = [_int,_int],
+    Input = <
+        Delay = _int,
+        Event = [id:_int] + <
+            Forever = (),
+            Timeout = [to:_int]
+        >
+    >,
     Present         = (),
     Clear           = (),
     Draw_Pixel      = Point,
@@ -94,7 +105,7 @@ var pico_loop = func () -> () {
             output pico Pico.Present
             set old = add [togo,now]
         } else {
-            var e: Event = input pico Pico.Event_Timeout [_SDL_ANY,togo]
+            var e: Event = input pico Pico.Input.Event.Timeout [_SDL_ANY,togo]
             if not e?Timeout {
                 emit @GLOBAL e
             }
@@ -108,51 +119,69 @@ native type _{
     void output_pico (CEU_Pico arg) {
         switch (arg.tag) {
             case CEU_PICO_SET_ANCHOR: {
-                Pico_IO io = { CEU_PICO_SET_ANCHOR, .Set_Anchor = {arg.Set_Anchor._1.tag,arg.Set_Anchor._2.tag} };
+                Pico io = { .tag=CEU_PICO_SET_ANCHOR, .Set_Anchor = {arg.Set_Anchor._1.tag,arg.Set_Anchor._2.tag} };
                 pico_output(io);
                 break;
             }
             default:
-                pico_output(*(Pico_IO*)&arg);
+                pico_output(*(Pico*)&arg);
                 break;
         }
-    }
-
-    int tosdl (int e) {
-        switch (e) {
-            case CEU_EVENT_ANY:              return SDL_ANY;
-            //case CEU_EVENT_TIMEOUT:          return ???;
-            case CEU_EVENT_KEYDOWN:          return SDL_KEYDOWN;
-            case CEU_EVENT_MOUSEBUTTONDOWN:  return SDL_MOUSEBUTTONDOWN;
-            case CEU_EVENT_MOUSEBUTTONUP:    return SDL_MOUSEBUTTONUP;
-            case CEU_EVENT_MOUSEMOTION:      return SDL_MOUSEMOTION;
-        }
-        assert(0);
     }
 
     void toce (SDL_Event* e, CEU_Event* arg) {
         switch (e->type) {
             case SDL_KEYDOWN:
-                *arg = (CEU_Event) { CEU_EVENT_KEYDOWN, { .KeyDown = e->key.keysym.sym } };
+                *arg = (CEU_Event) {
+                    .tag = CEU_EVENT_KEY,
+                    .Key = {
+                        .tag = CEU_EVENT_KEY_DOWN,
+                        .Down = e->key.keysym.sym
+                    }
+                };
                 break;
             case SDL_MOUSEBUTTONDOWN: {
                 int bt = e->button.button;
                 int x  = e->button.x;
                 int y  = e->button.y;
-                *arg = (CEU_Event) { CEU_EVENT_MOUSEBUTTONDOWN, { .MouseButtonDown = {bt,{x,y}} } };
+                *arg = (CEU_Event) {
+                    .tag = CEU_EVENT_MOUSE,
+                    .Mouse = {
+                        .tag = CEU_EVENT_MOUSE_BUTTON,
+                        .Button = {
+                            .tag = CEU_EVENT_MOUSE_BUTTON_DOWN,
+                            .Down = {{x,y},bt}
+                        }
+                    }
+                };
                 break;
             }
             case SDL_MOUSEBUTTONUP: {
                 int bt = e->button.button;
                 int x  = e->button.x;
                 int y  = e->button.y;
-                *arg = (CEU_Event) { CEU_EVENT_MOUSEBUTTONUP, { .MouseButtonUp = {bt,{x,y}} } };
+                *arg = (CEU_Event) {
+                    .tag = CEU_EVENT_MOUSE,
+                    .Mouse = {
+                        .tag = CEU_EVENT_MOUSE_BUTTON,
+                        .Button = {
+                            .tag = CEU_EVENT_MOUSE_BUTTON_UP,
+                            .Up = {{x,y},bt}
+                        }
+                    }
+                };
                 break;
             }
             case SDL_MOUSEMOTION: {
                 int x  = e->button.x;
                 int y  = e->button.y;
-                *arg = (CEU_Event) { CEU_EVENT_MOUSEMOTION, { .MouseMotion = {x,y} } };
+                *arg = (CEU_Event) {
+                    .tag = CEU_EVENT_MOUSE,
+                    .Mouse = {
+                        .tag = CEU_EVENT_MOUSE_MOTION,
+                        .Motion = {x,y}
+                    }
+                };
                 break;
             }
         }
@@ -160,42 +189,43 @@ native type _{
 
     CEU_Event input_pico_Event (CEU_Pico arg) {
         SDL_Event e;
-        switch (arg.tag) {
-            case CEU_PICO_EVENT: {
-                int ok = pico_input(&e, (Pico_IO) {PICO_EVENT,.Event=arg.Event});
+        assert(arg.tag == CEU_PICO_INPUT);
+        assert(arg.Input.tag == CEU_PICO_INPUT_EVENT);
+        int ok = pico_input(&e, *((Pico*)&arg));
+        switch (arg.Input.Event.tag) {
+            case CEU_PICO_INPUT_EVENT_FOREVER:
                 assert(ok);
-                CEU_Event s;
-                toce(&e, &s);
-                return s;
-            }
-            case CEU_PICO_EVENT_TIMEOUT: {
-                int ok = pico_input(&e, (Pico_IO) {
-                    PICO_EVENT_TIMEOUT,
-                    .Event_Timeout = { arg.Event_Timeout._1, arg.Event_Timeout._2 }
-                });
-                if (ok) {
-                    CEU_Event s;
-                    toce(&e, &s);
-                    return s;
-                } else {
-                    return (CEU_Event) { CEU_EVENT_TIMEOUT };
+            case CEU_PICO_INPUT_EVENT_TIMEOUT: {
+                if (!ok) {
+                    return (CEU_Event) {
+                        .tag = CEU_EVENT_TIMEOUT,
+                    };
                 }
                 break;
             }
+            default:
+                assert(0 && "bug found");
         }
+        CEU_Event s;
+        toce(&e, &s);
+        return s;
     }
 
     void input_pico_Unit (CEU_Pico arg) {
         SDL_Event e;
-        switch (arg.tag) {
-            case CEU_PICO_DELAY: {
-                int ok = pico_input(&e, *((Pico_IO*)&arg));
+        assert(arg.tag == CEU_PICO_INPUT);
+        switch (arg.Input.tag) {
+            case CEU_PICO_INPUT_DELAY: {
+                int ok = pico_input(&e, *((Pico*)&arg));
                 assert(ok);
                 break;
             }
-            default:
+            case CEU_PICO_INPUT_EVENT: {
                 input_pico_Event (arg);
                 break;
+            }
+            default:
+                assert(0 && "bug found");
         }
     }
 }
