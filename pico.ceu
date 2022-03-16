@@ -37,16 +37,18 @@ type Pico = <
         >
     >,
     Output = <
-        Present         = (),
-        Clear           = (),
-        Draw = <
-            Pixel      = Point,
-            Line       = [Point,Point],
-            Rect       = Rect,
-            Text       = [Point,_(char*)],
-            Image      = [Point,_(char*)]
+        Present = (),
+        Clear   = (),
+        Draw    = <
+            Pixel = Point,
+            Line  = [Point,Point],
+            Rect  = Rect,
+            Text  = [Point,_(char*)],
+            Image = [Point,_(char*)]
         >,
-        Get_Size        = /Size,
+        Get = <
+            Size = /Size
+        >,
         Set = <
             Anchor      = [HAnchor,VAnchor],
             Auto        = (),
@@ -60,8 +62,8 @@ type Pico = <
             Title       = _(char*),
             Zoom        = Size
         >,
-        Write           = _(char*),
-        WriteLn         = _(char*)
+        Write   = _(char*),
+        WriteLn = _(char*)
     >
 >
 
