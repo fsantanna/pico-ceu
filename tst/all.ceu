@@ -40,15 +40,15 @@ output pico Pico.Output.Set.Grid _0
 
 -- WRITE
 output pico Pico.Output.Set.Cursor [_(-25),_25]
-output pico Pico.Output.Write   _("1 ")
-output pico Pico.Output.Write   _("2 ")
-output pico Pico.Output.WriteLn _("3")
-output pico Pico.Output.WriteLn _("")
-output pico Pico.Output.WriteLn _("pico")
+output pico Pico.Output.Write.Norm _("1 ")
+output pico Pico.Output.Write.Norm _("2 ")
+output pico Pico.Output.Write.Line _("3")
+output pico Pico.Output.Write.Line _("")
+output pico Pico.Output.Write.Line _("pico")
 
 -- SET_FONT
 output pico Pico.Output.Set.Font [_("tiny.ttf"),_5]
-output pico Pico.Output.WriteLn _("pico")
+output pico Pico.Output.Write.Line _("pico")
 
 input pico Pico.Input.Delay _2000
 

@@ -62,8 +62,10 @@ type Pico = <
             Title       = _(char*),
             Zoom        = Size
         >,
-        Write   = _(char*),
-        WriteLn = _(char*)
+        Write = [text:_(char*)] + <
+            Norm = (),
+            Line = ()
+        >
     >
 >
 
