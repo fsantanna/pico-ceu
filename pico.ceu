@@ -47,17 +47,19 @@ type Pico = <
             Image      = [Point,_(char*)]
         >,
         Get_Size        = /Size,
-        Set_Anchor      = [HAnchor,VAnchor],
-        Set_Auto        = (),
-        Set_Color_Clear = [_int,_int,_int,_int],
-        Set_Color_Draw  = [_int,_int,_int,_int],
-        Set_Cursor      = Point,
-        Set_Font        = [_(char*),_int],
-        Set_Grid        = _int,
-        Set_Pan         = Point,
-        Set_Size        = Size,
-        Set_Title       = _(char*),
-        Set_Zoom        = Size,
+        Set = <
+            Anchor      = [HAnchor,VAnchor],
+            Auto        = (),
+            Color_Clear = [_int,_int,_int,_int],
+            Color_Draw  = [_int,_int,_int,_int],
+            Cursor      = Point,
+            Font        = [_(char*),_int],
+            Grid        = _int,
+            Pan         = Point,
+            Size        = Size,
+            Title       = _(char*),
+            Zoom        = Size
+        >,
         Write           = _(char*),
         WriteLn         = _(char*)
     >
@@ -96,7 +98,7 @@ var isRectVsRect = func [r1:Rect,r2:Rect] -> _int {
 }
 
 var pico_loop = func () -> () {
-    output pico Pico.Output.Set_Auto _0
+    output pico Pico.Output.Set.Auto _0
     var old: _int = _SDL_GetTicks ()
     loop {
         var now: _int = _SDL_GetTicks ()
@@ -123,9 +125,9 @@ native type _{
     void output_pico (CEU_Pico arg) {
         assert(arg.tag == PICO_OUTPUT);
         Pico c = *(Pico*)&arg;
-        if (arg.Output.tag == CEU_PICO_OUTPUT_SET_ANCHOR) {
-            c.Output.Set_Anchor._1 = arg.Output.Set_Anchor._1.tag;
-            c.Output.Set_Anchor._2 = arg.Output.Set_Anchor._2.tag;
+        if (arg.Output.tag==CEU_PICO_OUTPUT_SET && arg.Output.Set.tag==CEU_PICO_OUTPUT_SET_ANCHOR) {
+            c.Output.Set.Anchor._1 = arg.Output.Set.Anchor._1.tag;
+            c.Output.Set.Anchor._2 = arg.Output.Set.Anchor._2.tag;
         }
         pico_output(c);
     }
