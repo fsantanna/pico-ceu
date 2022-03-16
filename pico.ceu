@@ -36,27 +36,29 @@ type Pico = <
             Timeout = [to:_int]
         >
     >,
-    Present         = (),
-    Clear           = (),
-    Draw_Pixel      = Point,
-    Draw_Line       = [Point,Point],
-    Draw_Rect       = Rect,
-    Draw_Text       = [Point,_(char*)],
-    Draw_Image      = [Point,_(char*)],
-    Get_Size        = /Size,
-    Set_Anchor      = [HAnchor,VAnchor],
-    Set_Auto        = (),
-    Set_Color_Clear = [_int,_int,_int,_int],
-    Set_Color_Draw  = [_int,_int,_int,_int],
-    Set_Cursor      = Point,
-    Set_Font        = [_(char*),_int],
-    Set_Grid        = _int,
-    Set_Pan         = Point,
-    Set_Size        = Size,
-    Set_Title       = _(char*),
-    Set_Zoom        = Size,
-    Write           = _(char*),
-    WriteLn         = _(char*)
+    Output = <
+        Present         = (),
+        Clear           = (),
+        Draw_Pixel      = Point,
+        Draw_Line       = [Point,Point],
+        Draw_Rect       = Rect,
+        Draw_Text       = [Point,_(char*)],
+        Draw_Image      = [Point,_(char*)],
+        Get_Size        = /Size,
+        Set_Anchor      = [HAnchor,VAnchor],
+        Set_Auto        = (),
+        Set_Color_Clear = [_int,_int,_int,_int],
+        Set_Color_Draw  = [_int,_int,_int,_int],
+        Set_Cursor      = Point,
+        Set_Font        = [_(char*),_int],
+        Set_Grid        = _int,
+        Set_Pan         = Point,
+        Set_Size        = Size,
+        Set_Title       = _(char*),
+        Set_Zoom        = Size,
+        Write           = _(char*),
+        WriteLn         = _(char*)
+    >
 >
 
 -------------------------------------------------------------------------------
@@ -92,7 +94,7 @@ var isRectVsRect = func [r1:Rect,r2:Rect] -> _int {
 }
 
 var pico_loop = func () -> () {
-    output pico Pico.Set_Auto _0
+    output pico Pico.Output.Set_Auto _0
     var old: _int = _SDL_GetTicks ()
     loop {
         var now: _int = _SDL_GetTicks ()
@@ -100,9 +102,9 @@ var pico_loop = func () -> () {
         var togo = sub [_40, dt]            -- togo = 40 - dt
         if lte [togo,_0] {                  -- if togo<=0
             emit @GLOBAL Event.Frame _40
-            output pico Pico.Clear
+            output pico Pico.Output.Clear
             emit @GLOBAL Event.Draw
-            output pico Pico.Present
+            output pico Pico.Output.Present
             set old = add [togo,now]
         } else {
             var e: Event = input pico Pico.Input.Event.Timeout [_SDL_ANY,togo]
@@ -117,16 +119,13 @@ var pico_loop = func () -> () {
 
 native type _{
     void output_pico (CEU_Pico arg) {
-        switch (arg.tag) {
-            case CEU_PICO_SET_ANCHOR: {
-                Pico io = { .tag=CEU_PICO_SET_ANCHOR, .Set_Anchor = {arg.Set_Anchor._1.tag,arg.Set_Anchor._2.tag} };
-                pico_output(io);
-                break;
-            }
-            default:
-                pico_output(*(Pico*)&arg);
-                break;
+        assert(arg.tag == PICO_OUTPUT);
+        Pico c = *(Pico*)&arg;
+        if (arg.Output.tag == CEU_PICO_OUTPUT_SET_ANCHOR) {
+            c.Output.Set_Anchor._1 = arg.Output.Set_Anchor._1.tag;
+            c.Output.Set_Anchor._2 = arg.Output.Set_Anchor._2.tag;
         }
+        pico_output(c);
     }
 
     void toce (SDL_Event* e, CEU_Event* arg) {
