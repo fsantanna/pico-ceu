@@ -16,7 +16,7 @@ type Event = <
         Down = (),
         Up   = ()
     >,
-    Mouse = [pt: Point] + <
+    Mouse = [pos: Point] + <
         Button = [but: _int] + <
             Down = (),
             Up   = ()

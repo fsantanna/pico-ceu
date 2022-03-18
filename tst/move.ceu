@@ -1,21 +1,21 @@
 ^"int.ceu"
 ^"pico.ceu"
 
-output pico Pico.Set_Title _("pico-Ce: Moving Around")
+output pico Pico.Output.Set.Title _("pico-Ce: Moving Around")
 
 var x: _int = _0
 var y: _int = _0
 
 loop {
-    output pico Pico.Set_Color_Draw [_255,_255,_255,_255]
-    output pico Pico.Draw_Pixel [x,y]
+    output pico Pico.Output.Set.Color.Draw [_255,_255,_255,_255]
+    output pico Pico.Output.Draw.Pixel [x,y]
 
-    var e: Event = input pico Pico.Event _SDL_KEYDOWN
+    var e: Event = input pico Pico.Input.Event.Forever _SDL_KEYDOWN
 
-    output pico Pico.Set_Color_Draw [_0,_0,_0,_255]
-    output pico Pico.Draw_Pixel [x,y]
+    output pico Pico.Output.Set.Color.Draw [_0,_0,_0,_255]
+    output pico Pico.Output.Draw.Pixel [x,y]
 
-    var key = e!KeyDown;
+    var key = e!Key!Down.key;
     if _($key == SDLK_LEFT) {
         set x = _($x-1)
     }

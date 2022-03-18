@@ -8,34 +8,34 @@ spawn {
         var dxy: Size
         {
             var mouse: Point
-            await evt?MouseButtonDown until isPointVsRect [mouse,rect]
+            await evt?Mouse?Button?Down until isPointVsRect [mouse,rect]
                 where {
-                    set mouse = evt!MouseButtonDown.pos
+                    set mouse = evt!Mouse!Button!Down.pos
                 }
             set dxy = [sub [rect.pos.x,mouse.x], sub [rect.pos.y,mouse.y]]
         }
         paror {
             var orig = rect
-            await evt?KeyDown until eq [evt!KeyDown,_SDLK_ESCAPE]
+            await evt?Key?Down until eq [evt!Key!Down.key,_SDLK_ESCAPE]
             set rect = orig
             output std _("Cancelled!"):_(char*)
         } with {
-            await evt?MouseMotion
+            await evt?Mouse?Motion
             output std _("Dragging..."):_(char*)
-            var mouse = evt!MouseMotion
-            watching evt?MouseButtonUp {
+            var mouse = evt!Mouse!Motion
+            watching evt?Mouse?Button?Up {
                 loop {
                     set rect = [pt, rect.size]
                         where {
-                            var pt: Point = [add [mouse.x,dxy.w], add [mouse.y,dxy.h]]
+                            var pt: Point = [add [mouse.pos.x,dxy.w], add [mouse.pos.y,dxy.h]]
                         }
-                    await evt?MouseMotion
-                    set mouse = evt!MouseMotion
+                    await evt?Mouse?Motion
+                    set mouse = evt!Mouse!Motion
                 }
             }
             output std _("Dropped!"):_(char*)
         } with {
-            await evt?MouseButtonUp
+            await evt?Mouse?Button?Up
             output std _("Clicked!"):_(char*)
         }
     }
@@ -44,9 +44,9 @@ spawn {
 spawn {
     loop {
         await _1
-        output pico Pico.Clear
-        output pico Pico.Draw_Rect rect
-        output pico Pico.Present
+        output pico Pico.Output.Clear
+        output pico Pico.Output.Draw.Rect rect
+        output pico Pico.Output.Present
     }
 }
 
