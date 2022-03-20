@@ -66,7 +66,7 @@ type Pico = <
 
 -------------------------------------------------------------------------------
 
-var isPointVsRect = func [pt:Point,r:Rect] -> _int {
+func isPointVsRect: [pt:Point,r:Rect] -> _int {
     return not (or [ lt [pt.x, sub [r.x,rw]],
                 or [ gt [pt.x, add [r.x,rw]],
                 or [ lt [pt.y, sub [r.y,rh]],
@@ -79,7 +79,7 @@ var isPointVsRect = func [pt:Point,r:Rect] -> _int {
         }
 }
 
-var isRectVsRect = func [r1:Rect,r2:Rect] -> _int {
+func isRectVsRect: [r1:Rect,r2:Rect] -> _int {
     return (or [ isPointVsRect [p1,r1],
             or [ isPointVsRect [p2,r1],
             or [ isPointVsRect [p3,r1],
@@ -96,7 +96,7 @@ var isRectVsRect = func [r1:Rect,r2:Rect] -> _int {
         }
 }
 
-var pico_loop = func () -> () {
+func pico_loop: () -> () {
     output pico Pico.Output.Set.Auto _0
     var old: _int = _SDL_GetTicks ()
     loop {
