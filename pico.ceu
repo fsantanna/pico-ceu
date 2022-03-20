@@ -5,14 +5,10 @@ type Rect  = [pos:Point, size:Size]
 type HAnchor = <Left  =(),Center=(),Right=()>
 type VAnchor = <Bottom=(),Middle=(),Top  =()>
 
-type Event = <
-    Kill    = (),
-    Task    = _uint64_t,
-    Any     = (),
-    Timeout = (),
-    Frame   = _int,
-    Draw    = (),
-    Key = [key:_int] + <
+type Event += <
+    Frame = _int,
+    Draw  = (),
+    Key   = [key:_int] + <
         Down = (),
         Up   = ()
     >,
@@ -22,10 +18,7 @@ type Event = <
             Up   = ()
         >,
         Motion = ()
-    >,
-    Collided = (),
-    Pause    = _int,
-    Hide     = _int
+    >
 >
 
 type Pico = <
@@ -118,9 +111,7 @@ var pico_loop = func () -> () {
             set old = add [togo,now]
         } else {
             var e: Event = input pico Pico.Input.Event.Timeout [_SDL_ANY,togo]
-            if not e?Timeout {
-                emit @GLOBAL e
-            }
+            emit @GLOBAL e
         }
     }
 }
@@ -207,7 +198,8 @@ native type _{
             case CEU_PICO_INPUT_EVENT_TIMEOUT: {
                 if (!ok) {
                     return (CEU_Event) {
-                        .tag = CEU_EVENT_TIMEOUT,
+                        .tag = CEU_EVENT_TIMER,
+                        .Timer = arg.Input.Event.Timeout._2
                     };
                 }
                 break;
