@@ -1,3 +1,4 @@
+^"event.ceu"
 ^"int.ceu"
 ^"pico.ceu"
 
@@ -10,7 +11,7 @@ var f = task [pos:Point,vel:[dx:_int,dy:_int]]->()->() {
     var dy = arg.vel.dy
     loop {
         output pico Pico.Output.Draw.Pixel [x,y]
-        await evt?Timeout
+        await evt?Timer
         set x = _($x + $dx)
         set y = _($y + $dy)
     }
