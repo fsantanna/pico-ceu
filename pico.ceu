@@ -6,59 +6,59 @@ type HAnchor = <Left  =(),Center=(),Right=()>
 type VAnchor = <Bottom=(),Middle=(),Top  =()>
 
 type Event += <
-    Frame = _int,
-    Draw  = (),
+    Frame = _int
+    Draw  = ()
     Key   = [key:_int] + <
-        Down = (),
+        Down = ()
         Up   = ()
-    >,
+    >
     Mouse = [pos: Point] + <
         Button = [but: _int] + <
-            Down = (),
+            Down = ()
             Up   = ()
-        >,
+        >
         Motion = ()
     >
 >
 
 type Pico = <
     Input = <
-        Delay = _int,
+        Delay = _int
         Event = [id:_int] + <
-            Forever = (),
+            Forever = ()
             Timeout = [to:_int]
         >
-    >,
+    >
     Output = <
-        Present = (),
-        Clear   = (),
+        Present = ()
+        Clear   = ()
         Draw    = <
-            Pixel = Point,
-            Line  = [Point,Point],
-            Rect  = Rect,
-            Text  = [Point,_(char*)],
+            Pixel = Point
+            Line  = [Point,Point]
+            Rect  = Rect
+            Text  = [Point,_(char*)]
             Image = [Point,_(char*)]
-        >,
+        >
         Get = <
             Size = /Size
-        >,
+        >
         Set = <
-            Anchor      = [HAnchor,VAnchor],
-            Auto        = (),
+            Anchor      = [HAnchor,VAnchor]
+            Auto        = ()
             Color = [r:_int,g:_int,b:_int,a:_int] + <
-                Clear = (),
+                Clear = ()
                 Draw  = ()
-            >,
-            Cursor      = Point,
-            Font        = [_(char*),_int],
-            Grid        = _int,
-            Pan         = Point,
-            Size        = Size,
-            Title       = _(char*),
+            >
+            Cursor      = Point
+            Font        = [_(char*),_int]
+            Grid        = _int
+            Pan         = Point
+            Size        = Size
+            Title       = _(char*)
             Zoom        = Size
-        >,
+        >
         Write = [text:_(char*)] + <
-            Norm = (),
+            Norm = ()
             Line = ()
         >
     >

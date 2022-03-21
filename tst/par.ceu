@@ -4,7 +4,7 @@
 
 output pico Pico.Output.Set.Title _("pico-Ce: Parallel Across")
 
-var f = task [pos:Point,vel:[dx:_int,dy:_int]]->()->() {
+task f: [pos:Point,vel:[dx:_int,dy:_int]] -> () -> () {
     var  x = arg.pos.x
     var  y = arg.pos.y
     var dx = arg.vel.dx
