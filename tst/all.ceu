@@ -7,7 +7,7 @@ output pico Pico.Output.Set.Title _("pico-Ce")
 
 -- GET_SIZE
 var x: Size
-output pico Pico.Output.Get.Size /x
+output pico Pico.Output.Get.Size.Window [/x]
 --output std /x
 
 -- CLEAR

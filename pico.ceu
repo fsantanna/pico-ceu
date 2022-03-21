@@ -40,7 +40,10 @@ type Pico = <
             Image = [Point,_(char*)]
         >
         Get = <
-            Size = /Size
+            Size = [size:/Size] + <
+                Window = ()
+                Image  = [path:_(char*)]
+            >
         >
         Set = <
             Anchor      = [HAnchor,VAnchor]
