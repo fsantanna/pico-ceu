@@ -24,7 +24,8 @@ input pico Pico.Input.Delay _2000
 
 -- CROP_IMAGE
 output pico Pico.Output.Clear
-output pico Pico.Output.Set.Image  [[_0,_0],[_24,_24]]
+output pico Pico.Output.Set.Image.Crop [[_0,_0],[_24,_24]]
+output pico Pico.Output.Set.Image.Size [_24,_24]
 output pico Pico.Output.Draw.Image [[_0,_0], _("open.png")]
 
 input pico Pico.Input.Delay _2000

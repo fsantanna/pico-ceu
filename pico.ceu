@@ -55,7 +55,10 @@ type Pico = <
             Cursor      = Point
             Font        = [_(char*),_int]
             Grid        = _int
-            Image       = Rect
+            Image = <
+                Crop = Rect
+                Size = Size
+            >
             Pan         = Point
             Size        = Size
             Title       = _(char*)
