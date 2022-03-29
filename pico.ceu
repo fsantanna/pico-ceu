@@ -124,7 +124,7 @@ func pico_loop: () -> () {
 
 native type _{
     void output_pico (CEU_Pico arg) {
-        assert(arg.tag == PICO_OUTPUT);
+        assert(arg.tag == CEU_PICO_OUTPUT);
         Pico c = *(Pico*)&arg;
         if (arg.Output.tag==CEU_PICO_OUTPUT_SET && arg.Output.Set.tag==CEU_PICO_OUTPUT_SET_ANCHOR) {
             c.Output.Set.Anchor._1 = arg.Output.Set.Anchor._1.tag;
