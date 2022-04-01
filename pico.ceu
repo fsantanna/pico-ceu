@@ -64,8 +64,8 @@ type Output += <
     >
 >
 
-type Pico = <
-    Input = <
+type Input += <
+    Pico = <
         Delay = _int
         Event = [id:_int] + <
             Forever = ()
@@ -120,7 +120,7 @@ func pico_loop: () -> () {
             output Pico.Present
             set old = add [togo,now]
         } else {
-            var e: Event = input pico Pico.Input.Event.Timeout [_SDL_ANY,togo]
+            var e: Event = input Pico.Event.Timeout [_SDL_ANY,togo]
             emit @GLOBAL e
         }
     }
@@ -197,19 +197,19 @@ native type _{
         }
     }
 
-    CEU_Event input_pico_Event (CEU_Pico arg) {
+    CEU_Event input_Pico_Event (CEU_Input arg) {
         SDL_Event e;
-        assert(arg.tag == CEU_PICO_INPUT);
-        assert(arg.Input.tag == CEU_PICO_INPUT_EVENT);
+        assert(arg.tag == CEU_INPUT_PICO);
+        assert(arg.Pico.tag == CEU_INPUT_PICO_EVENT);
         int ok = pico_input(&e, *((Pico_Input*)&arg));
-        switch (arg.Input.Event.tag) {
-            case CEU_PICO_INPUT_EVENT_FOREVER:
+        switch (arg.Pico.Event.tag) {
+            case CEU_INPUT_PICO_EVENT_FOREVER:
                 assert(ok);
-            case CEU_PICO_INPUT_EVENT_TIMEOUT: {
+            case CEU_INPUT_PICO_EVENT_TIMEOUT: {
                 if (!ok) {
                     return (CEU_Event) {
                         .tag = CEU_EVENT_TIMER,
-                        .Timer = arg.Input.Event.Timeout._2
+                        .Timer = arg.Pico.Event.Timeout._2
                     };
                 }
                 break;
@@ -222,17 +222,17 @@ native type _{
         return s;
     }
 
-    void input_pico_Unit (CEU_Pico arg) {
+    void input_Pico_Unit (CEU_Input arg) {
         SDL_Event e;
-        assert(arg.tag == CEU_PICO_INPUT);
-        switch (arg.Input.tag) {
-            case CEU_PICO_INPUT_DELAY: {
+        assert(arg.tag == CEU_INPUT_PICO);
+        switch (arg.Pico.tag) {
+            case CEU_INPUT_PICO_DELAY: {
                 int ok = pico_input(&e, *((Pico_Input*)&arg));
                 assert(ok);
                 break;
             }
-            case CEU_PICO_INPUT_EVENT: {
-                input_pico_Event (arg);
+            case CEU_INPUT_PICO_EVENT: {
+                input_Pico_Event (arg);
                 break;
             }
             default:

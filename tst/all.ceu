@@ -14,13 +14,13 @@ output Pico.Get.Size.Window [/x]
 output Pico.Set.Color.Clear [_255,_255,_255,_255]
 output Pico.Clear
 
-input pico Pico.Input.Delay _2000
+input Pico.Delay _2000
 
 -- DRAW_IMAGE
 output Pico.Set.Anchor [HAnchor.Center,VAnchor.Middle]
 output Pico.Draw.Image [[_0,_0], _("open.png")]
 
-input pico Pico.Input.Delay _2000
+input Pico.Delay _2000
 
 -- CROP_IMAGE
 output Pico.Clear
@@ -28,7 +28,7 @@ output Pico.Set.Image.Crop [[_0,_0],[_24,_24]]
 output Pico.Set.Image.Size [_24,_24]
 output Pico.Draw.Image [[_0,_0], _("open.png")]
 
-input pico Pico.Input.Delay _2000
+input Pico.Delay _2000
 
 -- DRAW_PIXEL
 output Pico.Set.Color.Clear [_0,_0,_0,_255]
@@ -36,12 +36,12 @@ output Pico.Set.Color.Draw [_255,_255,_255,_255]
 output Pico.Clear
 output Pico.Draw.Pixel [_0,_0]
 
-input pico Pico.Input.Delay _2000
+input Pico.Delay _2000
 
 -- DRAW_TEXT
 output Pico.Draw.Text [[_0,_5], _("Hello!")]
 
-input pico Pico.Input.Delay _2000
+input Pico.Delay _2000
 
 -- SET_GRID
 output Pico.Clear
@@ -59,13 +59,13 @@ output Pico.Write.Line _("pico")
 output Pico.Set.Font [_("tiny.ttf"),_5]
 output Pico.Write.Line _("pico")
 
-input pico Pico.Input.Delay _2000
+input Pico.Delay _2000
 
 -- MOUSE
-var e: Event = input pico Pico.Input.Event.Forever _SDL_MOUSEBUTTONDOWN
+var e: Event = input Pico.Event.Forever _SDL_MOUSEBUTTONDOWN
 output Pico.Draw.Pixel e!Mouse!Button!Down.1
 
-input pico Pico.Input.Delay _2000
+input Pico.Delay _2000
 
 -- SET_GRID
 output Pico.Clear
@@ -82,66 +82,66 @@ output Pico.Draw.Rect [[_0,_0],[_21,_21]]
 output Pico.Set.Anchor [HAnchor.Right,VAnchor.Top]
 output Pico.Draw.Rect [[_25,_25],[_5,_5]]
 
-input pico Pico.Input.Delay _2000
+input Pico.Delay _2000
 
 -- SET_ZOOM
 
 output Pico.Clear
 output Pico.Set.Zoom [_10,_10]
 output Pico.Draw.Pixel [_0,_0]
-input pico Pico.Input.Delay _500
+input Pico.Delay _500
 
 output Pico.Clear
 output Pico.Set.Zoom [_15,_15]
 output Pico.Draw.Pixel [_0,_0]
-input pico Pico.Input.Delay _500
+input Pico.Delay _500
 
 output Pico.Clear
 output Pico.Set.Zoom [_20,_20]
 output Pico.Draw.Pixel [_0,_0]
-input pico Pico.Input.Delay _500
+input Pico.Delay _500
 
 output Pico.Clear
 output Pico.Set.Zoom [_15,_15]
 output Pico.Draw.Pixel [_0,_0]
-input pico Pico.Input.Delay _500
+input Pico.Delay _500
 
 output Pico.Clear
 output Pico.Set.Zoom [_10,_10]
 output Pico.Draw.Pixel [_0,_0]
-input pico Pico.Input.Delay _500
+input Pico.Delay _500
 
 -- SET_PAN
 
 output Pico.Clear
 output Pico.Set.Pan [_0,_0]
 output Pico.Draw.Pixel [_0,_0]
-input pico Pico.Input.Delay _500
+input Pico.Delay _500
 
 output Pico.Clear
 output Pico.Set.Pan [_5,_5]
 output Pico.Draw.Pixel [_0,_0]
-input pico Pico.Input.Delay _500
+input Pico.Delay _500
 
 output Pico.Clear
 output Pico.Set.Pan [_10,_10]
 output Pico.Draw.Pixel [_0,_0]
-input pico Pico.Input.Delay _500
+input Pico.Delay _500
 
 output Pico.Clear
 output Pico.Set.Pan [_5,_5]
 output Pico.Draw.Pixel [_0,_0]
-input pico Pico.Input.Delay _500
+input Pico.Delay _500
 
 output Pico.Clear
 output Pico.Set.Pan [_0,_0]
 output Pico.Draw.Pixel [_0,_0]
-input pico Pico.Input.Delay _500
+input Pico.Delay _500
 
-input pico Pico.Input.Delay _2000
+input Pico.Delay _2000
 
 output Pico.Set.Size [_101,_101]
 output Pico.Draw.Pixel [_0,_0]
 output Pico.Present
 
-input pico Pico.Input.Delay _2000
+input Pico.Delay _2000
