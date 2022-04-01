@@ -21,15 +21,8 @@ type Event += <
     >
 >
 
-type Pico = <
-    Input = <
-        Delay = _int
-        Event = [id:_int] + <
-            Forever = ()
-            Timeout = [to:_int]
-        >
-    >
-    Output = <
+type Output += <
+    Pico = <
         Present = ()
         Clear   = ()
         Draw    = <
@@ -71,6 +64,16 @@ type Pico = <
     >
 >
 
+type Pico = <
+    Input = <
+        Delay = _int
+        Event = [id:_int] + <
+            Forever = ()
+            Timeout = [to:_int]
+        >
+    >
+>
+
 -------------------------------------------------------------------------------
 
 func isPointVsRect: [pt:Point,r:Rect] -> _int {
@@ -104,7 +107,7 @@ func isRectVsRect: [r1:Rect,r2:Rect] -> _int {
 }
 
 func pico_loop: () -> () {
-    output pico Pico.Output.Set.Auto _0
+    output Pico.Set.Auto _0
     var old: _int = _SDL_GetTicks ()
     loop {
         var now: _int = _SDL_GetTicks ()
@@ -112,9 +115,9 @@ func pico_loop: () -> () {
         var togo = sub [_40, dt]            -- togo = 40 - dt
         if lte [togo,_0] {                  -- if togo<=0
             emit @GLOBAL Event.Frame _40
-            output pico Pico.Output.Clear
+            output Pico.Clear
             emit @GLOBAL Event.Draw
-            output pico Pico.Output.Present
+            output Pico.Present
             set old = add [togo,now]
         } else {
             var e: Event = input pico Pico.Input.Event.Timeout [_SDL_ANY,togo]
@@ -126,12 +129,12 @@ func pico_loop: () -> () {
 -------------------------------------------------------------------------------
 
 native type _{
-    void output_pico (CEU_Pico arg) {
-        assert(arg.tag == CEU_PICO_OUTPUT);
-        Pico c = *(Pico*)&arg;
-        if (arg.Output.tag==CEU_PICO_OUTPUT_SET && arg.Output.Set.tag==CEU_PICO_OUTPUT_SET_ANCHOR) {
-            c.Output.Set.Anchor._1 = arg.Output.Set.Anchor._1.tag;
-            c.Output.Set.Anchor._2 = arg.Output.Set.Anchor._2.tag;
+    void output_Pico (CEU_Output arg) {
+        assert(arg.tag == CEU_OUTPUT_PICO);
+        Pico_Output c = *(Pico_Output*)&arg;
+        if (arg.Pico.tag==CEU_OUTPUT_PICO_SET && arg.Pico.Set.tag==CEU_OUTPUT_PICO_SET_ANCHOR) {
+            c.Set.Anchor._1 = arg.Pico.Set.Anchor._1.tag;
+            c.Set.Anchor._2 = arg.Pico.Set.Anchor._2.tag;
         }
         pico_output(c);
     }
@@ -198,7 +201,7 @@ native type _{
         SDL_Event e;
         assert(arg.tag == CEU_PICO_INPUT);
         assert(arg.Input.tag == CEU_PICO_INPUT_EVENT);
-        int ok = pico_input(&e, *((Pico*)&arg));
+        int ok = pico_input(&e, *((Pico_Input*)&arg));
         switch (arg.Input.Event.tag) {
             case CEU_PICO_INPUT_EVENT_FOREVER:
                 assert(ok);
@@ -224,7 +227,7 @@ native type _{
         assert(arg.tag == CEU_PICO_INPUT);
         switch (arg.Input.tag) {
             case CEU_PICO_INPUT_DELAY: {
-                int ok = pico_input(&e, *((Pico*)&arg));
+                int ok = pico_input(&e, *((Pico_Input*)&arg));
                 assert(ok);
                 break;
             }
