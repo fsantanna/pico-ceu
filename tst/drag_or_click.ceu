@@ -6,23 +6,24 @@ var rect: Rect = [[_10,_10],[_5,_5]]
 
 spawn {
     loop {
-        var dxy: Size
+        var dxy: Size --= do {
         {
             var mouse: Point
             await evt?Mouse?Button?Down until isPointVsRect [mouse,rect]
                 where {
                     set mouse = evt!Mouse!Button!Down.pos
                 }
+            --return [sub [rect.pos.x,mouse.x], sub [rect.pos.y,mouse.y]]
             set dxy = [sub [rect.pos.x,mouse.x], sub [rect.pos.y,mouse.y]]
         }
         paror {
             var orig = rect
             await evt?Key?Down until eq [evt!Key!Down.key,_SDLK_ESCAPE]
             set rect = orig
-            output std _("Cancelled!"):_(char*)
+            output Std _("Cancelled!"):_(char*)
         } with {
             await evt?Mouse?Motion
-            output std _("Dragging..."):_(char*)
+            output Std _("Dragging..."):_(char*)
             var mouse = evt!Mouse!Motion
             watching evt?Mouse?Button?Up {
                 loop {
@@ -34,10 +35,10 @@ spawn {
                     set mouse = evt!Mouse!Motion
                 }
             }
-            output std _("Dropped!"):_(char*)
+            output Std _("Dropped!"):_(char*)
         } with {
             await evt?Mouse?Button?Up
-            output std _("Clicked!"):_(char*)
+            output Std _("Clicked!"):_(char*)
         }
     }
 }
@@ -45,9 +46,9 @@ spawn {
 spawn {
     loop {
         await _1
-        output pico Pico.Output.Clear
-        output pico Pico.Output.Draw.Rect rect
-        output pico Pico.Output.Present
+        output Pico.Clear
+        output Pico.Draw.Rect rect
+        output Pico.Present
     }
 }
 

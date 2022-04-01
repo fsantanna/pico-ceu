@@ -2,16 +2,18 @@
 ^"int.ceu"
 ^"pico.ceu"
 
-output pico Pico.Output.Set.Title _("pico-Ce: Across")
+output Pico.Set.Title _("pico-Ce: Across")
 
-var i: _int = _(-25)
-loop {
-    output pico Pico.Output.Draw.Pixel [i,i]
-    input pico Pico.Input.Delay _100
-    if _($i == 25) {
-        break
+spawn {
+    var i: _int = _(-25)
+    loop {
+        output Pico.Draw.Pixel [i,i]
+        input Pico.Delay _100
+        if _($i == 25) {
+            break
+        }
+        set i = _($i + 1)
     }
-    set i = _($i + 1)
-}
 
-input pico Pico.Input.Event.Forever _SDL_ANY
+    input Pico.Event.Forever _SDL_ANY
+}

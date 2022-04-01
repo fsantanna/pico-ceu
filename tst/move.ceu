@@ -2,31 +2,33 @@
 ^"int.ceu"
 ^"pico.ceu"
 
-output pico Pico.Output.Set.Title _("pico-Ce: Moving Around")
+output Pico.Set.Title _("pico-Ce: Moving Around")
 
 var x: _int = _0
 var y: _int = _0
 
-loop {
-    output pico Pico.Output.Set.Color.Draw [_255,_255,_255,_255]
-    output pico Pico.Output.Draw.Pixel [x,y]
+spawn {
+    loop {
+        output Pico.Set.Color.Draw [_255,_255,_255,_255]
+        output Pico.Draw.Pixel [x,y]
 
-    var e: Event = input pico Pico.Input.Event.Forever _SDL_KEYDOWN
+        var e: Event = input Pico.Event.Forever _SDL_KEYDOWN
 
-    output pico Pico.Output.Set.Color.Draw [_0,_0,_0,_255]
-    output pico Pico.Output.Draw.Pixel [x,y]
+        output Pico.Set.Color.Draw [_0,_0,_0,_255]
+        output Pico.Draw.Pixel [x,y]
 
-    var key = e!Key!Down.key;
-    if _($key == SDLK_LEFT) {
-        set x = _($x-1)
-    }
-    if _($key == SDLK_RIGHT) {
-        set x = _($x+1)
-    }
-    if _($key == SDLK_UP) {
-        set y = _($y+1)
-    }
-    if _($key == SDLK_DOWN) {
-        set y = _($y-1)
+        var key = e!Key!Down.key;
+        if _($key == SDLK_LEFT) {
+            set x = _($x-1)
+        }
+        if _($key == SDLK_RIGHT) {
+            set x = _($x+1)
+        }
+        if _($key == SDLK_UP) {
+            set y = _($y+1)
+        }
+        if _($key == SDLK_DOWN) {
+            set y = _($y-1)
+        }
     }
 }

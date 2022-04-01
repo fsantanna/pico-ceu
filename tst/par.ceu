@@ -2,7 +2,7 @@
 ^"int.ceu"
 ^"pico.ceu"
 
-output pico Pico.Output.Set.Title _("pico-Ce: Parallel Across")
+output Pico.Set.Title _("pico-Ce: Parallel Across")
 
 task f: [pos:Point,vel:[dx:_int,dy:_int]] -> () -> () {
     var  x = arg.pos.x
@@ -10,7 +10,7 @@ task f: [pos:Point,vel:[dx:_int,dy:_int]] -> () -> () {
     var dx = arg.vel.dx
     var dy = arg.vel.dy
     loop {
-        output pico Pico.Output.Draw.Pixel [x,y]
+        output Pico.Draw.Pixel [x,y]
         await evt?Timer
         set x = _($x + $dx)
         set y = _($y + $dy)
@@ -20,8 +20,10 @@ task f: [pos:Point,vel:[dx:_int,dy:_int]] -> () -> () {
 var x = spawn f [[_(-25),_( 25)],[_( 1),_(-1)]]
 var y = spawn f [[_(-25),_(-25)],[_( 1),_( 1)]]
 
-loop {
-    var e: Event = input pico Pico.Input.Event.Timeout [_SDL_ANY,_100]
-    --output std /e
-    emit @GLOBAL e
+spawn {
+    loop {
+        var e: Event = input Pico.Event.Timeout [_SDL_ANY,_100]
+        --output std /e
+        emit @GLOBAL e
+    }
 }

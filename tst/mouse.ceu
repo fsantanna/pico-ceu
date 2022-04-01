@@ -2,16 +2,18 @@
 ^"int.ceu"
 ^"pico.ceu"
 
-output pico Pico.Output.Set.Title _("pico-Ce: Mouse")
+output Pico.Set.Title _("pico-Ce: Mouse")
 
-loop {
-    var e: Event = input pico Pico.Input.Event.Forever _SDL_MOUSEBUTTONDOWN
+spawn {
+    loop {
+        var e: Event = input Pico.Event.Forever _SDL_MOUSEBUTTONDOWN
 
-    var button = e!Mouse!Button!Down.but
-    if _($button == SDL_BUTTON_LEFT) {
-        output pico Pico.Output.Set.Color.Draw [_255,_255,_255,_255]
-    } else {
-        output pico Pico.Output.Set.Color.Draw [_0,_0,_0,_255]
+        var button = e!Mouse!Button!Down.but
+        if _($button == SDL_BUTTON_LEFT) {
+            output Pico.Set.Color.Draw [_255,_255,_255,_255]
+        } else {
+            output Pico.Set.Color.Draw [_0,_0,_0,_255]
+        }
+        output Pico.Draw.Pixel e!Mouse!Button!Down.pos
     }
-    output pico Pico.Output.Draw.Pixel e!Mouse!Button!Down.pos
 }
