@@ -197,7 +197,7 @@ native type _{
         }
     }
 
-    CEU_Event input_Pico_Event (CEU_Input arg) {
+    CEU_Event input_Pico_CEU_Event (CEU_Input arg) {
         SDL_Event e;
         assert(arg.tag == CEU_INPUT_PICO);
         assert(arg.Pico.tag == CEU_INPUT_PICO_EVENT);
@@ -232,7 +232,7 @@ native type _{
                 break;
             }
             case CEU_INPUT_PICO_EVENT: {
-                input_Pico_Event (arg);
+                input_Pico_CEU_Event (arg);
                 break;
             }
             default:
