@@ -53,9 +53,9 @@ type Output += <
                 Size = Size
             >
             Pan         = Point
+            Pixel       = Size
             Size        = Size
             Title       = _(char*)
-            Zoom        = Size
         >
         Write = [text:_(char*)] + <
             Norm = ()

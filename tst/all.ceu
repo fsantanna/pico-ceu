@@ -3,12 +3,11 @@
 ^"pico.ceu"
 
 -- TITLE
-output Pico.Set.Title _("pico-Ce")
+output Pico.Set.Title _("pico-Ceu")
 
 -- GET_SIZE
 var x: Size
 output Pico.Get.Size.Window [/x]
---output std /x
 
 -- CLEAR
 output Pico.Set.Color.Clear [_255,_255,_255,_255]
@@ -87,27 +86,27 @@ input Pico.Delay _2000
 -- SET_ZOOM
 
 output Pico.Clear
-output Pico.Set.Zoom [_10,_10]
+output Pico.Set.Pixel [_10,_10]
 output Pico.Draw.Pixel [_0,_0]
 input Pico.Delay _500
 
 output Pico.Clear
-output Pico.Set.Zoom [_15,_15]
+output Pico.Set.Pixel [_17,_17]
 output Pico.Draw.Pixel [_0,_0]
 input Pico.Delay _500
 
 output Pico.Clear
-output Pico.Set.Zoom [_20,_20]
+output Pico.Set.Pixel [_30,_30]
 output Pico.Draw.Pixel [_0,_0]
 input Pico.Delay _500
 
 output Pico.Clear
-output Pico.Set.Zoom [_15,_15]
+output Pico.Set.Pixel [_17,_17]
 output Pico.Draw.Pixel [_0,_0]
 input Pico.Delay _500
 
 output Pico.Clear
-output Pico.Set.Zoom [_10,_10]
+output Pico.Set.Pixel [_10,_10]
 output Pico.Draw.Pixel [_0,_0]
 input Pico.Delay _500
 
@@ -140,7 +139,7 @@ input Pico.Delay _500
 
 input Pico.Delay _2000
 
-output Pico.Set.Size [_101,_101]
+output Pico.Set.Size [_110,_110]
 output Pico.Draw.Pixel [_0,_0]
 output Pico.Present
 
