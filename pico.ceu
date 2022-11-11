@@ -10,6 +10,7 @@ set ceu_input_event = func (type) {
     var tp
     var v1
     var v2
+    var v3
     native {
         SDL_Event evt;
         pico_input_event(&evt,$type);
@@ -19,9 +20,14 @@ set ceu_input_event = func (type) {
                 $v1 = evt.key.state;
                 $v2 = evt.key.keysym.sym;
                 break;
+            case SDL_MOUSEBUTTONDOWN:
+                $v1 = evt.button.button;
+                $v2 = evt.button.x;
+                $v3 = evt.button.y;
+                break;
         }
     }
-    [tp,v1,v2]
+    [tp,v1,v2,v3]
 }
 
 ;; OUTPUT
