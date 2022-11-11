@@ -1,19 +1,15 @@
-^"prelude.ceu"
-^"int.ceu"
-^"pico.ceu"
+^["pico.ceu"]
 
-output Pico.Set.Title _("pico-Ce: Across")
+;;output Pico.Set.Title _("pico-Ce: Across")
 
-spawn {
-    var i: _int = _(-25)
-    loop {
-        output Pico.Draw.Pixel [i,i]
-        input Pico.Delay _100
-        if _($i == 25) {
-            break
-        }
-        set i = _($i + 1)
+;;spawn {
+    var i
+    set i = -25
+    while (i <= 25) {
+        ceu_output_draw_pixel(i,i)
+        ceu_input_delay(100)
+        set i = i + 1
     }
+;;}
 
-    input Pico.Event.Forever _SDL_ANY
-}
+ceu_input_event(native{return SDL_ANY;})
