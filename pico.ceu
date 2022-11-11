@@ -3,6 +3,29 @@ native {
 }
 ;; TODO: native { pico_init(0); }
 
+;; INPUT
+
+var ceu_input_event
+set ceu_input_event = func (type) {
+    var tp
+    var v1
+    var v2
+    native {
+        SDL_Event evt;
+        pico_input_event(&evt,$type);
+        $tp = evt.type;
+        switch (evt.type) {
+            case SDL_KEYDOWN:
+                $v1 = evt.key.state;
+                $v2 = evt.key.keysym.sym;
+                break;
+        }
+    }
+    [tp,v1,v2]
+}
+
+;; OUTPUT
+
 var ceu_output_draw_pixel
 set ceu_output_draw_pixel = func (x,y) {
     native {
@@ -17,9 +40,11 @@ set ceu_input_delay = func (ms) {
     }
 }
 
-var ceu_input_event
-set ceu_input_event = func (type) {
+;; STATE
+
+var ceu_state_set_color_draw
+set ceu_state_set_color_draw = func (r,g,b,a) {
     native {
-        pico_input_event(NULL,$type);
+        pico_state_set_color_draw((SDL_Color){$r,$g,$b,$a});
     }
 }

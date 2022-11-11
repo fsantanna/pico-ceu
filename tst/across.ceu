@@ -2,14 +2,12 @@
 
 ;;output Pico.Set.Title _("pico-Ce: Across")
 
-;;spawn {
-    var i
-    set i = -25
-    while (i <= 25) {
-        ceu_output_draw_pixel(i,i)
-        ceu_input_delay(100)
-        set i = i + 1
-    }
-;;}
+var i
+set i = -25
+while (i <= 25) {
+    ceu_output_draw_pixel(i,i)
+    ceu_input_delay(100)
+    set i = i + 1
+}
 
 ceu_input_event(native{return SDL_ANY;})
