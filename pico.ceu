@@ -5,8 +5,15 @@ native {
 
 ;; INPUT
 
-var ceu_input_event
-set ceu_input_event = func (type) {
+var pico_input_delay
+set pico_input_delay = func (ms) {
+    native {
+        pico_input_delay($ms);
+    }
+}
+
+var pico_input_event
+set pico_input_event = func (type) {
     var tp
     var v1
     var v2
@@ -30,27 +37,138 @@ set ceu_input_event = func (type) {
     [tp,v1,v2,v3]
 }
 
+var pico_input_event_timeout
+set pico_input_event_timeout = func (type,time) {
+    var tp
+    var v1
+    var v2
+    var v3
+    native {
+        SDL_Event evt;
+        pico_input_event_timeout(&evt,$type,$time);
+        $tp = evt.type;
+        switch (evt.type) {
+            case SDL_KEYDOWN:
+                $v1 = evt.key.state;
+                $v2 = evt.key.keysym.sym;
+                break;
+            case SDL_MOUSEBUTTONDOWN:
+                $v1 = evt.button.button;
+                $v2 = evt.button.x;
+                $v3 = evt.button.y;
+                break;
+        }
+    }
+    [tp,v1,v2,v3]
+}
+
 ;; OUTPUT
 
-var ceu_output_draw_pixel
-set ceu_output_draw_pixel = func (x,y) {
+var pico_output_clear
+set pico_output_clear = func () {
+    native {
+        pico_output_clear();
+    }
+}
+
+var pico_output_draw_pixel
+set pico_output_draw_pixel = func (x,y) {
     native {
         pico_output_draw_pixel((SDL_Point){$x,$y});
     }
 }
 
-var ceu_input_delay
-set ceu_input_delay = func (ms) {
+var pico_output_present
+set pico_output_present = func () {
     native {
-        pico_input_delay($ms);
+        pico_output_present();
     }
 }
 
 ;; STATE
 
-var ceu_state_set_color_draw
-set ceu_state_set_color_draw = func (r,g,b,a) {
+;; GET
+
+var pico_state_get_size
+set pico_state_get_size = func () {
+    var w
+    var h
+    native {
+        SDL_Point sz;
+        pico_state_get_size(&sz);
+        $w = sz.x;
+        $h = sz.y;
+    }
+    [w,h]
+}
+
+;; SET
+
+var pico_state_set_auto
+set pico_state_set_auto = func (on) {
+    native {
+        pico_state_set_auto($on);
+    }
+}
+
+var pico_state_set_color_clear
+set pico_state_set_color_clear = func (r,g,b,a) {
+    native {
+        pico_state_set_color_clear((SDL_Color){$r,$g,$b,$a});
+    }
+}
+
+var pico_state_set_color_draw
+set pico_state_set_color_draw = func (r,g,b,a) {
     native {
         pico_state_set_color_draw((SDL_Color){$r,$g,$b,$a});
+    }
+}
+
+var pico_state_set_grid
+set pico_state_set_grid = func (on) {
+    native {
+        pico_state_set_grid($on);
+    }
+}
+
+var pico_state_set_pixel_size
+set pico_state_set_pixel_size = func (w,h) {
+    native {
+        pico_state_set_pixel_size((SDL_Point){$w,$h});
+    }
+}
+
+var pico_state_set_size
+set pico_state_set_size = func (w,h) {
+    native {
+        pico_state_set_size((SDL_Point){$w,$h});
+    }
+}
+
+;; LOOP
+
+var EVT
+var pico_loop
+set pico_loop = func () {
+    pico_state_set_auto(false)
+    var old
+    set old = native { return SDL_GetTicks(); }
+    while true {
+        var now
+        set now = native { return SDL_GetTicks(); }
+        var togo
+        set togo = 40 - (now-old)
+        if togo <= 0 {
+            set EVT = 40
+            broadcast #frame
+            pico_output_clear()
+            broadcast #draw
+            pico_output_present()
+            set old = togo + now
+        } else {
+            set EVT = pico_input_event_timeout(native { return SDL_ANY; },togo)
+            broadcast #sdl
+        }
     }
 }

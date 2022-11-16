@@ -8,14 +8,14 @@ var y
 set y = 0
 
 while true {
-    ceu_state_set_color_draw(255,255,255,255)
-    ceu_output_draw_pixel(x,y)
+    pico_state_set_color_draw(255,255,255,255)
+    pico_output_draw_pixel(x,y)
 
     var evt
-    set evt = ceu_input_event(native { return SDL_KEYDOWN; })
+    set evt = pico_input_event(native { return SDL_KEYDOWN; })
 
-    ceu_state_set_color_draw(0,0,0,255)
-    ceu_output_draw_pixel(x,y)
+    pico_state_set_color_draw(0,0,0,255)
+    pico_output_draw_pixel(x,y)
 
     var key
     set key = evt[2]

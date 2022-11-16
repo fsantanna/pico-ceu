@@ -5,7 +5,7 @@
 var f
 set f = task (pos,vel) {
     while (true) {
-        ceu_output_draw_pixel(pos[0],pos[1])
+        pico_output_draw_pixel(pos[0],pos[1])
         yield (nil)
         set pos[0] = pos[0] + vel[0]
         set pos[1] = pos[1] + vel[1]
@@ -20,7 +20,7 @@ resume x([-25,25],[1,-1])
 resume y([-25,-25],[1,1])
 
 while (true) {
-    ceu_input_delay(100)
+    pico_input_delay(100)
     resume x()
     resume y()
 }
