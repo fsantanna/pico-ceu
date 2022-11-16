@@ -132,17 +132,17 @@ set pico_state_set_grid = func (on) {
     }
 }
 
-var pico_state_set_pixel_size
-set pico_state_set_pixel_size = func (w,h) {
-    native {
-        pico_state_set_pixel_size((SDL_Point){$w,$h});
-    }
-}
-
 var pico_state_set_size
 set pico_state_set_size = func (w,h) {
     native {
         pico_state_set_size((SDL_Point){$w,$h});
+    }
+}
+
+var pico_state_set_size_pixel
+set pico_state_set_size_pixel = func (w,h) {
+    native {
+        pico_state_set_size_pixel((SDL_Point){$w,$h});
     }
 }
 
