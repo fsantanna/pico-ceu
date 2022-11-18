@@ -78,6 +78,13 @@ set pico_output_draw_pixel = func (x,y) {
     }
 }
 
+var pico_output_draw_image
+set pico_output_draw_image = func (x,y,img) {
+    native {
+        pico_output_draw_image((SDL_Point){$x,$y}, (char*)(((XXX*)&$img)->p));
+    }
+}
+
 var pico_output_present
 set pico_output_present = func () {
     native {
