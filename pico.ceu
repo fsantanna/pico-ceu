@@ -5,8 +5,6 @@ defer {
 
 ;; INPUT
 
-var evt_frame = @[ (#type,#frame), (#dt,40) ]
-var evt_draw  = @[ (#type,#draw)  ]
 var evt = @[]
 
 var pico_input_delay
@@ -163,9 +161,16 @@ set pico_loop = func () {
         var togo
         set togo = 40 - (now-old)
         if togo <= 0 {
-            broadcast evt_frame
+            do {
+                set evt[#type] = #frame
+                set evt[#dt]   = 40
+                broadcast ()
+            }
             pico_output_clear()
-            broadcast evt_draw
+            do {
+                set evt[#type] = #draw
+                broadcast ()
+            }
             pico_output_present()
             set old = togo + now
         } else {
