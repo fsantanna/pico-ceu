@@ -5,67 +5,71 @@ defer {
 
 ;; INPUT
 
+var evt_frame = @[ (#type,#frame), (#dt,40) ]
+var evt_draw  = @[ (#type,#draw)  ]
+var evt = @[]
+
 var pico_input_delay
 set pico_input_delay = func (ms) {
     `pico_input_delay($ms.Number);`
 }
 
-var pico_input_event
-set pico_input_event = func (type) {
-    var tp
-    var v1
-    var v2
-    var v3
-    set tp = 0
-    set v1 = 0
-    set v2 = 0
-    set v3 = 0
+var pico_event_sdl_ceu = func (sdl, type) {
+    var tp = 0
+    var v1 = 0
+    var v2 = 0
+    var v3 = 0
     native ```
-        SDL_Event evt;
-        pico_input_event(&evt,$type.Number);
-        $tp.Number = evt.type;
-        switch (evt.type) {
+        SDL_Event* evt = (SDL_Event*) $sdl.Pointer;
+        $tp.Number = evt->type;
+        switch (evt->type) {
             case SDL_KEYDOWN:
-                $v1.Number = evt.key.state;
-                $v2.Number = evt.key.keysym.sym;
+                $v1.Number = evt->key.state;
+                $v2.Number = evt->key.keysym.sym;
                 break;
             case SDL_MOUSEBUTTONDOWN:
-                $v1.Number = evt.button.button;
-                $v2.Number = evt.button.x;
-                $v3.Number = evt.button.y;
+                $v1.Number = evt->button.button;
+                $v2.Number = evt->button.x;
+                $v3.Number = evt->button.y;
                 break;
         }
     ```
-    [tp,v1,v2,v3]
+    ifs {
+        (tp == `#number SDL_KEYDOWN`) {
+            set evt[#type]  = #keydown
+            set evt[#state] = v1
+            set evt[#sym]   = v2
+        }
+        (tp == `#number SDL_MOUSEBUTTONDOWN`) {
+            set evt[#type]   = #mousebuttondown
+            set evt[#button] = v1
+            set evt[#x]      = v2
+            set evt[#y]      = v3
+        }
+    }
+}
+
+var pico_input_event
+set pico_input_event = func (type) {
+    var sdl = `#pointer NULL`
+    native ```
+        SDL_Event sdl;
+        pico_input_event(&sdl,$type.Number);
+        $sdl.Pointer = &sdl;
+    ```
+    pico_event_sdl_ceu(sdl, type)
 }
 
 var pico_input_event_timeout
-set pico_input_event_timeout = func (type,time) {
-    var tp
-    var v1
-    var v2
-    var v3
-    set tp = 0
-    set v1 = 0
-    set v2 = 0
-    set v3 = 0
+set pico_input_event_timeout = func (type, time) {
+    var sdl = `#pointer NULL`
+    var ok = false
     native ```
-        SDL_Event evt;
-        pico_input_event_timeout(&evt,$type.Number,$time.Number);
-        $tp.Number = evt.type;
-        switch (evt.type) {
-            case SDL_KEYDOWN:
-                $v1.Number = evt.key.state;
-                $v2.Number = evt.key.keysym.sym;
-                break;
-            case SDL_MOUSEBUTTONDOWN:
-                $v1.Number = evt.button.button;
-                $v2.Number = evt.button.x;
-                $v3.Number = evt.button.y;
-                break;
-        }
+        SDL_Event sdl;
+        $ok.Bool = pico_input_event_timeout(&sdl,$type.Number,$time.Number);
+        $sdl.Pointer = &sdl;
     ```
-    [tp,v1,v2,v3]
+    ok and pico_event_sdl_ceu(sdl, type)
 }
 
 ;; OUTPUT
@@ -148,7 +152,6 @@ set pico_state_set_title = func (title) {
 
 ;; LOOP
 
-var EVT
 var pico_loop
 set pico_loop = func () {
     pico_state_set_auto(false)
@@ -160,16 +163,15 @@ set pico_loop = func () {
         var togo
         set togo = 40 - (now-old)
         if togo <= 0 {
-            set EVT = 40
-            broadcast #frame
+            broadcast evt_frame
             pico_output_clear()
-            broadcast #draw
+            broadcast evt_draw
             pico_output_present()
             set old = togo + now
         } else {
-            set EVT = pico_input_event_timeout(`#number SDL_ANY`,togo)
-            if EVT[0] /= 0 {
-                broadcast #sdl
+            var tmp = pico_input_event_timeout(`#number SDL_ANY`,togo)
+            if tmp {
+                broadcast ()
             }
         }
     }

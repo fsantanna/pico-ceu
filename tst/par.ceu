@@ -1,23 +1,20 @@
 ^["pico.ceu"]
 
-;;output Pico.Set.Title _("pico-Ce: Parallel Across")
+pico_state_set_title(`#pointer "pico-Ce: Parallel Across"`)
 
-var f
-set f = task (pos,vel) {
+var f = task (pos,vel) {
     while (true) {
         pico_output_draw_pixel(pos[0],pos[1])
-        yield (nil)
+        yield ()
         set pos[0] = pos[0] + vel[0]
         set pos[1] = pos[1] + vel[1]
     }
 }
 
-var x
-var y
-set x = spawn f
-set y = spawn f
-resume x([-25,25],[1,-1])
-resume y([-25,-25],[1,1])
+var x = spawn f ([-25,25],[1,-1])
+var y = spawn f ([-25,-25],[1,1])
+resume x()
+resume y()
 
 while (true) {
     pico_input_delay(100)

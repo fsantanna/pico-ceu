@@ -1,14 +1,16 @@
 ^["pico.ceu"]
 
-;;output Pico.Set.Title _("pico-Ce: Mouse")
+pico_state_set_title(`#pointer "pico-Ce: Mouse"`)
 
 while true {
-    var evt
-    set evt = pico_input_event(native { return SDL_MOUSEBUTTONDOWN; })
-    if evt[1] == native{return SDL_BUTTON_LEFT;} {
-        pico_state_set_color_draw(255,255,255,255)
-    } else {
-        pico_state_set_color_draw(0,0,0,255)
+    pico_input_event(`#number SDL_MOUSEBUTTONDOWN`)
+    ifs {
+        evt[#button] == `#number SDL_BUTTON_LEFT` {
+            pico_state_set_color_draw(255,255,255,255)
+        }
+        evt[#button] == `#number SDL_BUTTON_RIGHT` {
+            pico_state_set_color_draw(0,0,0,255)
+        }
     }
-    pico_output_draw_pixel(evt[2],evt[3])
+    pico_output_draw_pixel(evt[#x],evt[#y])
 }

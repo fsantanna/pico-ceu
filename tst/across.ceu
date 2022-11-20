@@ -1,13 +1,12 @@
 ^["pico.ceu"]
 
-;;output Pico.Set.Title _("pico-Ce: Across")
+pico_state_set_title(`#pointer "pico-Ce: Across"`)
 
-var i
-set i = -25
+var i = -25
 while (i <= 25) {
     pico_output_draw_pixel(i,i)
     pico_input_delay(100)
     set i = i + 1
 }
 
-pico_input_event(native{return SDL_ANY;})
+pico_input_event(`#number SDL_ANY`)

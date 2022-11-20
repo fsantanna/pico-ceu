@@ -1,34 +1,28 @@
 ^["pico.ceu"]
 
-;;output Pico.Set.Title _("pico-Ce: Moving Around")
+pico_state_set_title(`#pointer "pico-Ce: Moving Around"`)
 
-var x
-set x = 0
-var y
-set y = 0
+var x = 0
+var y = 0
 
 while true {
     pico_state_set_color_draw(255,255,255,255)
     pico_output_draw_pixel(x,y)
 
-    var evt
-    set evt = pico_input_event(native { return SDL_KEYDOWN; })
-
+    pico_input_event(`#number SDL_KEYDOWN`)
     pico_state_set_color_draw(0,0,0,255)
     pico_output_draw_pixel(x,y)
 
-    var key
-    set key = evt[2]
-    if key == native{return SDLK_a;} {
+    if evt[#sym] == `#number SDLK_a` {
         set x = x - 1
     }
-    if key == native{return SDLK_d;} {
+    if evt[#sym] == `#number SDLK_d` {
         set x = x + 1
     }
-    if key == native{return SDLK_s;} {
+    if evt[#sym] == `#number SDLK_s` {
         set y = y - 1
     }
-    if key == native{return SDLK_w;} {
+    if evt[#sym] == `#number SDLK_w` {
         set y = y + 1
     }
 }
