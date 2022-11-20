@@ -1,15 +1,13 @@
-native {
-    pico_init(1);
+native `pico_init(1);`
+defer {
+    native `pico_init(0);`
 }
-;; TODO: native { pico_init(0); }
 
 ;; INPUT
 
 var pico_input_delay
 set pico_input_delay = func (ms) {
-    native {
-        pico_input_delay($ms);
-    }
+    `pico_input_delay($ms.Number);`
 }
 
 var pico_input_event
@@ -18,22 +16,26 @@ set pico_input_event = func (type) {
     var v1
     var v2
     var v3
-    native {
+    set tp = 0
+    set v1 = 0
+    set v2 = 0
+    set v3 = 0
+    native ```
         SDL_Event evt;
-        pico_input_event(&evt,$type);
-        $tp = evt.type;
+        pico_input_event(&evt,$type.Number);
+        $tp.Number = evt.type;
         switch (evt.type) {
             case SDL_KEYDOWN:
-                $v1 = evt.key.state;
-                $v2 = evt.key.keysym.sym;
+                $v1.Number = evt.key.state;
+                $v2.Number = evt.key.keysym.sym;
                 break;
             case SDL_MOUSEBUTTONDOWN:
-                $v1 = evt.button.button;
-                $v2 = evt.button.x;
-                $v3 = evt.button.y;
+                $v1.Number = evt.button.button;
+                $v2.Number = evt.button.x;
+                $v3.Number = evt.button.y;
                 break;
         }
-    }
+    ```
     [tp,v1,v2,v3]
 }
 
@@ -43,22 +45,26 @@ set pico_input_event_timeout = func (type,time) {
     var v1
     var v2
     var v3
-    native {
+    set tp = 0
+    set v1 = 0
+    set v2 = 0
+    set v3 = 0
+    native ```
         SDL_Event evt;
-        pico_input_event_timeout(&evt,$type,$time);
-        $tp = evt.type;
+        pico_input_event_timeout(&evt,$type.Number,$time.Number);
+        $tp.Number = evt.type;
         switch (evt.type) {
             case SDL_KEYDOWN:
-                $v1 = evt.key.state;
-                $v2 = evt.key.keysym.sym;
+                $v1.Number = evt.key.state;
+                $v2.Number = evt.key.keysym.sym;
                 break;
             case SDL_MOUSEBUTTONDOWN:
-                $v1 = evt.button.button;
-                $v2 = evt.button.x;
-                $v3 = evt.button.y;
+                $v1.Number = evt.button.button;
+                $v2.Number = evt.button.x;
+                $v3.Number = evt.button.y;
                 break;
         }
-    }
+    ```
     [tp,v1,v2,v3]
 }
 
@@ -66,30 +72,22 @@ set pico_input_event_timeout = func (type,time) {
 
 var pico_output_clear
 set pico_output_clear = func () {
-    native {
-        pico_output_clear();
-    }
+    `pico_output_clear();`
 }
 
 var pico_output_draw_pixel
 set pico_output_draw_pixel = func (x,y) {
-    native {
-        pico_output_draw_pixel((SDL_Point){$x,$y});
-    }
+    `pico_output_draw_pixel((SDL_Point){$x.Number,$y.Number});`
 }
 
 var pico_output_draw_image
 set pico_output_draw_image = func (x,y,img) {
-    native {
-        pico_output_draw_image((SDL_Point){$x,$y}, (char*)(((XXX*)&$img)->p));
-    }
+    `pico_output_draw_image((SDL_Point){$x.Number,$y.Number}, (char*)$img.Pointer);`
 }
 
 var pico_output_present
 set pico_output_present = func () {
-    native {
-        pico_output_present();
-    }
+    `pico_output_present();`
 }
 
 ;; STATE
@@ -100,12 +98,14 @@ var pico_state_get_size
 set pico_state_get_size = func () {
     var w
     var h
-    native {
+    set w = 0
+    set h = 0
+    native ```
         SDL_Point sz;
         pico_state_get_size(&sz);
-        $w = sz.x;
-        $h = sz.y;
-    }
+        $w.Number = sz.x;
+        $h.Number = sz.y;
+    ```
     [w,h]
 }
 
@@ -113,44 +113,32 @@ set pico_state_get_size = func () {
 
 var pico_state_set_auto
 set pico_state_set_auto = func (on) {
-    native {
-        pico_state_set_auto($on);
-    }
+    `pico_state_set_auto($on.Bool);`
 }
 
 var pico_state_set_color_clear
 set pico_state_set_color_clear = func (r,g,b,a) {
-    native {
-        pico_state_set_color_clear((SDL_Color){$r,$g,$b,$a});
-    }
+    `pico_state_set_color_clear((SDL_Color){$r.Number,$g.Number,$b.Number,$a.Number});`
 }
 
 var pico_state_set_color_draw
 set pico_state_set_color_draw = func (r,g,b,a) {
-    native {
-        pico_state_set_color_draw((SDL_Color){$r,$g,$b,$a});
-    }
+    `pico_state_set_color_draw((SDL_Color){$r.Number,$g.Number,$b.Number,$a.Number});`
 }
 
 var pico_state_set_grid
 set pico_state_set_grid = func (on) {
-    native {
-        pico_state_set_grid($on);
-    }
+    `pico_state_set_grid($on.Bool);`
 }
 
 var pico_state_set_size
 set pico_state_set_size = func (w,h) {
-    native {
-        pico_state_set_size((SDL_Point){$w,$h});
-    }
+    `pico_state_set_size((SDL_Point){$w.Number,$h.Number});`
 }
 
 var pico_state_set_size_pixel
 set pico_state_set_size_pixel = func (w,h) {
-    native {
-        pico_state_set_size_pixel((SDL_Point){$w,$h});
-    }
+    `pico_state_set_size_pixel((SDL_Point){$w.Number,$h.Number});`
 }
 
 ;; LOOP
@@ -160,10 +148,10 @@ var pico_loop
 set pico_loop = func () {
     pico_state_set_auto(false)
     var old
-    set old = native { return SDL_GetTicks(); }
+    set old = `#number SDL_GetTicks()`
     while true {
         var now
-        set now = native { return SDL_GetTicks(); }
+        set now = `#number SDL_GetTicks()`
         var togo
         set togo = 40 - (now-old)
         if togo <= 0 {
@@ -174,7 +162,7 @@ set pico_loop = func () {
             pico_output_present()
             set old = togo + now
         } else {
-            set EVT = pico_input_event_timeout(native { return SDL_ANY; },togo)
+            set EVT = pico_input_event_timeout(`#number SDL_ANY`,togo)
             broadcast #sdl
         }
     }
