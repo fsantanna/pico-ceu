@@ -141,6 +141,11 @@ set pico_state_set_size_pixel = func (w,h) {
     `pico_state_set_size_pixel((SDL_Point){$w.Number,$h.Number});`
 }
 
+var pico_state_set_title
+set pico_state_set_title = func (title) {
+    `pico_state_set_title((char*)$title.Pointer);`
+}
+
 ;; LOOP
 
 var EVT
@@ -163,7 +168,9 @@ set pico_loop = func () {
             set old = togo + now
         } else {
             set EVT = pico_input_event_timeout(`#number SDL_ANY`,togo)
-            broadcast #sdl
+            if EVT[0] /= 0 {
+                broadcast #sdl
+            }
         }
     }
 }
