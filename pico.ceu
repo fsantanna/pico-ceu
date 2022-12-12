@@ -221,6 +221,10 @@ set pico_state_set_title = func (title) {
 
 ;; AUX
 
+func evt_type? (tag) {
+    tags(evt)==:dict and evt.type==tag
+}
+
 func pico_point_vs_rect? (pt, r) {
     ifs {
         pt.0 < (r.0-(r.2/2)) -> false
@@ -253,7 +257,7 @@ set pico_loop = func () {
     pico_state_set_auto(false)
     var old
     set old = `:number SDL_GetTicks()`
-    while true {
+    while true { {:break}
         var now
         set now = `:number SDL_GetTicks()`
         var togo
@@ -283,7 +287,7 @@ set pico_loop = func () {
             var tmp = pico_input_event_timeout(`:number SDL_ANY`,togo)
             if tmp {
                 if tmp.type == :quit {
-                    break
+                    throw :break
                 }
                 broadcast in :global, tmp
             }
