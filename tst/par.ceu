@@ -1,6 +1,6 @@
 ^["pico.ceu"]
 
-pico_state_set_title(`#pointer "pico-Ce: Parallel Across"`)
+pico_state_set_title(`:pointer "pico-Ceu: Parallel Across"`)
 
 var f = task (pos,vel) {
     while (true) {

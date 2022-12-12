@@ -1,6 +1,6 @@
 ^["pico.ceu"]
 
-pico_state_set_title(`#pointer "pico-Ce: Moving Around"`)
+pico_state_set_title(`:pointer "pico-Ceu: Moving Around"`)
 
 var x = 0
 var y = 0
@@ -9,20 +9,20 @@ while true {
     pico_state_set_color_draw(255,255,255,255)
     pico_output_draw_pixel(x,y)
 
-    pico_input_event(`#number SDL_KEYDOWN`)
+    var e = pico_input_event(`:number SDL_KEYDOWN`)
     pico_state_set_color_draw(0,0,0,255)
     pico_output_draw_pixel(x,y)
 
-    if evt[#sym] == `#number SDLK_a` {
+    if e.sym == `:number SDLK_a` {
         set x = x - 1
     }
-    if evt[#sym] == `#number SDLK_d` {
+    if e.sym == `:number SDLK_d` {
         set x = x + 1
     }
-    if evt[#sym] == `#number SDLK_s` {
+    if e.sym == `:number SDLK_s` {
         set y = y - 1
     }
-    if evt[#sym] == `#number SDLK_w` {
+    if e.sym == `:number SDLK_w` {
         set y = y + 1
     }
 }

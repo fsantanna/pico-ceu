@@ -1,146 +1,149 @@
-^"prelude.ceu"
-^"int.ceu"
-^"pico.ceu"
+^["pico.ceu"]
 
--- TITLE
-output Pico.Set.Title _("pico-Ceu")
+;; TITLE
+pico_state_set_title(`:pointer "pico-Ceu"`)
 
--- GET_SIZE
-var x: Size
-output Pico.Get.Size.Window [/x]
+;; GET_SIZE
+var x = pico_state_get_size()
+println(x)
 
--- CLEAR
-output Pico.Set.Color.Clear [_255,_255,_255,_255]
-output Pico.Clear
+;; CLEAR
+pico_state_set_color_clear(255,255,255,255)
+pico_output_clear()
 
-input Pico.Delay _2000
+pico_input_delay(2000)
 
--- DRAW_IMAGE
-output Pico.Set.Anchor [HAnchor.Center,VAnchor.Middle]
-output Pico.Draw.Image [[_0,_0], _("open.png")]
+;; DRAW_IMAGE
+pico_state_set_anchor(`:number Center`, `:number Middle`)
+pico_output_draw_image(0,0, `:pointer "open.png"`)
 
-input Pico.Delay _2000
+pico_input_delay(2000)
 
--- CROP_IMAGE
-output Pico.Clear
-output Pico.Set.Image.Crop [[_0,_0],[_24,_24]]
-output Pico.Set.Image.Size [_24,_24]
-output Pico.Draw.Image [[_0,_0], _("open.png")]
+;; CROP_IMAGE
+pico_output_clear()
+pico_state_set_image_crop(0,0,24,24)
+pico_state_set_size_image(24,24)
+pico_output_draw_image(0,0, `:pointer "open.png"`)
 
-input Pico.Delay _2000
+pico_input_delay(2000)
 
--- DRAW_PIXEL
-output Pico.Set.Color.Clear [_0,_0,_0,_255]
-output Pico.Set.Color.Draw [_255,_255,_255,_255]
-output Pico.Clear
-output Pico.Draw.Pixel [_0,_0]
+;; DRAW_PIXEL
+pico_state_set_color_clear(0,0,0,255)
+pico_state_set_color_draw(255,255,255,255)
+pico_output_clear()
+pico_output_draw_pixel(0,0)
 
-input Pico.Delay _2000
+pico_input_delay(2000)
 
--- DRAW_TEXT
-output Pico.Draw.Text [[_0,_5], _("Hello!")]
+;; DRAW_TEXT
+pico_output_draw_text(0,5, `:pointer "Hello!"`)
 
-input Pico.Delay _2000
+pico_input_delay(2000)
 
--- SET_GRID
-output Pico.Clear
-output Pico.Set.Grid _0
+;; SET_GRID
+pico_state_set_grid(false)
+pico_output_clear()
 
--- WRITE
-output Pico.Set.Cursor [_(-25),_25]
-output Pico.Write.Norm _("1 ")
-output Pico.Write.Norm _("2 ")
-output Pico.Write.Line _("3")
-output Pico.Write.Line _("")
-output Pico.Write.Line _("pico")
+pico_input_delay(2000)
 
--- SET_FONT
-output Pico.Set.Font [_("tiny.ttf"),_5]
-output Pico.Write.Line _("pico")
+;; WRITE
+pico_state_set_cursor(-25,25)
+pico_output_write(`:pointer "1 "`)
+pico_output_write(`:pointer "2 "`)
+pico_output_writeln(`:pointer "3"`)
+pico_output_writeln(`:pointer ""`)
+pico_output_writeln(`:pointer "pico"`)
 
-input Pico.Delay _2000
+pico_input_delay(2000)
 
--- MOUSE
-var e: Event = input Pico.Event.Forever _SDL_MOUSEBUTTONDOWN
-output Pico.Draw.Pixel e!Mouse!Button!Down.1
+;; SET_FONT
+pico_state_set_font(`:pointer "tiny.ttf"`, 5)
+pico_output_writeln(`:pointer "pico"`)
 
-input Pico.Delay _2000
+pico_input_delay(2000)
 
--- SET_GRID
-output Pico.Clear
-output Pico.Set.Grid _1
+;; MOUSE
+var e = pico_input_event(`:number SDL_MOUSEBUTTONDOWN`)
+pico_output_draw_pixel(e.x,e.y)
 
--- DRAW_LINE
-output Pico.Draw.Line [[_(-25),_(-25)],[_25,_25]]
-output Pico.Draw.Line [[_(-25),_25],[_25,_(-25)]]
+pico_input_delay(2000)
 
--- DRAW_RECT
-output Pico.Draw.Rect [[_0,_0],[_21,_21]]
+;; SET_GRID
+pico_state_set_grid(true)
+pico_output_clear()
 
--- SET_ANCHOR
-output Pico.Set.Anchor [HAnchor.Right,VAnchor.Top]
-output Pico.Draw.Rect [[_25,_25],[_5,_5]]
+;; DRAW_LINE
+pico_output_draw_line([-25,-25],[25, 25])
+pico_output_draw_line([-25, 25],[25,-25])
 
-input Pico.Delay _2000
+;; DRAW_RECT
+pico_output_draw_line([-25, 25],[25,-25])
+pico_output_draw_rect([0,0,21,21])
 
--- SET_ZOOM
+;; SET_ANCHOR
+pico_state_set_anchor(`:number Right`, `:number Top`)
+pico_output_draw_rect([25,25,5,5])
 
-output Pico.Clear
-output Pico.Set.Pixel [_10,_10]
-output Pico.Draw.Pixel [_0,_0]
-input Pico.Delay _500
+pico_input_delay(2000)
 
-output Pico.Clear
-output Pico.Set.Pixel [_17,_17]
-output Pico.Draw.Pixel [_0,_0]
-input Pico.Delay _500
+;; SET_ZOOM
 
-output Pico.Clear
-output Pico.Set.Pixel [_30,_30]
-output Pico.Draw.Pixel [_0,_0]
-input Pico.Delay _500
+pico_output_clear()
+pico_state_set_size_pixel(10,10)
+pico_output_draw_pixel(0,0)
+pico_input_delay(500)
 
-output Pico.Clear
-output Pico.Set.Pixel [_17,_17]
-output Pico.Draw.Pixel [_0,_0]
-input Pico.Delay _500
+pico_output_clear()
+pico_state_set_size_pixel(17,17)
+pico_output_draw_pixel(0,0)
+pico_input_delay(500)
 
-output Pico.Clear
-output Pico.Set.Pixel [_10,_10]
-output Pico.Draw.Pixel [_0,_0]
-input Pico.Delay _500
+pico_output_clear()
+pico_state_set_size_pixel(30,30)
+pico_output_draw_pixel(0,0)
+pico_input_delay(500)
 
--- SET_PAN
+pico_output_clear()
+pico_state_set_size_pixel(17,17)
+pico_output_draw_pixel(0,0)
+pico_input_delay(500)
 
-output Pico.Clear
-output Pico.Set.Pan [_0,_0]
-output Pico.Draw.Pixel [_0,_0]
-input Pico.Delay _500
+pico_output_clear()
+pico_state_set_size_pixel(10,10)
+pico_output_draw_pixel(0,0)
+pico_input_delay(500)
 
-output Pico.Clear
-output Pico.Set.Pan [_5,_5]
-output Pico.Draw.Pixel [_0,_0]
-input Pico.Delay _500
+;; SET_PAN
 
-output Pico.Clear
-output Pico.Set.Pan [_10,_10]
-output Pico.Draw.Pixel [_0,_0]
-input Pico.Delay _500
+pico_output_clear()
+pico_state_set_pan(0,0)
+pico_output_draw_pixel(0,0)
+pico_input_delay(500)
 
-output Pico.Clear
-output Pico.Set.Pan [_5,_5]
-output Pico.Draw.Pixel [_0,_0]
-input Pico.Delay _500
+pico_output_clear()
+pico_state_set_pan(5,5)
+pico_output_draw_pixel(0,0)
+pico_input_delay(500)
 
-output Pico.Clear
-output Pico.Set.Pan [_0,_0]
-output Pico.Draw.Pixel [_0,_0]
-input Pico.Delay _500
+pico_output_clear()
+pico_state_set_pan(10,10)
+pico_output_draw_pixel(0,0)
+pico_input_delay(500)
 
-input Pico.Delay _2000
+pico_output_clear()
+pico_state_set_pan(5,5)
+pico_output_draw_pixel(0,0)
+pico_input_delay(500)
 
-output Pico.Set.Size [_110,_110]
-output Pico.Draw.Pixel [_0,_0]
-output Pico.Present
+pico_output_clear()
+pico_state_set_pan(0,0)
+pico_output_draw_pixel(0,0)
+pico_input_delay(500)
 
-input Pico.Delay _2000
+pico_input_delay(2000)
+
+pico_state_set_size(110,110)
+pico_output_draw_pixel(0,0)
+pico_output_present()
+
+pico_input_delay(2000)

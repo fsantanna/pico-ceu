@@ -5,8 +5,6 @@ defer {
 
 ;; INPUT
 
-var evt = @[]
-
 var pico_input_delay
 set pico_input_delay = func (ms) {
     `pico_input_delay($ms.Number);`
@@ -33,23 +31,32 @@ var pico_event_sdl_ceu = func (sdl, type) {
         }
     ```
     ifs {
-        (tp == `#number SDL_KEYDOWN`) {
-            set evt[#type]  = #keydown
-            set evt[#state] = v1
-            set evt[#sym]   = v2
+        (tp == `:number SDL_KEYDOWN`) -> {
+            @[
+                (:type,  :keydown),
+                (:state, v1),
+                (:sym,   v2),
+            ]
         }
-        (tp == `#number SDL_MOUSEBUTTONDOWN`) {
-            set evt[#type]   = #mousebuttondown
-            set evt[#button] = v1
-            set evt[#x]      = v2
-            set evt[#y]      = v3
+        (tp == `:number SDL_MOUSEBUTTONDOWN`) -> {
+            @[
+                (:type,   :mousebuttondown),
+                (:button, v1),
+                (:x,      v2),
+                (:y,      v3),
+            ]
+        }
+        (tp == `:number SDL_QUIT`) -> {
+            @[
+                (:type, :quit),
+            ]
         }
     }
 }
 
 var pico_input_event
 set pico_input_event = func (type) {
-    var sdl = `#pointer NULL`
+    var sdl = `:pointer NULL`
     native ```
         SDL_Event sdl;
         pico_input_event(&sdl,$type.Number);
@@ -60,7 +67,7 @@ set pico_input_event = func (type) {
 
 var pico_input_event_timeout
 set pico_input_event_timeout = func (type, time) {
-    var sdl = `#pointer NULL`
+    var sdl = `:pointer NULL`
     var ok = false
     native ```
         SDL_Event sdl;
@@ -77,19 +84,53 @@ set pico_output_clear = func () {
     `pico_output_clear();`
 }
 
-var pico_output_draw_pixel
-set pico_output_draw_pixel = func (x,y) {
-    `pico_output_draw_pixel((SDL_Point){$x.Number,$y.Number});`
-}
-
 var pico_output_draw_image
 set pico_output_draw_image = func (x,y,img) {
     `pico_output_draw_image((SDL_Point){$x.Number,$y.Number}, (char*)$img.Pointer);`
 }
 
+var pico_output_draw_line
+set pico_output_draw_line = func (p1,p2) {
+    var x1 = p1[0]
+    var y1 = p1[1]
+    var x2 = p2[0]
+    var y2 = p2[1]
+    `pico_output_draw_line((SDL_Point){$x1.Number,$y1.Number},
+                           (SDL_Point){$x2.Number,$y2.Number});`
+}
+
+var pico_output_draw_rect
+set pico_output_draw_rect = func (rct) {
+    var x = rct[0]
+    var y = rct[1]
+    var w = rct[2]
+    var h = rct[3]
+    `pico_output_draw_rect((SDL_Rect){$x.Number,$y.Number,$w.Number,$h.Number});`
+}
+
+var pico_output_draw_pixel
+set pico_output_draw_pixel = func (x,y) {
+    `pico_output_draw_pixel((SDL_Point){$x.Number,$y.Number});`
+}
+
+var pico_output_draw_text
+set pico_output_draw_text = func (x,y,txt) {
+    `pico_output_draw_text((SDL_Point){$x.Number,$y.Number}, $txt.Pointer);`
+}
+
 var pico_output_present
 set pico_output_present = func () {
     `pico_output_present();`
+}
+
+var pico_output_write
+set pico_output_write = func (txt) {
+    `pico_output_write($txt.Pointer);`
+}
+
+var pico_output_writeln
+set pico_output_writeln = func (txt) {
+    `pico_output_writeln($txt.Pointer);`
 }
 
 ;; STATE
@@ -113,6 +154,11 @@ set pico_state_get_size = func () {
 
 ;; SET
 
+var pico_state_set_anchor
+set pico_state_set_anchor = func (h,v) {
+    `pico_state_set_anchor($h.Number,$v.Number);`
+}
+
 var pico_state_set_auto
 set pico_state_set_auto = func (on) {
     `pico_state_set_auto($on.Bool);`
@@ -128,14 +174,39 @@ set pico_state_set_color_draw = func (r,g,b,a) {
     `pico_state_set_color_draw((SDL_Color){$r.Number,$g.Number,$b.Number,$a.Number});`
 }
 
+var pico_state_set_cursor
+set pico_state_set_cursor = func (x,y) {
+    `pico_state_set_cursor((SDL_Point){$x.Number,$y.Number});`
+}
+
+var pico_state_set_font
+set pico_state_set_font = func (file, h) {
+    `pico_state_set_font($file.Pointer,$h.Number);`
+}
+
 var pico_state_set_grid
 set pico_state_set_grid = func (on) {
     `pico_state_set_grid($on.Bool);`
 }
 
+var pico_state_set_image_crop
+set pico_state_set_image_crop = func (x,y,w,h) {
+    `pico_state_set_image_crop((SDL_Rect){$x.Number,$y.Number,$w.Number,$h.Number});`
+}
+
+var pico_state_set_pan
+set pico_state_set_pan = func (x,y) {
+    `pico_state_set_pan((SDL_Point){$x.Number,$y.Number});`
+}
+
 var pico_state_set_size
 set pico_state_set_size = func (w,h) {
     `pico_state_set_size((SDL_Point){$w.Number,$h.Number});`
+}
+
+var pico_state_set_size_image
+set pico_state_set_size_image = func (w,h) {
+    `pico_state_set_size_image((SDL_Point){$w.Number,$h.Number});`
 }
 
 var pico_state_set_size_pixel
@@ -148,35 +219,73 @@ set pico_state_set_title = func (title) {
     `pico_state_set_title((char*)$title.Pointer);`
 }
 
+;; AUX
+
+func pico_point_vs_rect? (pt, r) {
+    ifs {
+        pt.0 < (r.0-(r.2/2)) -> false
+        pt.0 > (r.0+(r.2/2)) -> false
+        pt.1 < (r.1-(r.3/2)) -> false
+        pt.1 > (r.1+(r.3/2)) -> false
+        else                 -> true
+    }
+}
+
+func pico_rect_vs_rect? (r1, r2) {
+    ifs {
+        pico_point_vs_rect?(p1,r1) -> true
+        pico_point_vs_rect?(p2,r1) -> true
+        pico_point_vs_rect?(p3,r1) -> true
+        pico_point_vs_rect?(p4,r1) -> true
+        else                      -> false
+    } where {
+        var p1 = [(r2.0-(r2.2/2)), (r2.1-(r2.3/2))]
+        var p2 = [(r2.0-(r2.2/2)), (r2.1+(r2.3/2))]
+        var p3 = [(r2.0+(r2.2/2)), (r2.1+(r2.3/2))]
+        var p4 = [(r2.0+(r2.2/2)), (r2.1-(r2.3/2))]
+    }
+}
+
 ;; LOOP
 
 var pico_loop
 set pico_loop = func () {
     pico_state_set_auto(false)
     var old
-    set old = `#number SDL_GetTicks()`
+    set old = `:number SDL_GetTicks()`
     while true {
         var now
-        set now = `#number SDL_GetTicks()`
+        set now = `:number SDL_GetTicks()`
         var togo
         set togo = 40 - (now-old)
         if togo <= 0 {
             do {
-                set evt[#type] = #frame
-                set evt[#dt]   = 40
-                broadcast ()
+                broadcast in :global, @[
+                    (:type, :timer),
+                    (:dt,   40),
+                ]
+            }
+            do {
+                broadcast in :global, @[
+                    (:type, :frame),
+                    (:dt,   40),
+                ]
             }
             pico_output_clear()
             do {
-                set evt[#type] = #draw
-                broadcast ()
+                broadcast in :global, @[
+                    (:type, :draw),
+                ]
             }
             pico_output_present()
             set old = togo + now
         } else {
-            var tmp = pico_input_event_timeout(`#number SDL_ANY`,togo)
+            var tmp = pico_input_event_timeout(`:number SDL_ANY`,togo)
             if tmp {
-                broadcast ()
+                if tmp.type == :quit {
+                    break
+                }
+                broadcast in :global, tmp
             }
         }
     }
