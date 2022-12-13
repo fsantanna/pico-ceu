@@ -1,55 +1,42 @@
-^"prelude.ceu"
-^"int.ceu"
-^"pico.ceu"
+^["pico.ceu"]
 
-var rect: Rect = [[_10,_10],[_5,_5]]
+pico_state_set_title(`:pointer "pico-Ceu: Click, Drag, or Cancel"`)
 
 spawn {
-    loop {
-        var dxy: Size --= do {
-        {
-            var mouse: Point
-            await evt?Mouse?Button?Down until isPointVsRect [mouse,rect]
-                where {
-                    set mouse = evt!Mouse!Button!Down.pos
-                }
-            --return [sub [rect.pos.x,mouse.x], sub [rect.pos.y,mouse.y]]
-            set dxy = [sub [rect.pos.x,mouse.x], sub [rect.pos.y,mouse.y]]
+    var rect = [10,10, 5,5]
+    spawn {
+        every evt_type?(:draw) {
+            pico_state_set_color_clear(0,0,0,255)
+            pico_output_draw_rect(rect)
         }
+    }
+    while true {
+        await evt_type?(:mousebuttondown) and
+              pico_point_vs_rect?([evt.x,evt.y], rect)
+        `puts("> clicking...");`
+        var orig  = [rect.0, rect.1, rect.2, rect.3]
+        var click = [evt.x, evt.y]
         paror {
-            var orig = rect
-            await evt?Key?Down until eq [evt!Key!Down.key,_SDLK_ESCAPE]
-            set rect = orig
-            output Std _("Cancelled!"):_(char*)
+            await evt_type?(:keydown) and evt.sym==`:number SDLK_x`
+            set rect = [orig.0, orig.1, orig.2, orig.3]
+            `puts("<<< Cancelled!");`
         } with {
-            await evt?Mouse?Motion
-            output Std _("Dragging..."):_(char*)
-            var mouse = evt!Mouse!Motion
-            watching evt?Mouse?Button?Up {
-                loop {
-                    set rect = [pt, rect.size]
-                        where {
-                            var pt: Point = [add [mouse.pos.x,dxy.w], add [mouse.pos.y,dxy.h]]
-                        }
-                    await evt?Mouse?Motion
-                    set mouse = evt!Mouse!Motion
+            await evt_type?(:mousemotion)
+            `puts("> dragging...");`
+            awaiting evt_type?(:mousebuttonup) {
+                while true {
+                    set rect.0 = orig.0 + (evt.x - click.0)
+                    set rect.1 = orig.1 + (evt.y - click.1)
+                    await evt_type?(:mousemotion)
                 }
             }
-            output Std _("Dropped!"):_(char*)
+            `puts("<<< Dragged!");`
         } with {
-            await evt?Mouse?Button?Up
-            output Std _("Clicked!"):_(char*)
+            await evt_type?(:mousebuttonup)
+            `puts("<<< Clicked!");`
         }
     }
 }
 
-spawn {
-    loop {
-        await _1
-        output Pico.Clear
-        output Pico.Draw.Rect rect
-        output Pico.Present
-    }
-}
 
-call pico_loop ()
+pico_loop()
