@@ -1,6 +1,6 @@
 ^["pico.ceu"]
 
-pico_state_set_title(`:pointer "pico-Ceu: Mouse"`)
+pico_state_set_title("pico-Ceu: Mouse")
 
 while true {
     var e = pico_input_event(`:number SDL_MOUSEBUTTONDOWN`)

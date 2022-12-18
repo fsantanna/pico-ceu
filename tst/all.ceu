@@ -1,7 +1,7 @@
 ^["pico.ceu"]
 
 ;; TITLE
-pico_state_set_title(`:pointer "pico-Ceu"`)
+pico_state_set_title("pico-Ceu")
 
 ;; GET_SIZE
 var x = pico_state_get_size()
@@ -15,7 +15,7 @@ pico_input_delay(2000)
 
 ;; DRAW_IMAGE
 pico_state_set_anchor(`:number Center`, `:number Middle`)
-pico_output_draw_image(0,0, `:pointer "open.png"`)
+pico_output_draw_image(0,0, "open.png")
 
 pico_input_delay(2000)
 
@@ -23,7 +23,7 @@ pico_input_delay(2000)
 pico_output_clear()
 pico_state_set_image_crop(0,0,24,24)
 pico_state_set_size_image(24,24)
-pico_output_draw_image(0,0, `:pointer "open.png"`)
+pico_output_draw_image(0,0, "open.png")
 
 pico_input_delay(2000)
 
@@ -36,7 +36,7 @@ pico_output_draw_pixel(0,0)
 pico_input_delay(2000)
 
 ;; DRAW_TEXT
-pico_output_draw_text(0,5, `:pointer "Hello!"`)
+pico_output_draw_text(0,5, "Hello!")
 
 pico_input_delay(2000)
 
@@ -48,17 +48,17 @@ pico_input_delay(2000)
 
 ;; WRITE
 pico_state_set_cursor(-25,25)
-pico_output_write(`:pointer "1 "`)
-pico_output_write(`:pointer "2 "`)
-pico_output_writeln(`:pointer "3"`)
-pico_output_writeln(`:pointer ""`)
-pico_output_writeln(`:pointer "pico"`)
+pico_output_write("1 ")
+pico_output_write("2 ")
+pico_output_writeln("3")
+pico_output_writeln("")
+pico_output_writeln("pico")
 
 pico_input_delay(2000)
 
 ;; SET_FONT
-pico_state_set_font(`:pointer "tiny.ttf"`, 5)
-pico_output_writeln(`:pointer "pico"`)
+pico_state_set_font("tiny.ttf", 5)
+pico_output_writeln("pico")
 
 pico_input_delay(2000)
 

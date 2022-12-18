@@ -1,6 +1,6 @@
 ^["pico.ceu"]
 
-pico_state_set_title(`:pointer "pico-Ceu: Click, Drag, or Cancel"`)
+pico_state_set_title("pico-Ceu: Click, Drag, or Cancel")
 
 spawn {
     var rect = [10,10, 5,5]
@@ -13,16 +13,16 @@ spawn {
     while true {
         await evt_type?(:mousebuttondown) and
               pico_point_vs_rect?([evt.x,evt.y], rect)
-        `puts("> clicking...");`
+        println("> clicking...")
         var orig  = [rect.0, rect.1, rect.2, rect.3]
         var click = [evt.x, evt.y]
         paror {
             await evt_type?(:keydown) and evt.sym==`:number SDLK_x`
-            set rect = [orig.0, orig.1, orig.2, orig.3]
-            `puts("<<< Cancelled!");`
+            set rect = [orig.0, orig.1, orig.2, orig.3]     ;; TODO: bad
+            println("<<< Cancelled!")
         } with {
             await evt_type?(:mousemotion)
-            `puts("> dragging...");`
+            println("> dragging...")
             awaiting evt_type?(:mousebuttonup) {
                 while true {
                     set rect.0 = orig.0 + (evt.x - click.0)
@@ -30,13 +30,12 @@ spawn {
                     await evt_type?(:mousemotion)
                 }
             }
-            `puts("<<< Dragged!");`
+            println("<<< Dragged!")
         } with {
             await evt_type?(:mousebuttonup)
-            `puts("<<< Clicked!");`
+            println("<<< Clicked!")
         }
     }
 }
-
 
 pico_loop()

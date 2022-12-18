@@ -1,6 +1,6 @@
 ^["pico.ceu"]
 
-pico_state_set_title(`:pointer "pico-Ceu: Moving Around"`)
+pico_state_set_title("pico-Ceu: Moving Around")
 
 var x = 0
 var y = 0

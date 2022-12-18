@@ -1,6 +1,6 @@
-native `pico_init(1);`
+`pico_init(1);`
 defer {
-    native `pico_init(0);`
+    `pico_init(0);`
 }
 
 ;; INPUT
@@ -15,7 +15,7 @@ var pico_event_sdl_ceu = func (sdl, type) {
     var v1 = 0
     var v2 = 0
     var v3 = 0
-    native ```
+    ```
         SDL_Event* evt = (SDL_Event*) $sdl.Pointer;
         $tp.Number = evt->type;
         switch (evt->type) {
@@ -77,7 +77,7 @@ var pico_event_sdl_ceu = func (sdl, type) {
 var pico_input_event
 set pico_input_event = func (type) {
     var sdl = `:pointer NULL`
-    native ```
+    ```
         SDL_Event sdl;
         pico_input_event(&sdl,$type.Number);
         $sdl.Pointer = &sdl;
@@ -89,7 +89,7 @@ var pico_input_event_timeout
 set pico_input_event_timeout = func (type, time) {
     var sdl = `:pointer NULL`
     var ok = false
-    native ```
+    ```
         SDL_Event sdl;
         $ok.Bool = pico_input_event_timeout(&sdl,$type.Number,$time.Number);
         $sdl.Pointer = &sdl;
@@ -106,7 +106,7 @@ set pico_output_clear = func () {
 
 var pico_output_draw_image
 set pico_output_draw_image = func (x,y,img) {
-    `pico_output_draw_image((SDL_Point){$x.Number,$y.Number}, (char*)$img.Pointer);`
+    `pico_output_draw_image((SDL_Point){$x.Number,$y.Number}, (char*)$img.Dyn->Vector.mem);`
 }
 
 var pico_output_draw_line
@@ -135,7 +135,7 @@ set pico_output_draw_pixel = func (x,y) {
 
 var pico_output_draw_text
 set pico_output_draw_text = func (x,y,txt) {
-    `pico_output_draw_text((SDL_Point){$x.Number,$y.Number}, $txt.Pointer);`
+    `pico_output_draw_text((SDL_Point){$x.Number,$y.Number}, $txt.Dyn->Vector.mem);`
 }
 
 var pico_output_present
@@ -145,12 +145,12 @@ set pico_output_present = func () {
 
 var pico_output_write
 set pico_output_write = func (txt) {
-    `pico_output_write($txt.Pointer);`
+    `pico_output_write($txt.Dyn->Vector.mem);`
 }
 
 var pico_output_writeln
 set pico_output_writeln = func (txt) {
-    `pico_output_writeln($txt.Pointer);`
+    `pico_output_writeln($txt.Dyn->Vector.mem);`
 }
 
 ;; STATE
@@ -163,7 +163,7 @@ set pico_state_get_size = func () {
     var h
     set w = 0
     set h = 0
-    native ```
+    ```
         SDL_Point sz;
         pico_state_get_size(&sz);
         $w.Number = sz.x;
@@ -201,7 +201,7 @@ set pico_state_set_cursor = func (x,y) {
 
 var pico_state_set_font
 set pico_state_set_font = func (file, h) {
-    `pico_state_set_font($file.Pointer,$h.Number);`
+    `pico_state_set_font($file.Dyn->Vector.mem,$h.Number);`
 }
 
 var pico_state_set_grid
@@ -236,7 +236,7 @@ set pico_state_set_size_pixel = func (w,h) {
 
 var pico_state_set_title
 set pico_state_set_title = func (title) {
-    `pico_state_set_title((char*)$title.Pointer);`
+    `pico_state_set_title($title.Dyn->Vector.mem);`
 }
 
 ;; AUX
@@ -307,7 +307,7 @@ set pico_loop = func () {
             var tmp = pico_input_event_timeout(`:number SDL_ANY`,togo)
             if tmp {
                 if tmp.type == :quit {
-                    throw :break
+                    throw(:break)
                 }
                 broadcast in :global, tmp
             }

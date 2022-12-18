@@ -1,6 +1,6 @@
 ^["pico.ceu"]
 
-pico_state_set_title(`:pointer "pico-Ceu: Across"`)
+pico_state_set_title("pico-Ceu: Across")
 
 var i = -25
 while i <= 25 {
