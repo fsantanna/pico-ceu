@@ -13,16 +13,10 @@ while true {
     pico_state_set_color_draw(0,0,0,255)
     pico_output_draw_pixel(x,y)
 
-    if e.sym == `:number SDLK_a` {
-        set x = x - 1
-    }
-    if e.sym == `:number SDLK_d` {
-        set x = x + 1
-    }
-    if e.sym == `:number SDLK_s` {
-        set y = y - 1
-    }
-    if e.sym == `:number SDLK_w` {
-        set y = y + 1
+    ifs e.1 {
+        == `:number SDLK_a` -> set x = x - 1
+        == `:number SDLK_d` -> set x = x + 1
+        == `:number SDLK_s` -> set y = y - 1
+        == `:number SDLK_w` -> set y = y + 1
     }
 }

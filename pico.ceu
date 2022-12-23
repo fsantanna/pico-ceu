@@ -25,9 +25,9 @@ var pico_event_sdl_ceu = func (sdl, type) {
                 break;
             case SDL_MOUSEBUTTONDOWN:
             case SDL_MOUSEBUTTONUP:
-                $v1.Number = evt->button.button;
-                $v2.Number = evt->button.x;
-                $v3.Number = evt->button.y;
+                $v1.Number = evt->button.x;
+                $v2.Number = evt->button.y;
+                $v3.Number = evt->button.button;
                 break;
             case SDL_MOUSEMOTION:
                 $v1.Number = evt->button.x;
@@ -37,39 +37,19 @@ var pico_event_sdl_ceu = func (sdl, type) {
     ```
     ifs {
         (tp == `:number SDL_KEYDOWN`) -> {
-            @[
-                (:type,  :keydown),
-                (:state, v1),
-                (:sym,   v2),
-            ]
+            tags([v1,v2], :keydown, true)
         }
         (tp == `:number SDL_MOUSEBUTTONDOWN`) -> {
-            @[
-                (:type,   :mousebuttondown),
-                (:button, v1),
-                (:x,      v2),
-                (:y,      v3),
-            ]
+            tags([v1,v2,v3], :mousebuttondown, true)
         }
         (tp == `:number SDL_MOUSEBUTTONUP`) -> {
-            @[
-                (:type,   :mousebuttonup),
-                (:button, v1),
-                (:x,      v2),
-                (:y,      v3),
-            ]
+            tags([v1,v2,v3], :mousebuttonup, true)
         }
         (tp == `:number SDL_MOUSEMOTION`) -> {
-            @[
-                (:type,   :mousemotion),
-                (:x,      v1),
-                (:y,      v2),
-            ]
+            tags([v1,v2], :mousemotion, true)
         }
         (tp == `:number SDL_QUIT`) -> {
-            @[
-                (:type, :quit),
-            ]
+            tags([], :quit, true)
         }
     }
 }
@@ -159,13 +139,24 @@ set pico_output_writeln = func (txt) {
 
 var pico_state_get_size
 set pico_state_get_size = func () {
-    var w
-    var h
-    set w = 0
-    set h = 0
+    var w = 0
+    var h = 0
     ```
         SDL_Point sz;
         pico_state_get_size(&sz);
+        $w.Number = sz.x;
+        $h.Number = sz.y;
+    ```
+    [w,h]
+}
+
+var pico_state_get_size_image
+set pico_state_get_size_image = func (img) {
+    var w = 0
+    var h = 0
+    ```
+        SDL_Point sz;
+        pico_state_get_size_image((char*)$img.Dyn->Vector.mem, &sz);
         $w.Number = sz.x;
         $h.Number = sz.y;
     ```
@@ -241,10 +232,6 @@ set pico_state_set_title = func (title) {
 
 ;; AUX
 
-func evt_type? (tag) {
-    tags(evt)==:dict and evt.type==tag
-}
-
 func pico_point_vs_rect? (pt, r) {
     ifs {
         pt.0 < (r.0-(r.2/2)) -> false
@@ -270,6 +257,23 @@ func pico_rect_vs_rect? (r1, r2) {
     }
 }
 
+;; EVENTS
+
+;;type :Pico.Frame = [ms]
+;;type :Pico.Draw  = []
+;;type :Pico.Key   = [key]
+;;type :Pico.Key.Dn = []
+;;type :Pico.Key.Up = []
+;;type :Pico.Mouse = [pos]
+;;type :Pico.Mouse.Motion = []
+;;type :Pico.Mouse.Button = [but]
+;;type :Pico.Mouse.Button.Dn = []
+;;type :Pico.Mouse.Button.Up = []
+;;var evt :Pico.Frame = [x,y,z]
+    ;; 1. static link to use evt.x <<< muito importante
+    ;;      spec is only needed in compile time to link fields
+    ;; 2. static constructor check <<< importante por causa do extends
+
 ;; LOOP
 
 var pico_loop
@@ -283,30 +287,15 @@ set pico_loop = func () {
         var togo
         set togo = 40 - (now-old)
         if togo <= 0 {
-            do {
-                broadcast in :global, @[
-                    (:type, :timer),
-                    (:dt,   40),
-                ]
-            }
-            do {
-                broadcast in :global, @[
-                    (:type, :frame),
-                    (:dt,   40),
-                ]
-            }
+            broadcast in :global, tags([40], :frame, true)
             pico_output_clear()
-            do {
-                broadcast in :global, @[
-                    (:type, :draw),
-                ]
-            }
+            broadcast in :global, tags([], :draw, true)
             pico_output_present()
             set old = togo + now
         } else {
             var tmp = pico_input_event_timeout(`:number SDL_ANY`,togo)
             if tmp {
-                if tmp.type == :quit {
+                if tmp is :quit {
                     throw(:break)
                 }
                 broadcast in :global, tmp

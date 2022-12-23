@@ -5,34 +5,34 @@ pico_state_set_title("pico-Ceu: Click, Drag, or Cancel")
 spawn {
     var rect = [10,10, 5,5]
     spawn {
-        every evt_type?(:draw) {
+        every :draw {
             pico_state_set_color_clear(0,0,0,255)
             pico_output_draw_rect(rect)
         }
     }
     while true {
-        await evt_type?(:mousebuttondown) and
-              pico_point_vs_rect?([evt.x,evt.y], rect)
+        await (evt is :mousebuttondown) and
+              pico_point_vs_rect?([evt.0,evt.1],rect)
         println("> clicking...")
         var orig  = [rect.0, rect.1, rect.2, rect.3]
-        var click = [evt.x, evt.y]
+        var click = [evt.0, evt.1]
         paror {
-            await evt_type?(:keydown) and evt.sym==`:number SDLK_x`
+            await (evt is :keydown) and (evt.1 == `:number SDLK_x`)
             set rect = [orig.0, orig.1, orig.2, orig.3]     ;; TODO: bad
             println("<<< Cancelled!")
         } with {
-            await evt_type?(:mousemotion)
+            await :mousemotion
             println("> dragging...")
-            awaiting evt_type?(:mousebuttonup) {
+            awaiting :mousebuttonup {
                 while true {
-                    set rect.0 = orig.0 + (evt.x - click.0)
-                    set rect.1 = orig.1 + (evt.y - click.1)
-                    await evt_type?(:mousemotion)
+                    set rect.0 = orig.0 + (evt.0 - click.0)
+                    set rect.1 = orig.1 + (evt.1 - click.1)
+                    await :mousemotion
                 }
             }
             println("<<< Dragged!")
         } with {
-            await evt_type?(:mousebuttonup)
+            await :mousebuttonup
             println("<<< Clicked!")
         }
     }

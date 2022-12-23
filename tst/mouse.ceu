@@ -4,14 +4,14 @@ pico_state_set_title("pico-Ceu: Mouse")
 
 while true {
     var e = pico_input_event(`:number SDL_MOUSEBUTTONDOWN`)
-    ifs {
-        e.button==`:number SDL_BUTTON_LEFT` -> {
+    ifs e.2 {
+        == `:number SDL_BUTTON_LEFT` -> {
             pico_state_set_color_draw(255,255,255,255)
-            pico_output_draw_pixel(e.x,e.y)
+            pico_output_draw_pixel(e.0,e.1)
         }
-        e.button==`:number SDL_BUTTON_RIGHT` -> {
+        == `:number SDL_BUTTON_RIGHT` -> {
             pico_state_set_color_draw(0,0,0,255)
-            pico_output_draw_pixel(e.x,e.y)
+            pico_output_draw_pixel(e.0,e.1)
         }
     }
 }

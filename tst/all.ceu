@@ -64,7 +64,7 @@ pico_input_delay(2000)
 
 ;; MOUSE
 var e = pico_input_event(`:number SDL_MOUSEBUTTONDOWN`)
-pico_output_draw_pixel(e.x,e.y)
+pico_output_draw_pixel(e.0,e.1)
 
 pico_input_delay(2000)
 
