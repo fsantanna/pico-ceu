@@ -259,20 +259,38 @@ func pico_rect_vs_rect? (r1, r2) {
 
 ;; EVENTS
 
-;;type :Pico.Frame = [ms]
-;;type :Pico.Draw  = []
-;;type :Pico.Key   = [key]
-;;type :Pico.Key.Dn = []
-;;type :Pico.Key.Up = []
-;;type :Pico.Mouse = [pos]
-;;type :Pico.Mouse.Motion = []
-;;type :Pico.Mouse.Button = [but]
-;;type :Pico.Mouse.Button.Dn = []
-;;type :Pico.Mouse.Button.Up = []
-;;var evt :Pico.Frame = [x,y,z]
+;;;
+type :Pico.Frame = [ms]
+type :Pico.Draw  = []
+type :Pico.Key   = [key]
+type :Pico.Key.Dn = []
+type :Pico.Key.Up = []
+type :Pico.Mouse = [pos]
+type :Pico.Mouse.Motion = []
+type :Pico.Mouse.Button = [but]
+type :Pico.Mouse.Button.Dn = []
+type :Pico.Mouse.Button.Up = []
+var evt :Pico.Frame = [x,y,z]
     ;; 1. static link to use evt.x <<< muito importante
     ;;      spec is only needed in compile time to link fields
     ;; 2. static constructor check <<< importante por causa do extends
+
+type :Pico = {
+    :Frame = [ms]
+    :Draw  = []
+    :Key = [key] {
+        :Dn = []
+        :Up = []
+    }
+    :Mouse [x,y] {
+        :Motion = []
+        :Button = [but] {
+            Dn = []
+            Up = []
+        }
+    }
+}
+;;;
 
 ;; LOOP
 
