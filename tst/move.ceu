@@ -14,9 +14,9 @@ while true {
     pico_output_draw_pixel(x,y)
 
     ifs e.1 {
-        == `:number SDLK_a` -> set x = x - 1
-        == `:number SDLK_d` -> set x = x + 1
-        == `:number SDLK_s` -> set y = y - 1
-        == `:number SDLK_w` -> set y = y + 1
+        is `:number SDLK_a` -> set x = x - 1
+        is `:number SDLK_d` -> set x = x + 1
+        is `:number SDLK_s` -> set y = y - 1
+        is `:number SDLK_w` -> set y = y + 1
     }
 }
