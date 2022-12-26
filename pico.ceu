@@ -203,7 +203,11 @@ set pico_state_set_grid = func (on) {
 
 var pico_state_set_image_crop
 set pico_state_set_image_crop = func (x,y,w,h) {
-    `pico_state_set_image_crop((SDL_Rect){$x.Number,$y.Number,$w.Number,$h.Number});`
+    if x == nil {
+        `pico_state_set_image_crop((SDL_Rect){0,0,0,0});`
+    } else {
+        `pico_state_set_image_crop((SDL_Rect){$x.Number,$y.Number,$w.Number,$h.Number});`
+    }
 }
 
 var pico_state_set_pan
