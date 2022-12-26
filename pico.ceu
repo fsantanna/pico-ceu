@@ -85,8 +85,9 @@ set pico_output_clear = func () {
 }
 
 var pico_output_draw_image
-set pico_output_draw_image = func (x,y,img) {
-    `pico_output_draw_image((SDL_Point){$x.Number,$y.Number}, (char*)$img.Dyn->Vector.mem);`
+set pico_output_draw_image = func (x,y,img,cache) {
+    set cache = cache or (cache == nil)
+    `_pico_output_draw_image_cache((SDL_Point){$x.Number,$y.Number}, (char*)$img.Dyn->Vector.mem, $cache.Bool);`
 }
 
 var pico_output_draw_line
