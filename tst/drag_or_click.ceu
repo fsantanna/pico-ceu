@@ -14,11 +14,11 @@ spawn {
         await (evt is :mousebuttondown) and
               pico_point_vs_rect?([evt.0,evt.1],rect)
         println("> clicking...")
-        var orig  = [rect.0, rect.1, rect.2, rect.3]
+        var orig  = copy(rect)
         var click = [evt.0, evt.1]
         paror {
-            await (evt is :keydown) and (evt.1 == `:number SDLK_x`)
-            set rect = [orig.0, orig.1, orig.2, orig.3]     ;; TODO: bad
+            await (evt is :keydown) and (evt.1 == :Key.Escape)
+            set rect = copy(orig)
             println("<<< Cancelled!")
         } with {
             await :mousemotion

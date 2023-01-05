@@ -14,9 +14,9 @@ while true {
     pico_output_draw_pixel(x,y)
 
     ifs e.1 {
-        is `:number SDLK_a` -> set x = x - 1
-        is `:number SDLK_d` -> set x = x + 1
-        is `:number SDLK_s` -> set y = y - 1
-        is `:number SDLK_w` -> set y = y + 1
+        is :Key.Left  -> set x = x - 1
+        is :Key.Right -> set x = x + 1
+        is :Key.Down  -> set y = y - 1
+        is :Key.Up    -> set y = y + 1
     }
 }
