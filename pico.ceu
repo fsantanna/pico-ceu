@@ -3,12 +3,16 @@ defer {
     `pico_init(0);`
 }
 
-do {
-    :Key.A :Key.B :Key.C :Key.D :Key.E :Key.F :Key.G :Key.H :Key.I :Key.J
-    :Key.K :Key.L :Key.M :Key.N :Key.O :Key.P :Key.Q :Key.R :Key.S :Key.T
-    :Key.U :Key.V :Key.W :Key.X :Key.Y :Key.Z
-    :Key.Right :Key.Left :Key.Down :Key.Up
-	:Key.Escape
+enum {
+    :Key.A = `SDLK_a`,
+    :Key.B, :Key.C, :Key.D, :Key.E, :Key.F, :Key.G, :Key.H, :Key.I, :Key.J,
+    :Key.K, :Key.L, :Key.M, :Key.N, :Key.O, :Key.P, :Key.Q, :Key.R, :Key.S,
+    :Key.T ,:Key.U, :Key.V, :Key.W, :Key.X, :Key.Y, :Key.Z,
+
+    :Key.Right = `SDLK_RIGHT`,
+    :Key.Left, :Key.Down, :Key.Up,
+
+	:Key.Escape = `SDLK_ESCAPE`,
 }
 
 ;; INPUT
@@ -51,20 +55,8 @@ var pico_event_sdl_ceu = func (sdl, type) {
         is `:number SDL_MOUSEMOTION`     -> tags([v0,v1],    :mousemotion,     true)
         is `:number SDL_QUIT`            -> tags([],         :quit,            true)
         (tp == `:number SDL_KEYDOWN`) or (tp == `:number SDL_KEYUP`) -> {
-            set v1 = ifs {
-                `:bool $v1.Tag==SDLK_ESCAPE` -> {
-                    `:tag CEU_TAG_Key_Escape`
-                }
-                `:bool $v1.Tag>=SDLK_a && $v1.Tag<=SDLK_z` -> {
-                    `:tag (CEU_TAG_Key_A  + ($v1.Tag - SDLK_a))`
-                }
-                `:bool $v1.Tag>=SDLK_RIGHT && $v1.Tag<=SDLK_UP` -> {
-                    `:tag (CEU_TAG_Key_Right + ($v1.Tag - SDLK_RIGHT))`
-                }
-                else -> v1
-            }
-            var key_up_dn = ((tp == `:number SDL_KEYDOWN`) and :keydown) or :keyup
-            tags([v0,v1], key_up_dn, true)
+            var up_dn = ((tp == `:number SDL_KEYDOWN`) and :keydown) or :keyup
+            tags([v0,v1], up_dn, true)
         }
     }
 }
@@ -102,7 +94,7 @@ set pico_output_clear = func () {
 var pico_output_draw_image
 set pico_output_draw_image = func (x,y,img,cache) {
     set cache = cache or (cache == nil)
-    `_pico_output_draw_image_cache((SDL_Point){$x.Number,$y.Number}, (char*)$img.Dyn->Ncast.Vector.mem, $cache.Bool);`
+    `_pico_output_draw_image_cache((SDL_Point){$x.Number,$y.Number}, (char*)$img.Dyn->Ncast.Vector.buf, $cache.Bool);`
 }
 
 var pico_output_draw_line
@@ -131,7 +123,7 @@ set pico_output_draw_pixel = func (x,y) {
 
 var pico_output_draw_text
 set pico_output_draw_text = func (x,y,txt) {
-    `pico_output_draw_text((SDL_Point){$x.Number,$y.Number}, $txt.Dyn->Ncast.Vector.mem);`
+    `pico_output_draw_text((SDL_Point){$x.Number,$y.Number}, $txt.Dyn->Ncast.Vector.buf);`
 }
 
 var pico_output_present
@@ -141,12 +133,12 @@ set pico_output_present = func () {
 
 var pico_output_write
 set pico_output_write = func (txt) {
-    `pico_output_write($txt.Dyn->Ncast.Vector.mem);`
+    `pico_output_write($txt.Dyn->Ncast.Vector.buf);`
 }
 
 var pico_output_writeln
 set pico_output_writeln = func (txt) {
-    `pico_output_writeln($txt.Dyn->Ncast.Vector.mem);`
+    `pico_output_writeln($txt.Dyn->Ncast.Vector.buf);`
 }
 
 ;; STATE
@@ -172,7 +164,7 @@ set pico_state_get_size_image = func (img) {
     var h = 0
     ```
         SDL_Point sz;
-        pico_state_get_size_image((char*)$img.Dyn->Ncast.Vector.mem, &sz);
+        pico_state_get_size_image((char*)$img.Dyn->Ncast.Vector.buf, &sz);
         $w.Number = sz.x;
         $h.Number = sz.y;
     ```
@@ -208,7 +200,7 @@ set pico_state_set_cursor = func (x,y) {
 
 var pico_state_set_font
 set pico_state_set_font = func (file, h) {
-    `pico_state_set_font($file.Dyn->Ncast.Vector.mem,$h.Number);`
+    `pico_state_set_font($file.Dyn->Ncast.Vector.buf,$h.Number);`
 }
 
 var pico_state_set_grid
@@ -247,7 +239,7 @@ set pico_state_set_size_pixel = func (w,h) {
 
 var pico_state_set_title
 set pico_state_set_title = func (title) {
-    `pico_state_set_title($title.Dyn->Ncast.Vector.mem);`
+    `pico_state_set_title($title.Dyn->Ncast.Vector.buf);`
 }
 
 ;; AUX
@@ -323,7 +315,7 @@ set pico_loop = func () {
         var now
         set now = `:number SDL_GetTicks()`
         var togo
-        set togo = 40 - (now-old)
+        set togo = 40 - (now - old)
         if togo <= 0 {
             broadcast in :global, tags([40], :frame, true)
             pico_output_clear()
