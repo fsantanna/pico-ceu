@@ -14,7 +14,7 @@ pico_output_clear()
 pico_input_delay(2000)
 
 ;; DRAW_IMAGE
-pico_state_set_anchor(`:number Center`, `:number Middle`)
+pico_state_set_anchor(:HAnchor-Center, :VAnchor-Middle)
 pico_output_draw_image(0,0, "open.png")
 
 pico_input_delay(2000)
@@ -63,8 +63,8 @@ pico_output_writeln("pico")
 pico_input_delay(2000)
 
 ;; MOUSE
-var e = pico_input_event(`:number SDL_MOUSEBUTTONDOWN`)
-pico_output_draw_pixel(e.0,e.1)
+var e :Pico.Mouse.Button = pico_input_event(:Pico.Mouse.Button.Dn)
+pico_output_draw_pixel(e.pos.x,e.pos.y)
 
 pico_input_delay(2000)
 
@@ -81,7 +81,7 @@ pico_output_draw_line([-25, 25],[25,-25])
 pico_output_draw_rect([0,0,21,21])
 
 ;; SET_ANCHOR
-pico_state_set_anchor(`:number Right`, `:number Top`)
+pico_state_set_anchor(:HAnchor-Right, :VAnchor-Top)
 pico_output_draw_rect([25,25,5,5])
 
 pico_input_delay(2000)

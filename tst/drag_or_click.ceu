@@ -16,8 +16,8 @@ spawn {
         println("> clicking...")
         var orig  = copy(rect)
         var click = [evt.0, evt.1]
-        paror {
-            await (evt is :keydown) and (evt.1 == :Key.Escape)
+        par-or {
+            await (evt is :keydown) and (evt.1 == :Key-Escape)
             set rect = copy(orig)
             println("<<< Cancelled!")
         } with {
