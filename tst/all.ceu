@@ -1,149 +1,149 @@
 ^["pico.ceu"]
 
 ;; TITLE
-pico_state_set_title("pico-Ceu")
+pico-state-set-title("pico-Ceu")
 
-;; GET_SIZE
-var x = pico_state_get_size()
+;; GET-SIZE
+var x = pico-state-get-size()
 println(x)
 
 ;; CLEAR
-pico_state_set_color_clear(255,255,255,255)
-pico_output_clear()
+pico-state-set-color-clear(255,255,255,255)
+pico-output-clear()
 
-pico_input_delay(2000)
+pico-input-delay(2000)
 
-;; DRAW_IMAGE
-pico_state_set_anchor(:HAnchor-Center, :VAnchor-Middle)
-pico_output_draw_image(0,0, "open.png")
+;; DRAW-IMAGE
+pico-state-set-anchor(:HAnchor-Center, :VAnchor-Middle)
+pico-output-draw-image(0,0, "open.png")
 
-pico_input_delay(2000)
+pico-input-delay(2000)
 
-;; CROP_IMAGE
-pico_output_clear()
-pico_state_set_image_crop(0,0,24,24)
-pico_state_set_size_image(24,24)
-pico_output_draw_image(0,0, "open.png")
+;; CROP-IMAGE
+pico-output-clear()
+pico-state-set-image-crop(0,0,24,24)
+pico-state-set-size-image(24,24)
+pico-output-draw-image(0,0, "open.png")
 
-pico_input_delay(2000)
+pico-input-delay(2000)
 
-;; DRAW_PIXEL
-pico_state_set_color_clear(0,0,0,255)
-pico_state_set_color_draw(255,255,255,255)
-pico_output_clear()
-pico_output_draw_pixel(0,0)
+;; DRAW-PIXEL
+pico-state-set-color-clear(0,0,0,255)
+pico-state-set-color-draw(255,255,255,255)
+pico-output-clear()
+pico-output-draw-pixel(0,0)
 
-pico_input_delay(2000)
+pico-input-delay(2000)
 
-;; DRAW_TEXT
-pico_output_draw_text(0,5, "Hello!")
+;; DRAW-TEXT
+pico-output-draw-text(0,5, "Hello!")
 
-pico_input_delay(2000)
+pico-input-delay(2000)
 
-;; SET_GRID
-pico_state_set_grid(false)
-pico_output_clear()
+;; SET-GRID
+pico-state-set-grid(false)
+pico-output-clear()
 
-pico_input_delay(2000)
+pico-input-delay(2000)
 
 ;; WRITE
-pico_state_set_cursor(-25,25)
-pico_output_write("1 ")
-pico_output_write("2 ")
-pico_output_writeln("3")
-pico_output_writeln("")
-pico_output_writeln("pico")
+pico-state-set-cursor(-25,25)
+pico-output-write("1 ")
+pico-output-write("2 ")
+pico-output-writeln("3")
+pico-output-writeln("")
+pico-output-writeln("pico")
 
-pico_input_delay(2000)
+pico-input-delay(2000)
 
-;; SET_FONT
-pico_state_set_font("tiny.ttf", 5)
-pico_output_writeln("pico")
+;; SET-FONT
+pico-state-set-font("tiny.ttf", 5)
+pico-output-writeln("pico")
 
-pico_input_delay(2000)
+pico-input-delay(2000)
 
 ;; MOUSE
-var e :Pico.Mouse.Button = pico_input_event(:Pico.Mouse.Button.Dn)
-pico_output_draw_pixel(e.pos.x,e.pos.y)
+var e :Pico.Mouse.Button = pico-input-event(:Pico.Mouse.Button.Dn)
+pico-output-draw-pixel(e.pos.x,e.pos.y)
 
-pico_input_delay(2000)
+pico-input-delay(2000)
 
-;; SET_GRID
-pico_state_set_grid(true)
-pico_output_clear()
+;; SET-GRID
+pico-state-set-grid(true)
+pico-output-clear()
 
-;; DRAW_LINE
-pico_output_draw_line([-25,-25],[25, 25])
-pico_output_draw_line([-25, 25],[25,-25])
+;; DRAW-LINE
+pico-output-draw-line([-25,-25],[25, 25])
+pico-output-draw-line([-25, 25],[25,-25])
 
-;; DRAW_RECT
-pico_output_draw_line([-25, 25],[25,-25])
-pico_output_draw_rect([0,0,21,21])
+;; DRAW-RECT
+pico-output-draw-line([-25, 25],[25,-25])
+pico-output-draw-rect([0,0,21,21])
 
-;; SET_ANCHOR
-pico_state_set_anchor(:HAnchor-Right, :VAnchor-Top)
-pico_output_draw_rect([25,25,5,5])
+;; SET-ANCHOR
+pico-state-set-anchor(:HAnchor-Right, :VAnchor-Top)
+pico-output-draw-rect([25,25,5,5])
 
-pico_input_delay(2000)
+pico-input-delay(2000)
 
-;; SET_ZOOM
+;; SET-ZOOM
 
-pico_output_clear()
-pico_state_set_size_pixel(10,10)
-pico_output_draw_pixel(0,0)
-pico_input_delay(500)
+pico-output-clear()
+pico-state-set-size-pixel(10,10)
+pico-output-draw-pixel(0,0)
+pico-input-delay(500)
 
-pico_output_clear()
-pico_state_set_size_pixel(17,17)
-pico_output_draw_pixel(0,0)
-pico_input_delay(500)
+pico-output-clear()
+pico-state-set-size-pixel(17,17)
+pico-output-draw-pixel(0,0)
+pico-input-delay(500)
 
-pico_output_clear()
-pico_state_set_size_pixel(30,30)
-pico_output_draw_pixel(0,0)
-pico_input_delay(500)
+pico-output-clear()
+pico-state-set-size-pixel(30,30)
+pico-output-draw-pixel(0,0)
+pico-input-delay(500)
 
-pico_output_clear()
-pico_state_set_size_pixel(17,17)
-pico_output_draw_pixel(0,0)
-pico_input_delay(500)
+pico-output-clear()
+pico-state-set-size-pixel(17,17)
+pico-output-draw-pixel(0,0)
+pico-input-delay(500)
 
-pico_output_clear()
-pico_state_set_size_pixel(10,10)
-pico_output_draw_pixel(0,0)
-pico_input_delay(500)
+pico-output-clear()
+pico-state-set-size-pixel(10,10)
+pico-output-draw-pixel(0,0)
+pico-input-delay(500)
 
-;; SET_PAN
+;; SET-PAN
 
-pico_output_clear()
-pico_state_set_pan(0,0)
-pico_output_draw_pixel(0,0)
-pico_input_delay(500)
+pico-output-clear()
+pico-state-set-pan(0,0)
+pico-output-draw-pixel(0,0)
+pico-input-delay(500)
 
-pico_output_clear()
-pico_state_set_pan(5,5)
-pico_output_draw_pixel(0,0)
-pico_input_delay(500)
+pico-output-clear()
+pico-state-set-pan(5,5)
+pico-output-draw-pixel(0,0)
+pico-input-delay(500)
 
-pico_output_clear()
-pico_state_set_pan(10,10)
-pico_output_draw_pixel(0,0)
-pico_input_delay(500)
+pico-output-clear()
+pico-state-set-pan(10,10)
+pico-output-draw-pixel(0,0)
+pico-input-delay(500)
 
-pico_output_clear()
-pico_state_set_pan(5,5)
-pico_output_draw_pixel(0,0)
-pico_input_delay(500)
+pico-output-clear()
+pico-state-set-pan(5,5)
+pico-output-draw-pixel(0,0)
+pico-input-delay(500)
 
-pico_output_clear()
-pico_state_set_pan(0,0)
-pico_output_draw_pixel(0,0)
-pico_input_delay(500)
+pico-output-clear()
+pico-state-set-pan(0,0)
+pico-output-draw-pixel(0,0)
+pico-input-delay(500)
 
-pico_input_delay(2000)
+pico-input-delay(2000)
 
-pico_state_set_size(110,110)
-pico_output_draw_pixel(0,0)
-pico_output_present()
+pico-state-set-size(110,110)
+pico-output-draw-pixel(0,0)
+pico-output-present()
 
-pico_input_delay(2000)
+pico-input-delay(2000)

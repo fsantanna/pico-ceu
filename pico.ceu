@@ -10,6 +10,7 @@ data :WH = [w,h]
 data :Rect = [x,y,w,h]
 
 data :Pico = [] {
+    :Any   = []
     :Quit  = []
     :Frame = [ms]
     :Draw  = []
@@ -32,6 +33,11 @@ enum {
 }
 
 enum {
+    :Mouse-Button-Left = `SDL_BUTTON_LEFT`,
+    :Mouse-Button-Middle, :Mouse-Button-Right,
+}
+
+enum {
     :Key-A = `SDLK_a`,
     :Key-B, :Key-C, :Key-D, :Key-E, :Key-F, :Key-G, :Key-H, :Key-I, :Key-J,
     :Key-K, :Key-L, :Key-M, :Key-N, :Key-O, :Key-P, :Key-Q, :Key-R, :Key-S,
@@ -45,55 +51,57 @@ enum {
 
 ;; INPUT
 
-var pico_input_delay
-set pico_input_delay = func (ms) {
+var pico-input-delay = func (ms) {
     `pico_input_delay($ms.Number);`
 }
 
-var pico_event_sdl_ceu = func (sdl, type) {
+var pico-event-sdl-ceu = func (sdl, type) {
     var tp = :nil
-    var v0 = 0
-    var v1 = 0
-    var v2 = 0
+    var t0 = :nil
+    var t1 = :nil
+    var t2 = :nil
+    var n0 = 0
+    var n1 = 0
+    var n2 = 0
     ```
         SDL_Event* evt = (SDL_Event*) $sdl.Pointer;
         $tp.Tag = evt->type;
         switch (evt->type) {
             case SDL_KEYDOWN:
             case SDL_KEYUP:
-                $v0.Tag  = evt->key.state;
-                $v1.Tag  = evt->key.keysym.sym;
-                $v1.type = CEU_VALUE_TAG;
+                $t0.Tag  = evt->key.state;
+                $t1.Tag  = evt->key.keysym.sym;
                 break;
             case SDL_MOUSEBUTTONDOWN:
             case SDL_MOUSEBUTTONUP:
-                $v0.Number = evt->button.x;
-                $v1.Number = evt->button.y;
-                $v2.Tag    = evt->button.button;
+                $n0.Number = evt->button.x;
+                $n1.Number = evt->button.y;
+                $t2.Tag    = evt->button.button;
                 break;
             case SDL_MOUSEMOTION:
-                $v0.Number = evt->button.x;
-                $v1.Number = evt->button.y;
+                $n0.Number = evt->button.x;
+                $n1.Number = evt->button.y;
                 break;
         }
     ```
     ifs tp {
         is `:tag SDL_QUIT`            -> :Pico.Quit []
-        is `:tag SDL_MOUSEMOTION`     -> :Pico.Mouse.Motion [[v0,v1]]
-        is `:tag SDL_MOUSEBUTTONDOWN` -> :Pico.Mouse.Button.Dn [[v0,v1],v2]
-        is `:tag SDL_MOUSEBUTTONUP`   -> :Pico.Mouse.Button.Up [[v0,v1],v2]
-        is `:tag SDL_KEYDOWN`         -> :Pico.Key.Dn [[v0,v1],nil]
-        is `:tag SDL_KEYUP`           -> :Pico.Key.Up [[v0,v1],nil]
+        is `:tag SDL_MOUSEMOTION`     -> :Pico.Mouse.Motion [[n0,n1]]
+        is `:tag SDL_MOUSEBUTTONDOWN` -> :Pico.Mouse.Button.Dn [[n0,n1],t2]
+        is `:tag SDL_MOUSEBUTTONUP`   -> :Pico.Mouse.Button.Up [[n0,n1],t2]
+        is `:tag SDL_KEYDOWN`         -> :Pico.Key.Dn [t1]
+        is `:tag SDL_KEYUP`           -> :Pico.Key.Up [t1]
         else -> throw(:error)
     }
 }
 
-var pico_input_event
-set pico_input_event = func (tag) {
+var pico-input-event = func (tag) {
     var sdl = `:pointer NULL`
     ```
         int tag_to_type (int tag) {
             switch (tag) {
+                case CEU_TAG_Pico_Any:
+                    return SDL_ANY;
                 case CEU_TAG_Pico_Quit:
                     return SDL_QUIT;
                 case CEU_TAG_Pico_Key_Dn:
@@ -116,11 +124,10 @@ set pico_input_event = func (tag) {
         pico_input_event(&sdl,type);
         $sdl.Pointer = &sdl;
     ```
-    pico_event_sdl_ceu(sdl, type)
+    pico-event-sdl-ceu(sdl, type)
 }
 
-var pico_input_event_timeout
-set pico_input_event_timeout = func (type, time) {
+var pico-input-event-timeout = func (type, time) {
     var sdl = `:pointer NULL`
     var ok = false
     ```
@@ -128,24 +135,21 @@ set pico_input_event_timeout = func (type, time) {
         $ok.Bool = pico_input_event_timeout(&sdl,$type.Tag,$time.Number);
         $sdl.Pointer = &sdl;
     ```
-    ok and pico_event_sdl_ceu(sdl, type)
+    ok and pico-event-sdl-ceu(sdl, type)
 }
 
 ;; OUTPUT
 
-var pico_output_clear
-set pico_output_clear = func () {
+var pico-output-clear = func () {
     `pico_output_clear();`
 }
 
-var pico_output_draw_image
-set pico_output_draw_image = func (x,y,img,cache) {
+var pico-output-draw-image = func (x,y,img,cache) {
     set cache = cache or (cache == nil)
     `_pico_output_draw_image_cache((SDL_Point){$x.Number,$y.Number}, (char*)$img.Dyn->Ncast.Vector.buf, $cache.Bool);`
 }
 
-var pico_output_draw_line
-set pico_output_draw_line = func (p1,p2) {
+var pico-output-draw-line = func (p1,p2) {
     var x1 = p1[0]
     var y1 = p1[1]
     var x2 = p2[0]
@@ -154,8 +158,7 @@ set pico_output_draw_line = func (p1,p2) {
                            (SDL_Point){$x2.Number,$y2.Number});`
 }
 
-var pico_output_draw_rect
-set pico_output_draw_rect = func (rct) {
+var pico-output-draw-rect = func (rct) {
     var x = rct[0]
     var y = rct[1]
     var w = rct[2]
@@ -163,28 +166,23 @@ set pico_output_draw_rect = func (rct) {
     `pico_output_draw_rect((SDL_Rect){$x.Number,$y.Number,$w.Number,$h.Number});`
 }
 
-var pico_output_draw_pixel
-set pico_output_draw_pixel = func (x,y) {
+var pico-output-draw-pixel = func (x,y) {
     `pico_output_draw_pixel((SDL_Point){$x.Number,$y.Number});`
 }
 
-var pico_output_draw_text
-set pico_output_draw_text = func (x,y,txt) {
+var pico-output-draw-text = func (x,y,txt) {
     `pico_output_draw_text((SDL_Point){$x.Number,$y.Number}, $txt.Dyn->Ncast.Vector.buf);`
 }
 
-var pico_output_present
-set pico_output_present = func () {
+var pico-output-present = func () {
     `pico_output_present();`
 }
 
-var pico_output_write
-set pico_output_write = func (txt) {
+var pico-output-write = func (txt) {
     `pico_output_write($txt.Dyn->Ncast.Vector.buf);`
 }
 
-var pico_output_writeln
-set pico_output_writeln = func (txt) {
+var pico-output-writeln = func (txt) {
     `pico_output_writeln($txt.Dyn->Ncast.Vector.buf);`
 }
 
@@ -192,8 +190,7 @@ set pico_output_writeln = func (txt) {
 
 ;; GET
 
-var pico_state_get_size
-set pico_state_get_size = func () {
+var pico-state-get-size = func () {
     var w = 0
     var h = 0
     ```
@@ -205,8 +202,7 @@ set pico_state_get_size = func () {
     [w,h]
 }
 
-var pico_state_get_size_image
-set pico_state_get_size_image = func (img) {
+var pico-state-get-size-image = func (img) {
     var w = 0
     var h = 0
     ```
@@ -220,43 +216,35 @@ set pico_state_get_size_image = func (img) {
 
 ;; SET
 
-var pico_state_set_anchor
-set pico_state_set_anchor = func (h,v) {
+var pico-state-set-anchor = func (h,v) {
     `pico_state_set_anchor($h.Tag,$v.Tag);`
 }
 
-var pico_state_set_auto
-set pico_state_set_auto = func (on) {
+var pico-state-set-auto = func (on) {
     `pico_state_set_auto($on.Bool);`
 }
 
-var pico_state_set_color_clear
-set pico_state_set_color_clear = func (r,g,b,a) {
+var pico-state-set-color-clear = func (r,g,b,a) {
     `pico_state_set_color_clear((SDL_Color){$r.Number,$g.Number,$b.Number,$a.Number});`
 }
 
-var pico_state_set_color_draw
-set pico_state_set_color_draw = func (r,g,b,a) {
+var pico-state-set-color-draw = func (r,g,b,a) {
     `pico_state_set_color_draw((SDL_Color){$r.Number,$g.Number,$b.Number,$a.Number});`
 }
 
-var pico_state_set_cursor
-set pico_state_set_cursor = func (x,y) {
+var pico-state-set-cursor = func (x,y) {
     `pico_state_set_cursor((SDL_Point){$x.Number,$y.Number});`
 }
 
-var pico_state_set_font
-set pico_state_set_font = func (file, h) {
+var pico-state-set-font = func (file, h) {
     `pico_state_set_font($file.Dyn->Ncast.Vector.buf,$h.Number);`
 }
 
-var pico_state_set_grid
-set pico_state_set_grid = func (on) {
+var pico-state-set-grid = func (on) {
     `pico_state_set_grid($on.Bool);`
 }
 
-var pico_state_set_image_crop
-set pico_state_set_image_crop = func (x,y,w,h) {
+var pico-state-set-image-crop = func (x,y,w,h) {
     if x == nil {
         `pico_state_set_image_crop((SDL_Rect){0,0,0,0});`
     } else {
@@ -264,34 +252,29 @@ set pico_state_set_image_crop = func (x,y,w,h) {
     }
 }
 
-var pico_state_set_pan
-set pico_state_set_pan = func (x,y) {
+var pico-state-set-pan = func (x,y) {
     `pico_state_set_pan((SDL_Point){$x.Number,$y.Number});`
 }
 
-var pico_state_set_size
-set pico_state_set_size = func (w,h) {
+var pico-state-set-size = func (w,h) {
     `pico_state_set_size((SDL_Point){$w.Number,$h.Number});`
 }
 
-var pico_state_set_size_image
-set pico_state_set_size_image = func (w,h) {
+var pico-state-set-size-image = func (w,h) {
     `pico_state_set_size_image((SDL_Point){$w.Number,$h.Number});`
 }
 
-var pico_state_set_size_pixel
-set pico_state_set_size_pixel = func (w,h) {
+var pico-state-set-size-pixel = func (w,h) {
     `pico_state_set_size_pixel((SDL_Point){$w.Number,$h.Number});`
 }
 
-var pico_state_set_title
-set pico_state_set_title = func (title) {
+var pico-state-set-title = func (title) {
     `pico_state_set_title($title.Dyn->Ncast.Vector.buf);`
 }
 
 ;; AUX
 
-func pico_point_vs_rect? (pt, r) {
+func pico-point-vs-rect? (pt, r) {
     ifs {
         pt.0 < (r.0-(r.2/2)) -> false
         pt.0 > (r.0+(r.2/2)) -> false
@@ -301,12 +284,12 @@ func pico_point_vs_rect? (pt, r) {
     }
 }
 
-func pico_rect_vs_rect? (r1, r2) {
+func pico-rect-vs-rect? (r1, r2) {
     ifs {
-        pico_point_vs_rect?(p1,r1) -> true
-        pico_point_vs_rect?(p2,r1) -> true
-        pico_point_vs_rect?(p3,r1) -> true
-        pico_point_vs_rect?(p4,r1) -> true
+        pico-point-vs-rect?(p1,r1) -> true
+        pico-point-vs-rect?(p2,r1) -> true
+        pico-point-vs-rect?(p3,r1) -> true
+        pico-point-vs-rect?(p4,r1) -> true
         else                      -> false
     } where {
         var p1 = [(r2.0-(r2.2/2)), (r2.1-(r2.3/2))]
@@ -318,9 +301,8 @@ func pico_rect_vs_rect? (r1, r2) {
 
 ;; LOOP
 
-var pico_loop
-set pico_loop = func () {
-    pico_state_set_auto(false)
+var pico-loop = func () {
+    pico-state-set-auto(false)
     var old
     set old = `:number SDL_GetTicks()`
     while true { {:break}
@@ -330,14 +312,14 @@ set pico_loop = func () {
         set togo = 40 - (now - old)
         if togo <= 0 {
             broadcast in :global, :Pico.Frame [40]
-            pico_output_clear()
+            pico-output-clear()
             broadcast in :global, :Pico.Draw []
-            pico_output_present()
+            pico-output-present()
             set old = togo + now
         } else {
-            var tmp = pico_input_event_timeout(`:tag SDL_ANY`,togo)
+            var tmp = pico-input-event-timeout(`:tag SDL_ANY`,togo)
             if tmp {
-                if tmp is :quit {
+                if tmp is :Pico.Quit {
                     throw(:break)
                 }
                 broadcast in :global, tmp

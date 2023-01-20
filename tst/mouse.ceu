@@ -1,17 +1,18 @@
 ^["pico.ceu"]
 
-pico_state_set_title("pico-Ceu: Mouse")
+pico-state-set-title("pico-Ceu: Mouse")
 
 while true {
-    var e = pico_input_event(`:number SDL_MOUSEBUTTONDOWN`)
-    ifs e.2 {
-        == `:number SDL_BUTTON_LEFT` -> {
-            pico_state_set_color_draw(255,255,255,255)
-            pico_output_draw_pixel(e.0,e.1)
+    var e :Pico.Mouse.Button.Dn = pico-input-event(:Pico.Mouse.Button.Dn)
+    println(e)
+    ifs e.but {
+        == :Mouse-Button-Left -> {
+            pico-state-set-color-draw(255,255,255,255)
+            pico-output-draw-pixel(e.pos.x,e.pos.y)
         }
-        == `:number SDL_BUTTON_RIGHT` -> {
-            pico_state_set_color_draw(0,0,0,255)
-            pico_output_draw_pixel(e.0,e.1)
+        == :Mouse-Button-Right -> {
+            pico-state-set-color-draw(0,0,0,255)
+            pico-output-draw-pixel(e.pos.x,e.pos.y)
         }
     }
 }

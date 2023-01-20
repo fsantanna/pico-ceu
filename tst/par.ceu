@@ -1,13 +1,15 @@
 ^["pico.ceu"]
 
-pico_state_set_title("pico-Ceu: Parallel Across")
+pico-state-set-title("pico-Ceu: Parallel Across")
 
-var f = task (pos,vel) {
+data :XY = [x,y]
+
+var f = task (pos :XY,vel:XY) {
     while (true) {
-        pico_output_draw_pixel(pos[0],pos[1])
+        pico-output-draw-pixel(pos.x,pos.y)
         yield ()
-        set pos[0] = pos[0] + vel[0]
-        set pos[1] = pos[1] + vel[1]
+        set pos.x = pos.x + vel.x
+        set pos.y = pos.y + vel.y
     }
 }
 
@@ -17,7 +19,7 @@ resume x()
 resume y()
 
 while (true) {
-    pico_input_delay(100)
+    pico-input-delay(100)
     resume x()
     resume y()
 }
