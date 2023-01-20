@@ -2,8 +2,6 @@
 
 pico-state-set-title("pico-Ceu: Parallel Across")
 
-data :XY = [x,y]
-
 var f = task (pos :XY,vel:XY) {
     while (true) {
         pico-output-draw-pixel(pos.x,pos.y)
