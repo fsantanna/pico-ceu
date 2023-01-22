@@ -274,12 +274,12 @@ var pico-state-set-title = func (title) {
 
 ;; AUX
 
-func pico-point-vs-rect? (pt, r) {
+func pico-point-vs-rect? (pt :XY, r :Rect) {
     ifs {
-        pt.0 < (r.0-(r.2/2)) -> false
-        pt.0 > (r.0+(r.2/2)) -> false
-        pt.1 < (r.1-(r.3/2)) -> false
-        pt.1 > (r.1+(r.3/2)) -> false
+        pt.x < (r.x-(r.w/2)) -> false
+        pt.x > (r.x+(r.w/2)) -> false
+        pt.y < (r.y-(r.h/2)) -> false
+        pt.y > (r.y+(r.h/2)) -> false
         else                 -> true
     }
 }
@@ -312,6 +312,7 @@ var pico-loop = func () {
         set togo = 40 - (now - old)
         if togo <= 0 {
             broadcast in :global, :Pico.Frame [40]
+            broadcast in :global, :frame [40]
             pico-output-clear()
             broadcast in :global, :Pico.Draw []
             pico-output-present()
