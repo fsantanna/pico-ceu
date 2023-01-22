@@ -5,9 +5,10 @@ defer {
 
 ;; DATA / ENUM
 
-data :XY = [x,y]
-data :WH = [w,h]
-data :Rect = [x,y,w,h]
+data :RGBA = [r,g,b,a]
+data :XY   = [x,y]
+data :WH   = [w,h]
+data :Rect = [pos:XY, dim:WH]
 
 data :Pico = [] {
     :Any   = []
@@ -144,33 +145,39 @@ var pico-output-clear = func () {
     `pico_output_clear();`
 }
 
-var pico-output-draw-image = func (x,y,img,cache) {
+var pico-output-draw-image = func (pos:XY,img,cache) {
+    var x = pos.x
+    var y = pos.y
     set cache = cache or (cache == nil)
     `_pico_output_draw_image_cache((SDL_Point){$x.Number,$y.Number}, (char*)$img.Dyn->Ncast.Vector.buf, $cache.Bool);`
 }
 
-var pico-output-draw-line = func (p1,p2) {
-    var x1 = p1[0]
-    var y1 = p1[1]
-    var x2 = p2[0]
-    var y2 = p2[1]
+var pico-output-draw-line = func (p1:XY, p2:XY) {
+    var x1 = p1.x
+    var y1 = p1.y
+    var x2 = p2.x
+    var y2 = p2.y
     `pico_output_draw_line((SDL_Point){$x1.Number,$y1.Number},
                            (SDL_Point){$x2.Number,$y2.Number});`
 }
 
-var pico-output-draw-rect = func (rct) {
-    var x = rct[0]
-    var y = rct[1]
-    var w = rct[2]
-    var h = rct[3]
+var pico-output-draw-rect = func (r:Rect) {
+    var x = r.pos.x
+    var y = r.pos.y
+    var w = r.dim.w
+    var h = r.dim.h
     `pico_output_draw_rect((SDL_Rect){$x.Number,$y.Number,$w.Number,$h.Number});`
 }
 
-var pico-output-draw-pixel = func (x,y) {
+var pico-output-draw-pixel = func (pos:XY) {
+    var x = pos.x
+    var y = pos.y
     `pico_output_draw_pixel((SDL_Point){$x.Number,$y.Number});`
 }
 
-var pico-output-draw-text = func (x,y,txt) {
+var pico-output-draw-text = func (pos:XY, txt) {
+    var x = pos.x
+    var y = pos.y
     `pico_output_draw_text((SDL_Point){$x.Number,$y.Number}, $txt.Dyn->Ncast.Vector.buf);`
 }
 
@@ -224,15 +231,25 @@ var pico-state-set-auto = func (on) {
     `pico_state_set_auto($on.Bool);`
 }
 
-var pico-state-set-color-clear = func (r,g,b,a) {
+var pico-state-set-color-clear = func (clr:RGBA) {
+    var r = clr.r
+    var g = clr.g
+    var b = clr.b
+    var a = clr.a
     `pico_state_set_color_clear((SDL_Color){$r.Number,$g.Number,$b.Number,$a.Number});`
 }
 
-var pico-state-set-color-draw = func (r,g,b,a) {
+var pico-state-set-color-draw = func (clr:RGBA) {
+    var r = clr.r
+    var g = clr.g
+    var b = clr.b
+    var a = clr.a
     `pico_state_set_color_draw((SDL_Color){$r.Number,$g.Number,$b.Number,$a.Number});`
 }
 
-var pico-state-set-cursor = func (x,y) {
+var pico-state-set-cursor = func (pos:XY) {
+    var x = pos.x
+    var y = pos.y
     `pico_state_set_cursor((SDL_Point){$x.Number,$y.Number});`
 }
 
@@ -244,7 +261,11 @@ var pico-state-set-grid = func (on) {
     `pico_state_set_grid($on.Bool);`
 }
 
-var pico-state-set-image-crop = func (x,y,w,h) {
+var pico-state-set-image-crop = func (r:Rect) {
+    var x = r.pos.x
+    var y = r.pos.y
+    var w = r.dim.w
+    var h = r.dim.h
     if x == nil {
         `pico_state_set_image_crop((SDL_Rect){0,0,0,0});`
     } else {
@@ -252,19 +273,27 @@ var pico-state-set-image-crop = func (x,y,w,h) {
     }
 }
 
-var pico-state-set-pan = func (x,y) {
+var pico-state-set-pan = func (pos:XY) {
+    var x = pos.x
+    var y = pos.y
     `pico_state_set_pan((SDL_Point){$x.Number,$y.Number});`
 }
 
-var pico-state-set-size = func (w,h) {
+var pico-state-set-size = func (dim:WH) {
+    var w = dim.w
+    var h = dim.h
     `pico_state_set_size((SDL_Point){$w.Number,$h.Number});`
 }
 
-var pico-state-set-size-image = func (w,h) {
+var pico-state-set-size-image = func (dim:WH) {
+    var w = dim.w
+    var h = dim.h
     `pico_state_set_size_image((SDL_Point){$w.Number,$h.Number});`
 }
 
-var pico-state-set-size-pixel = func (w,h) {
+var pico-state-set-size-pixel = func (dim:WH) {
+    var w = dim.w
+    var h = dim.h
     `pico_state_set_size_pixel((SDL_Point){$w.Number,$h.Number});`
 }
 
@@ -274,17 +303,17 @@ var pico-state-set-title = func (title) {
 
 ;; AUX
 
-func pico-point-vs-rect? (pt :XY, r :Rect) {
+func pico-point-vs-rect? (pt:XY, r:Rect) {
     ifs {
-        pt.x < (r.x-(r.w/2)) -> false
-        pt.x > (r.x+(r.w/2)) -> false
-        pt.y < (r.y-(r.h/2)) -> false
-        pt.y > (r.y+(r.h/2)) -> false
-        else                 -> true
+        pt.x < (r.pos.x-(r.dim.w/2)) -> false
+        pt.x > (r.pos.x+(r.dim.w/2)) -> false
+        pt.y < (r.pos.y-(r.dim.h/2)) -> false
+        pt.y > (r.pos.y+(r.dim.h/2)) -> false
+        else                         -> true
     }
 }
 
-func pico-rect-vs-rect? (r1, r2) {
+func pico-rect-vs-rect? (r1:Rect, r2:Rect) {
     ifs {
         pico-point-vs-rect?(p1,r1) -> true
         pico-point-vs-rect?(p2,r1) -> true
@@ -292,10 +321,12 @@ func pico-rect-vs-rect? (r1, r2) {
         pico-point-vs-rect?(p4,r1) -> true
         else                      -> false
     } where {
-        var p1 = [(r2.0-(r2.2/2)), (r2.1-(r2.3/2))]
-        var p2 = [(r2.0-(r2.2/2)), (r2.1+(r2.3/2))]
-        var p3 = [(r2.0+(r2.2/2)), (r2.1+(r2.3/2))]
-        var p4 = [(r2.0+(r2.2/2)), (r2.1-(r2.3/2))]
+        var w2 = r2.dim.w / 2
+        var h2 = r2.dim.h / 2
+        var p1 = [r2.pos.x - w2, r2.pos.y - h2]
+        var p2 = [r2.pos.x - w2, r2.pos.y + h2]
+        var p3 = [r2.pos.x + w2, r2.pos.y + h2]
+        var p4 = [r2.pos.x + w2, r2.pos.y - h2]
     }
 }
 

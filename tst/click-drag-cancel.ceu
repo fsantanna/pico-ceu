@@ -3,18 +3,18 @@
 pico-state-set-title("pico-Ceu: Click, Drag, or Cancel")
 
 spawn {
-    var rect :Rect = [10,10, 5,5]
+    var rect :Rect = [[10,10],[5,5]]
     spawn {
         every :Pico.Draw {
-            pico-state-set-color-clear(0,0,0,255)
+            pico-state-set-color-clear([0,0,0,255])
             pico-output-draw-rect(rect)
         }
     }
     while true {
         await :Pico.Mouse.Button.Dn, pico-point-vs-rect?(evt.pos,rect)
         println("> clicking...")
-        var orig :Rect = copy(rect)
-        var click :XY = copy(evt.pos)
+        var orig  :Rect = copy(rect)
+        var click :XY   = copy(evt.pos)
         par-or {
             await :Pico.Key.Dn, (evt.key == :Key-Escape)
             set rect = copy(orig)
@@ -24,8 +24,8 @@ spawn {
             println("> dragging...")
             awaiting :Pico.Mouse.Button.Up {
                 while true {
-                    set rect.x = orig.x + (evt.pos.x - click.x)
-                    set rect.y = orig.y + (evt.pos.y - click.y)
+                    set rect.pos.x = orig.pos.x + (evt.pos.x - click.x)
+                    set rect.pos.y = orig.pos.y + (evt.pos.y - click.y)
                     await :Pico.Mouse.Motion
                 }
             }

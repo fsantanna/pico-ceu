@@ -2,9 +2,9 @@
 
 pico-state-set-title("pico-Ceu: Parallel Across")
 
-var f = task (pos :XY,vel:XY) {
+var f = coro (pos:XY, vel:XY) {
     while (true) {
-        pico-output-draw-pixel(pos.x,pos.y)
+        pico-output-draw-pixel(pos)
         yield ()
         set pos.x = pos.x + vel.x
         set pos.y = pos.y + vel.y

@@ -4,15 +4,14 @@ pico-state-set-title("pico-Ceu: Mouse")
 
 while true {
     var e :Pico.Mouse.Button.Dn = pico-input-event(:Pico.Mouse.Button.Dn)
-    println(e)
     ifs e.but {
         == :Mouse-Button-Left -> {
-            pico-state-set-color-draw(255,255,255,255)
-            pico-output-draw-pixel(e.pos.x,e.pos.y)
+            pico-state-set-color-draw([255,255,255,255])
+            pico-output-draw-pixel(e.pos)
         }
         == :Mouse-Button-Right -> {
-            pico-state-set-color-draw(0,0,0,255)
-            pico-output-draw-pixel(e.pos.x,e.pos.y)
+            pico-state-set-color-draw([0,0,0,255])
+            pico-output-draw-pixel(e.pos)
         }
     }
 }

@@ -2,21 +2,20 @@
 
 pico-state-set-title("pico-Ceu: Moving Around")
 
-var x = 0
-var y = 0
+var pos:XY = [0,0]
 
 while true {
-    pico-state-set-color-draw(255,255,255,255)
-    pico-output-draw-pixel(x,y)
+    pico-state-set-color-draw([255,255,255,255])
+    pico-output-draw-pixel(pos)
 
     var e :Pico.Key.Dn = pico-input-event(:Pico.Key.Dn)
-    pico-state-set-color-draw(0,0,0,255)
-    pico-output-draw-pixel(x,y)
+    pico-state-set-color-draw([0,0,0,255])
+    pico-output-draw-pixel(pos)
 
     ifs e.key {
-        is :Key-Left  -> set x = x - 1
-        is :Key-Right -> set x = x + 1
-        is :Key-Down  -> set y = y - 1
-        is :Key-Up    -> set y = y + 1
+        is :Key-Left  -> set pos.x = pos.x - 1
+        is :Key-Right -> set pos.x = pos.x + 1
+        is :Key-Down  -> set pos.y = pos.y - 1
+        is :Key-Up    -> set pos.y = pos.y + 1
     }
 }

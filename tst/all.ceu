@@ -8,35 +8,35 @@ var x = pico-state-get-size()
 println(x)
 
 ;; CLEAR
-pico-state-set-color-clear(255,255,255,255)
+pico-state-set-color-clear([255,255,255,255])
 pico-output-clear()
 
 pico-input-delay(2000)
 
 ;; DRAW-IMAGE
 pico-state-set-anchor(:HAnchor-Center, :VAnchor-Middle)
-pico-output-draw-image(0,0, "open.png")
+pico-output-draw-image([0,0], "open.png")
 
 pico-input-delay(2000)
 
 ;; CROP-IMAGE
 pico-output-clear()
-pico-state-set-image-crop(0,0,24,24)
-pico-state-set-size-image(24,24)
-pico-output-draw-image(0,0, "open.png")
+pico-state-set-image-crop([[0,0],[24,24]])
+pico-state-set-size-image([24,24])
+pico-output-draw-image([0,0], "open.png")
 
 pico-input-delay(2000)
 
 ;; DRAW-PIXEL
-pico-state-set-color-clear(0,0,0,255)
-pico-state-set-color-draw(255,255,255,255)
+pico-state-set-color-clear([0,0,0,255])
+pico-state-set-color-draw([255,255,255,255])
 pico-output-clear()
-pico-output-draw-pixel(0,0)
+pico-output-draw-pixel([0,0])
 
 pico-input-delay(2000)
 
 ;; DRAW-TEXT
-pico-output-draw-text(0,5, "Hello!")
+pico-output-draw-text([0,5], "Hello!")
 
 pico-input-delay(2000)
 
@@ -47,7 +47,7 @@ pico-output-clear()
 pico-input-delay(2000)
 
 ;; WRITE
-pico-state-set-cursor(-25,25)
+pico-state-set-cursor([-25,25])
 pico-output-write("1 ")
 pico-output-write("2 ")
 pico-output-writeln("3")
@@ -64,7 +64,7 @@ pico-input-delay(2000)
 
 ;; MOUSE
 var e :Pico.Mouse.Button = pico-input-event(:Pico.Mouse.Button.Dn)
-pico-output-draw-pixel(e.pos.x,e.pos.y)
+pico-output-draw-pixel([e.pos.x,e.pos.y])
 
 pico-input-delay(2000)
 
@@ -78,72 +78,72 @@ pico-output-draw-line([-25, 25],[25,-25])
 
 ;; DRAW-RECT
 pico-output-draw-line([-25, 25],[25,-25])
-pico-output-draw-rect([0,0,21,21])
+pico-output-draw-rect([[0,0],[21,21]])
 
 ;; SET-ANCHOR
 pico-state-set-anchor(:HAnchor-Right, :VAnchor-Top)
-pico-output-draw-rect([25,25,5,5])
+pico-output-draw-rect([[25,25],[5,5]])
 
 pico-input-delay(2000)
 
 ;; SET-ZOOM
 
 pico-output-clear()
-pico-state-set-size-pixel(10,10)
-pico-output-draw-pixel(0,0)
+pico-state-set-size-pixel([10,10])
+pico-output-draw-pixel([0,0])
 pico-input-delay(500)
 
 pico-output-clear()
-pico-state-set-size-pixel(17,17)
-pico-output-draw-pixel(0,0)
+pico-state-set-size-pixel([17,17])
+pico-output-draw-pixel([0,0])
 pico-input-delay(500)
 
 pico-output-clear()
-pico-state-set-size-pixel(30,30)
-pico-output-draw-pixel(0,0)
+pico-state-set-size-pixel([30,30])
+pico-output-draw-pixel([0,0])
 pico-input-delay(500)
 
 pico-output-clear()
-pico-state-set-size-pixel(17,17)
-pico-output-draw-pixel(0,0)
+pico-state-set-size-pixel([17,17])
+pico-output-draw-pixel([0,0])
 pico-input-delay(500)
 
 pico-output-clear()
-pico-state-set-size-pixel(10,10)
-pico-output-draw-pixel(0,0)
+pico-state-set-size-pixel([10,10])
+pico-output-draw-pixel([0,0])
 pico-input-delay(500)
 
 ;; SET-PAN
 
 pico-output-clear()
-pico-state-set-pan(0,0)
-pico-output-draw-pixel(0,0)
+pico-state-set-pan([0,0])
+pico-output-draw-pixel([0,0])
 pico-input-delay(500)
 
 pico-output-clear()
-pico-state-set-pan(5,5)
-pico-output-draw-pixel(0,0)
+pico-state-set-pan([5,5])
+pico-output-draw-pixel([0,0])
 pico-input-delay(500)
 
 pico-output-clear()
-pico-state-set-pan(10,10)
-pico-output-draw-pixel(0,0)
+pico-state-set-pan([10,10])
+pico-output-draw-pixel([0,0])
 pico-input-delay(500)
 
 pico-output-clear()
-pico-state-set-pan(5,5)
-pico-output-draw-pixel(0,0)
+pico-state-set-pan([5,5])
+pico-output-draw-pixel([0,0])
 pico-input-delay(500)
 
 pico-output-clear()
-pico-state-set-pan(0,0)
-pico-output-draw-pixel(0,0)
+pico-state-set-pan([0,0])
+pico-output-draw-pixel([0,0])
 pico-input-delay(500)
 
 pico-input-delay(2000)
 
-pico-state-set-size(110,110)
-pico-output-draw-pixel(0,0)
+pico-state-set-size([110,110])
+pico-output-draw-pixel([0,0])
 pico-output-present()
 
 pico-input-delay(2000)
