@@ -52,11 +52,11 @@ enum {
 
 ;; INPUT
 
-var pico-input-delay = func (ms) {
+func pico-input-delay (ms) {
     `pico_input_delay($ms.Number);`
 }
 
-var pico-event-sdl-ceu = func (sdl, type) {
+func pico-event-sdl-ceu (sdl, type) {
     var tp = :nil
     var t0 = :nil
     var t1 = :nil
@@ -96,7 +96,7 @@ var pico-event-sdl-ceu = func (sdl, type) {
     }
 }
 
-var pico-input-event = func (tag) {
+func pico-input-event (tag) {
     var sdl = `:pointer NULL`
     ```
         int tag_to_type (int tag) {
@@ -128,7 +128,7 @@ var pico-input-event = func (tag) {
     pico-event-sdl-ceu(sdl, type)
 }
 
-var pico-input-event-timeout = func (type, time) {
+func pico-input-event-timeout (type, time) {
     var sdl = `:pointer NULL`
     var ok = false
     ```
@@ -141,55 +141,55 @@ var pico-input-event-timeout = func (type, time) {
 
 ;; OUTPUT
 
-var pico-output-clear = func () {
+func pico-output-clear () {
     `pico_output_clear();`
 }
 
-var pico-output-draw-image = func (pos:XY,img,cache) {
-    var x = pos.x
-    var y = pos.y
-    set cache = cache or (cache == nil)
-    `_pico_output_draw_image_cache((SDL_Point){$x.Number,$y.Number}, (char*)$img.Dyn->Ncast.Vector.buf, $cache.Bool);`
+func pico-output-draw-image (pos:XY,img,cache) {
+    val x = pos.x
+    val y = pos.y
+    val xcache = cache or (cache == nil)
+    `_pico_output_draw_image_cache((SDL_Point){$x.Number,$y.Number}, (char*)$img.Dyn->Ncast.Vector.buf, $xcache.Bool);`
 }
 
-var pico-output-draw-line = func (p1:XY, p2:XY) {
-    var x1 = p1.x
-    var y1 = p1.y
-    var x2 = p2.x
-    var y2 = p2.y
+func pico-output-draw-line (p1:XY, p2:XY) {
+    val x1 = p1.x
+    val y1 = p1.y
+    val x2 = p2.x
+    val y2 = p2.y
     `pico_output_draw_line((SDL_Point){$x1.Number,$y1.Number},
                            (SDL_Point){$x2.Number,$y2.Number});`
 }
 
-var pico-output-draw-rect = func (r:Rect) {
-    var x = r.pos.x
-    var y = r.pos.y
-    var w = r.dim.w
-    var h = r.dim.h
+func pico-output-draw-rect (r:Rect) {
+    val x = r.pos.x
+    val y = r.pos.y
+    val w = r.dim.w
+    val h = r.dim.h
     `pico_output_draw_rect((SDL_Rect){$x.Number,$y.Number,$w.Number,$h.Number});`
 }
 
-var pico-output-draw-pixel = func (pos:XY) {
-    var x = pos.x
-    var y = pos.y
+func pico-output-draw-pixel (pos:XY) {
+    val x = pos.x
+    val y = pos.y
     `pico_output_draw_pixel((SDL_Point){$x.Number,$y.Number});`
 }
 
-var pico-output-draw-text = func (pos:XY, txt) {
-    var x = pos.x
-    var y = pos.y
+func pico-output-draw-text (pos:XY, txt) {
+    val x = pos.x
+    val y = pos.y
     `pico_output_draw_text((SDL_Point){$x.Number,$y.Number}, $txt.Dyn->Ncast.Vector.buf);`
 }
 
-var pico-output-present = func () {
+func pico-output-present () {
     `pico_output_present();`
 }
 
-var pico-output-write = func (txt) {
+func pico-output-write (txt) {
     `pico_output_write($txt.Dyn->Ncast.Vector.buf);`
 }
 
-var pico-output-writeln = func (txt) {
+func pico-output-writeln (txt) {
     `pico_output_writeln($txt.Dyn->Ncast.Vector.buf);`
 }
 
@@ -197,7 +197,7 @@ var pico-output-writeln = func (txt) {
 
 ;; GET
 
-var pico-state-get-size = func () {
+func pico-state-get-size () {
     var w = 0
     var h = 0
     ```
@@ -209,7 +209,7 @@ var pico-state-get-size = func () {
     [w,h]
 }
 
-var pico-state-get-size-image = func (img) {
+func pico-state-get-size-image (img) {
     var w = 0
     var h = 0
     ```
@@ -223,81 +223,81 @@ var pico-state-get-size-image = func (img) {
 
 ;; SET
 
-var pico-state-set-anchor = func (h,v) {
+func pico-state-set-anchor (h,v) {
     `pico_state_set_anchor($h.Tag,$v.Tag);`
 }
 
-var pico-state-set-auto = func (on) {
+func pico-state-set-auto (on) {
     `pico_state_set_auto($on.Bool);`
 }
 
-var pico-state-set-color-clear = func (clr:RGBA) {
-    var r = clr.r
-    var g = clr.g
-    var b = clr.b
-    var a = clr.a
+func pico-state-set-color-clear (clr:RGBA) {
+    val r = clr.r
+    val g = clr.g
+    val b = clr.b
+    val a = clr.a
     `pico_state_set_color_clear((SDL_Color){$r.Number,$g.Number,$b.Number,$a.Number});`
 }
 
-var pico-state-set-color-draw = func (clr:RGBA) {
-    var r = clr.r
-    var g = clr.g
-    var b = clr.b
-    var a = clr.a
+func pico-state-set-color-draw (clr:RGBA) {
+    val r = clr.r
+    val g = clr.g
+    val b = clr.b
+    val a = clr.a
     `pico_state_set_color_draw((SDL_Color){$r.Number,$g.Number,$b.Number,$a.Number});`
 }
 
-var pico-state-set-cursor = func (pos:XY) {
-    var x = pos.x
-    var y = pos.y
+func pico-state-set-cursor (pos:XY) {
+    val x = pos.x
+    val y = pos.y
     `pico_state_set_cursor((SDL_Point){$x.Number,$y.Number});`
 }
 
-var pico-state-set-font = func (file, h) {
+func pico-state-set-font (file, h) {
     `pico_state_set_font($file.Dyn->Ncast.Vector.buf,$h.Number);`
 }
 
-var pico-state-set-grid = func (on) {
+func pico-state-set-grid (on) {
     `pico_state_set_grid($on.Bool);`
 }
 
-var pico-state-set-image-crop = func (r:Rect) {
-    var x = r.pos.x
-    var y = r.pos.y
-    var w = r.dim.w
-    var h = r.dim.h
-    if x == nil {
+func pico-state-set-image-crop (r:Rect) {
+    if r == nil {
         `pico_state_set_image_crop((SDL_Rect){0,0,0,0});`
     } else {
+        val x = r.pos.x
+        val y = r.pos.y
+        val w = r.dim.w
+        val h = r.dim.h
         `pico_state_set_image_crop((SDL_Rect){$x.Number,$y.Number,$w.Number,$h.Number});`
     }
 }
 
-var pico-state-set-pan = func (pos:XY) {
-    var x = pos.x
-    var y = pos.y
+func pico-state-set-pan (pos:XY) {
+    val x = pos.x
+    val y = pos.y
     `pico_state_set_pan((SDL_Point){$x.Number,$y.Number});`
 }
 
-var pico-state-set-size = func (dim:WH) {
-    var w = dim.w
-    var h = dim.h
+func pico-state-set-size (dim:WH) {
+    val w = dim.w
+    val h = dim.h
     `pico_state_set_size((SDL_Point){$w.Number,$h.Number});`
 }
 
-var pico-state-set-size-image = func (dim:WH) {
-    var w = dim.w
-    var h = dim.h
+func pico-state-set-size-image (dim:WH) {
+    val w = dim.w
+    val h = dim.h
     `pico_state_set_size_image((SDL_Point){$w.Number,$h.Number});`
 }
 
-var pico-state-set-size-pixel = func (dim:WH) {
-    var w = dim.w
-    var h = dim.h
+func pico-state-set-size-pixel (dim:WH) {
+    val w = dim.w
+    val h = dim.h
     `pico_state_set_size_pixel((SDL_Point){$w.Number,$h.Number});`
 }
 
-var pico-state-set-title = func (title) {
+func pico-state-set-title (title) {
     `pico_state_set_title($title.Dyn->Ncast.Vector.buf);`
 }
 
@@ -319,28 +319,72 @@ func pico-rect-vs-rect? (r1:Rect, r2:Rect) {
         pico-point-vs-rect?(p2,r1) -> true
         pico-point-vs-rect?(p3,r1) -> true
         pico-point-vs-rect?(p4,r1) -> true
-        else                      -> false
+        else                       -> false
     } where {
-        var w2 = r2.dim.w / 2
-        var h2 = r2.dim.h / 2
-        var p1 = [r2.pos.x - w2, r2.pos.y - h2]
-        var p2 = [r2.pos.x - w2, r2.pos.y + h2]
-        var p3 = [r2.pos.x + w2, r2.pos.y + h2]
-        var p4 = [r2.pos.x + w2, r2.pos.y - h2]
+        val w2 = r2.dim.w / 2
+        val h2 = r2.dim.h / 2
+        val p1 = [r2.pos.x - w2, r2.pos.y - h2]
+        val p2 = [r2.pos.x - w2, r2.pos.y + h2]
+        val p3 = [r2.pos.x + w2, r2.pos.y + h2]
+        val p4 = [r2.pos.x + w2, r2.pos.y - h2]
     }
+}
+
+func pico-to-tracks (...) {
+    val ret = #[]
+    while in :tuple ..., (_,v) {
+        ifs v {
+            is :x-task -> {
+                set ret[+] = track(v)
+            }
+            is :x-tasks -> {
+                while in :tasks v, i {
+                    set ret[+] = i
+                }
+            }
+        }
+    }
+    move(ret)
+}
+
+func pico-collisions (f-to-rect, trks) {
+    val ret = #[]
+    while in :vector trks, (i,t1) {
+        while in :vector trks, (j,t2) {
+            if (detrack(t1) /= detrack(t2)) {
+                val r1 = f-to-rect(detrack(t1).pub)
+                val r2 = f-to-rect(detrack(t2).pub)
+                if pico-rect-vs-rect?(r1, r2) {
+                    set ret[+] = [detrack(t1), t2]
+                }
+            }
+;;;
+            do :safe {
+                val t1' = detrack(t1)
+                val t2' = detrack(t2)
+                if t1' /= t2' {
+                    val r1 = f-to-rect(t1'.pub)
+                    val r2 = f-to-rect(t2'.pub)
+                    if pico-rect-vs-rect?(r1, r2) {
+                        set ret[+] = [t1, t2]
+;; t1', t2'
+                    }
+                }
+            }
+;;;
+        }
+    }
+    move(ret)
 }
 
 ;; LOOP
 
-var pico-loop = func () {
+func pico-loop () {
     pico-state-set-auto(false)
-    var old
-    set old = `:number SDL_GetTicks()`
+    var old = `:number SDL_GetTicks()`
     while true { {:break}
-        var now
-        set now = `:number SDL_GetTicks()`
-        var togo
-        set togo = 40 - (now - old)
+        val now  = `:number SDL_GetTicks()`
+        val togo = 40 - (now - old)
         if togo <= 0 {
             broadcast in :global, :Pico.Frame [40]
             broadcast in :global, :frame [40]
@@ -349,7 +393,7 @@ var pico-loop = func () {
             pico-output-present()
             set old = togo + now
         } else {
-            var tmp = pico-input-event-timeout(`:tag SDL_ANY`,togo)
+            val tmp = pico-input-event-timeout(`:tag SDL_ANY`,togo)
             if tmp {
                 if tmp is :Pico.Quit {
                     throw(:break)

@@ -2,11 +2,9 @@
 
 pico-state-set-title("pico-Ceu: Across")
 
-var i = -25
-while i <= 25 {
+while in [-25 -> 25], i {
     pico-output-draw-pixel([i,i])
     pico-input-delay(100)
-    set i = i + 1
 }
 
 pico-input-event(:Pico.Any)

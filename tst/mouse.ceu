@@ -3,7 +3,7 @@
 pico-state-set-title("pico-Ceu: Mouse")
 
 while true {
-    var e :Pico.Mouse.Button.Dn = pico-input-event(:Pico.Mouse.Button.Dn)
+    val e :Pico.Mouse.Button.Dn = pico-input-event(:Pico.Mouse.Button.Dn)
     ifs e.but {
         == :Mouse-Button-Left -> {
             pico-state-set-color-draw([255,255,255,255])

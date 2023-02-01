@@ -4,7 +4,7 @@
 pico-state-set-title("pico-Ceu")
 
 ;; GET-SIZE
-var x = pico-state-get-size()
+val x = pico-state-get-size()
 println(x)
 
 ;; CLEAR
@@ -63,7 +63,7 @@ pico-output-writeln("pico")
 pico-input-delay(2000)
 
 ;; MOUSE
-var e :Pico.Mouse.Button = pico-input-event(:Pico.Mouse.Button.Dn)
+val e :Pico.Mouse.Button = pico-input-event(:Pico.Mouse.Button.Dn)
 pico-output-draw-pixel([e.pos.x,e.pos.y])
 
 pico-input-delay(2000)

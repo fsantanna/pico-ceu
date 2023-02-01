@@ -2,7 +2,7 @@
 
 pico-state-set-title("pico-Ceu: Parallel Across")
 
-var f = coro (pos:XY, vel:XY) {
+coro F (pos:XY, vel:XY) {
     while (true) {
         pico-output-draw-pixel(pos)
         yield ()
@@ -11,8 +11,8 @@ var f = coro (pos:XY, vel:XY) {
     }
 }
 
-var x = spawn f ([-25,25],[1,-1])
-var y = spawn f ([-25,-25],[1,1])
+val x = spawn F ([-25,25],[1,-1])
+val y = spawn F ([-25,-25],[1,1])
 resume x()
 resume y()
 

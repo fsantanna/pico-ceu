@@ -2,13 +2,13 @@
 
 pico-state-set-title("pico-Ceu: Moving Around")
 
-var pos:XY = [0,0]
+val pos:XY = [0,0]
 
 while true {
     pico-state-set-color-draw([255,255,255,255])
     pico-output-draw-pixel(pos)
 
-    var e :Pico.Key.Dn = pico-input-event(:Pico.Key.Dn)
+    val e :Pico.Key.Dn = pico-input-event(:Pico.Key.Dn)
     pico-state-set-color-draw([0,0,0,255])
     pico-output-draw-pixel(pos)
 
