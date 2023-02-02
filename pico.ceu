@@ -330,48 +330,17 @@ func pico-rect-vs-rect? (r1:Rect, r2:Rect) {
     }
 }
 
-func pico-to-tracks (...) {
-    val ret = #[]
-    while in :tuple ..., (_,v) {
-        ifs v {
-            is :x-task -> {
-                set ret[+] = track(v)
-            }
-            is :x-tasks -> {
-                while in :tasks v, i {
-                    set ret[+] = i
-                }
-            }
-        }
-    }
-    move(ret)
-}
-
-func pico-collisions (f-to-rect, trks) {
+func pico-collisions (f-cmp, trks) {
     val ret = #[]
     while in :vector trks, (i,t1) {
         while in :vector trks, (j,t2) {
-            if (detrack(t1) /= detrack(t2)) {
-                val r1 = f-to-rect(detrack(t1).pub)
-                val r2 = f-to-rect(detrack(t2).pub)
-                if pico-rect-vs-rect?(r1, r2) {
-                    set ret[+] = [detrack(t1), t2]
+            val t1' = detrack(t1)
+            val t2' = detrack(t2)
+            if t1' /= t2' {
+                if f-cmp(t1'.pub,t2'.pub) {
+                    set ret[+] = [t1, t2]
                 }
             }
-;;;
-            do :safe {
-                val t1' = detrack(t1)
-                val t2' = detrack(t2)
-                if t1' /= t2' {
-                    val r1 = f-to-rect(t1'.pub)
-                    val r2 = f-to-rect(t2'.pub)
-                    if pico-rect-vs-rect?(r1, r2) {
-                        set ret[+] = [t1, t2]
-;; t1', t2'
-                    }
-                }
-            }
-;;;
         }
     }
     move(ret)
