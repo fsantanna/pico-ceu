@@ -169,6 +169,14 @@ func pico-output-draw-rect (r:Rect) {
     `pico_output_draw_rect((SDL_Rect){$x.Number,$y.Number,$w.Number,$h.Number});`
 }
 
+func pico-output-draw-oval (r:Rect) {
+    val x = r.pos.x
+    val y = r.pos.y
+    val w = r.dim.w
+    val h = r.dim.h
+    `pico_output_draw_oval((SDL_Rect){$x.Number,$y.Number,$w.Number,$h.Number});`
+}
+
 func pico-output-draw-pixel (pos:XY) {
     val x = pos.x
     val y = pos.y
@@ -183,6 +191,10 @@ func pico-output-draw-text (pos:XY, txt) {
 
 func pico-output-present () {
     `pico_output_present();`
+}
+
+func pico-output-sound (path) {
+    `pico_output_sound($path.Dyn->Ncast.Vector.buf);`
 }
 
 func pico-output-write (txt) {

@@ -3,6 +3,9 @@
 ;; TITLE
 pico-state-set-title("pico-Ceu")
 
+;; SOUND
+pico-output-sound("start.wav")
+
 ;; GET-SIZE
 val x = pico-state-get-size()
 println(x)
@@ -79,6 +82,9 @@ pico-output-draw-line([-25, 25],[25,-25])
 ;; DRAW-RECT
 pico-output-draw-line([-25, 25],[25,-25])
 pico-output-draw-rect([[0,0],[21,21]])
+
+;; DRAW-OVAL
+pico-output-draw-oval([[17,0],[6,6]])
 
 ;; SET-ANCHOR
 pico-state-set-anchor(:HAnchor-Right, :VAnchor-Top)
