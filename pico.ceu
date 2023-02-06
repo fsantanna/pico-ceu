@@ -345,16 +345,15 @@ func pico-rect-vs-rect? (r1:Rect, r2:Rect) {
     }
 }
 
-func pico-collisions (f-cmp, trks) {
+func pico-collisions (trks, f-cmp) {
     val ret = #[]
-    loop in iter(trks), i {
-        loop in iter(trks), j {
-            val t1' = detrack(i.1)
-            val t2' = detrack(j.1)
-            if t1' /= t2' {
-                if f-cmp(t1'.pub,t2'.pub) {
-                    set ret[+] = [i.1, j.1]
-                }
+    loop in [0 -> #trks), i {
+        loop in [i+1 -> #trks), j {
+            val r1 = trks[i]
+            val r2 = trks[j]
+            ;;val t2 = detrack(r2)
+            if f-cmp(detrack(r1).pub,detrack(r2).pub) {
+                set ret[+] = [r1, r2]
             }
         }
     }
