@@ -2,7 +2,7 @@
 
 pico-state-set-title("pico-Ceu: Mouse")
 
-while true {
+loop {
     val e :Pico.Mouse.Button.Dn = pico-input-event(:Pico.Mouse.Button.Dn)
     ifs e.but {
         == :Mouse-Button-Left -> {

@@ -47,6 +47,9 @@ enum {
     :Key-Right = `SDLK_RIGHT`,
     :Key-Left, :Key-Down, :Key-Up,
 
+    :Key-Shift-Right = `SDLK_RSHIFT`,
+    :Key-Shift-Left  = `SDLK_LSHIFT`,
+
 	:Key-Escape = `SDLK_ESCAPE`,
 }
 
@@ -344,13 +347,13 @@ func pico-rect-vs-rect? (r1:Rect, r2:Rect) {
 
 func pico-collisions (f-cmp, trks) {
     val ret = #[]
-    while in :vector trks, (i,t1) {
-        while in :vector trks, (j,t2) {
-            val t1' = detrack(t1)
-            val t2' = detrack(t2)
+    loop in iter(trks), i {
+        loop in iter(trks), j {
+            val t1' = detrack(i.1)
+            val t2' = detrack(j.1)
             if t1' /= t2' {
                 if f-cmp(t1'.pub,t2'.pub) {
-                    set ret[+] = [t1, t2]
+                    set ret[+] = [i.1, j.1]
                 }
             }
         }
@@ -363,7 +366,7 @@ func pico-collisions (f-cmp, trks) {
 func pico-loop () {
     pico-state-set-auto(false)
     var old = `:number SDL_GetTicks()`
-    while true { {:break}
+    loop { {:break}
         val now  = `:number SDL_GetTicks()`
         val togo = 40 - (now - old)
         if togo <= 0 {

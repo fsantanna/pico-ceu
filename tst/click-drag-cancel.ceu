@@ -10,7 +10,7 @@ spawn {
             pico-output-draw-rect(rect)
         }
     }
-    while true {
+    loop {
         await :Pico.Mouse.Button.Dn, pico-point-vs-rect?(evt.pos,rect)
         println("> clicking...")
         val orig  :Rect = copy(rect)
@@ -23,7 +23,7 @@ spawn {
             await :Pico.Mouse.Motion
             println("> dragging...")
             awaiting :Pico.Mouse.Button.Up {
-                while true {
+                loop {
                     set rect.pos.x = orig.pos.x + (evt.pos.x - click.x)
                     set rect.pos.y = orig.pos.y + (evt.pos.y - click.y)
                     await :Pico.Mouse.Motion

@@ -2,7 +2,7 @@
 
 pico-state-set-title("pico-Ceu: Across")
 
-while in [-25 -> 25], i {
+loop in [-25 -> 25], i {
     pico-output-draw-pixel([i,i])
     pico-input-delay(100)
 }

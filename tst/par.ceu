@@ -3,7 +3,7 @@
 pico-state-set-title("pico-Ceu: Parallel Across")
 
 coro F (pos:XY, vel:XY) {
-    while (true) {
+    loop {
         pico-output-draw-pixel(pos)
         yield ()
         set pos.x = pos.x + vel.x
@@ -16,7 +16,7 @@ val y = spawn F ([-25,-25],[1,1])
 resume x()
 resume y()
 
-while (true) {
+loop {
     pico-input-delay(100)
     resume x()
     resume y()
