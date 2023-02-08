@@ -1,4 +1,4 @@
-^["pico.ceu"]
+^["@/pico.ceu"]
 
 pico-state-set-title("pico-Ceu: Moving Around")
 

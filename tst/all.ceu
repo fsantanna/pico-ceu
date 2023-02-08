@@ -1,4 +1,4 @@
-^["pico.ceu"]
+^["@/pico.ceu"]
 
 ;; TITLE
 pico-state-set-title("pico-Ceu")
@@ -39,6 +39,7 @@ pico-output-draw-pixel([0,0])
 pico-input-delay(2000)
 
 ;; DRAW-TEXT
+pico-state-set-font("tiny.ttf", 10)
 pico-output-draw-text([0,5], "Hello!")
 
 pico-input-delay(2000)
