@@ -1,4 +1,4 @@
-^["@/pico.ceu"]
+^["@/pico/pico.ceu"]
 
 ;; TITLE
 pico-state-set-title("pico-Ceu")
