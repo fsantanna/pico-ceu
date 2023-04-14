@@ -13,9 +13,9 @@ loop {
     pico-output-draw-pixel(pos)
 
     ifs e.key {
-        is :Key-Left  -> set pos.x = pos.x - 1
-        is :Key-Right -> set pos.x = pos.x + 1
-        is :Key-Down  -> set pos.y = pos.y - 1
-        is :Key-Up    -> set pos.y = pos.y + 1
+        is? :Key-Left  -> set pos.x = pos.x - 1
+        is? :Key-Right -> set pos.x = pos.x + 1
+        is? :Key-Down  -> set pos.y = pos.y - 1
+        is? :Key-Up    -> set pos.y = pos.y + 1
     }
 }

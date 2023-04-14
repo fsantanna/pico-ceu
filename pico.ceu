@@ -89,12 +89,12 @@ func pico-event-sdl-ceu (sdl, type) {
         }
     ```
     ifs tp {
-        is `:tag SDL_QUIT`            -> :Pico.Quit []
-        is `:tag SDL_MOUSEMOTION`     -> :Pico.Mouse.Motion [[n0,n1]]
-        is `:tag SDL_MOUSEBUTTONDOWN` -> :Pico.Mouse.Button.Dn [[n0,n1],t2]
-        is `:tag SDL_MOUSEBUTTONUP`   -> :Pico.Mouse.Button.Up [[n0,n1],t2]
-        is `:tag SDL_KEYDOWN`         -> :Pico.Key.Dn [t1]
-        is `:tag SDL_KEYUP`           -> :Pico.Key.Up [t1]
+        is? `:tag SDL_QUIT`            -> :Pico.Quit []
+        is? `:tag SDL_MOUSEMOTION`     -> :Pico.Mouse.Motion [[n0,n1]]
+        is? `:tag SDL_MOUSEBUTTONDOWN` -> :Pico.Mouse.Button.Dn [[n0,n1],t2]
+        is? `:tag SDL_MOUSEBUTTONUP`   -> :Pico.Mouse.Button.Up [[n0,n1],t2]
+        is? `:tag SDL_KEYDOWN`         -> :Pico.Key.Dn [t1]
+        is? `:tag SDL_KEYUP`           -> :Pico.Key.Up [t1]
         else -> throw(:error)
     }
 }
@@ -365,24 +365,24 @@ func pico-collisions (trks, f-cmp) {
 func pico-loop () {
     pico-state-set-auto(false)
     var old = `:number SDL_GetTicks()`
-    loop { {:break}
+    loop {
         val now  = `:number SDL_GetTicks()`
         val togo = 40 - (now - old)
-        if togo <= 0 {
-            broadcast in :global, :Pico.Frame [40]
-            broadcast in :global, :frame [40]
-            pico-output-clear()
-            broadcast in :global, :Pico.Draw []
-            pico-output-present()
-            set old = togo + now
-        } else {
-            val tmp = pico-input-event-timeout(`:tag SDL_ANY`,togo)
-            if tmp {
-                if tmp is :Pico.Quit {
-                    throw(:break)
-                }
-                broadcast in :global, tmp
+        val quit? = ifs {
+            togo <= 0 {
+                broadcast in :global, :Pico.Frame [40]
+                broadcast in :global, :frame [40]
+                pico-output-clear()
+                broadcast in :global, :Pico.Draw []
+                pico-output-present()
+                set old = togo + now
+                false
             }
+            e = pico-input-event-timeout(`:tag SDL_ANY`,togo) {
+                broadcast in :global, e
+                e is? :Pico.Quit
+            }
+            else -> false
         }
-    }
+    } until quit?
 }
