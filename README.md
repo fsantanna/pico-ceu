@@ -1,4 +1,4 @@
 ```
 $ cd tst/
-$ ceu --lib=pico tst/across.ceu
+$ ceu --lib=pico all.ceu
 ```
