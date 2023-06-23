@@ -3,6 +3,8 @@ defer {
     `pico_init(0);`
 }
 
+var PICO-MPF = 40
+
 ;; DATA / ENUM
 
 data :RGBA = [r,g,b,a]
@@ -212,6 +214,10 @@ func pico-output-writeln (txt) {
 
 ;; GET
 
+func pico-state-get-fps () {
+    1000 / PICO-MPF
+}
+
 func pico-state-get-size () {
     var w = 0
     var h = 0
@@ -237,6 +243,10 @@ func pico-state-get-size-image (img) {
 }
 
 ;; SET
+
+func pico-state-set-fps (fps) {
+    set PICO-MPF = 1000 / fps
+}
 
 func pico-state-set-anchor (h,v) {
     `pico_state_set_anchor($h.Tag,$v.Tag);`
@@ -373,20 +383,17 @@ func pico-loop () {
     var old = `:number SDL_GetTicks()`
     loop {
         val now  = `:number SDL_GetTicks()`
-        val togo = 40 - (now - old)
-        ifs {
-            togo <= 0 {
-                broadcast in :global, :Pico.Frame [40]
-                broadcast in :global, :frame [40]
-                pico-output-clear()
-                broadcast in :global, :Pico.Draw []
-                pico-output-present()
-                set old = togo + now
-            }
-            e = pico-input-event-timeout(`:tag SDL_ANY`,togo) {
-                broadcast in :global, e
-                set pico-quit' = (e is? :Pico.Quit)
-            }
+        val togo = PICO-MPF - (now - old)
+        if togo <= 0 {
+            broadcast in :global, :Pico.Frame [PICO-MPF]
+            broadcast in :global, :frame [PICO-MPF]
+            pico-output-clear()
+            broadcast in :global, :Pico.Draw []
+            pico-output-present()
+            set old = togo + now
         }
+        val e = pico-input-event-timeout(`:tag SDL_ANY`, max(0,togo))
+        broadcast in :global, e
+        set pico-quit' = (e is? :Pico.Quit)
     } until pico-quit'
 }
