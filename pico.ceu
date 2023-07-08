@@ -91,13 +91,13 @@ func pico-event-sdl-ceu (sdl, type) {
         }
     ```
     ifs tp {
-        is? `:tag SDL_QUIT`            -> :Pico.Quit []
-        is? `:tag SDL_MOUSEMOTION`     -> :Pico.Mouse.Motion [[n0,n1]]
-        is? `:tag SDL_MOUSEBUTTONDOWN` -> :Pico.Mouse.Button.Dn [[n0,n1],t2]
-        is? `:tag SDL_MOUSEBUTTONUP`   -> :Pico.Mouse.Button.Up [[n0,n1],t2]
-        is? `:tag SDL_KEYDOWN`         -> :Pico.Key.Dn [t1]
-        is? `:tag SDL_KEYUP`           -> :Pico.Key.Up [t1]
-        else -> throw(:error)
+        is? `:tag SDL_QUIT`            => :Pico.Quit []
+        is? `:tag SDL_MOUSEMOTION`     => :Pico.Mouse.Motion [[n0,n1]]
+        is? `:tag SDL_MOUSEBUTTONDOWN` => :Pico.Mouse.Button.Dn [[n0,n1],t2]
+        is? `:tag SDL_MOUSEBUTTONUP`   => :Pico.Mouse.Button.Up [[n0,n1],t2]
+        is? `:tag SDL_KEYDOWN`         => :Pico.Key.Dn [t1]
+        is? `:tag SDL_KEYUP`           => :Pico.Key.Up [t1]
+        else => throw(:error)
     }
 }
 
@@ -330,21 +330,21 @@ func pico-state-set-title (title) {
 
 func pico-point-vs-rect? (pt:XY, r:Rect) {
     ifs {
-        pt.x < (r.pos.x-(r.dim.w/2)) -> false
-        pt.x > (r.pos.x+(r.dim.w/2)) -> false
-        pt.y < (r.pos.y-(r.dim.h/2)) -> false
-        pt.y > (r.pos.y+(r.dim.h/2)) -> false
-        else                         -> true
+        pt.x < (r.pos.x-(r.dim.w/2)) => false
+        pt.x > (r.pos.x+(r.dim.w/2)) => false
+        pt.y < (r.pos.y-(r.dim.h/2)) => false
+        pt.y > (r.pos.y+(r.dim.h/2)) => false
+        else                         => true
     }
 }
 
 func pico-rect-vs-rect? (r1:Rect, r2:Rect) {
     ifs {
-        pico-point-vs-rect?(p1,r1) -> true
-        pico-point-vs-rect?(p2,r1) -> true
-        pico-point-vs-rect?(p3,r1) -> true
-        pico-point-vs-rect?(p4,r1) -> true
-        else                       -> false
+        pico-point-vs-rect?(p1,r1) => true
+        pico-point-vs-rect?(p2,r1) => true
+        pico-point-vs-rect?(p3,r1) => true
+        pico-point-vs-rect?(p4,r1) => true
+        else                       => false
     } where {
         val w2 = r2.dim.w / 2
         val h2 = r2.dim.h / 2
@@ -357,8 +357,8 @@ func pico-rect-vs-rect? (r1:Rect, r2:Rect) {
 
 func pico-collisions (trks, f-cmp) {
     val ret = #[]
-    loop in [0 -> #trks), i {
-        loop in [i+1 -> #trks), j {
+    loop i in {0 => #trks{ {
+        loop j in {i+1 => #trks{ {
             val r1 = trks[i]
             val r2 = trks[j]
             ;;val t2 = detrack(r2)
