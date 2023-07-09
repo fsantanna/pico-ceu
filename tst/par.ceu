@@ -1,6 +1,6 @@
 ^["@/pico/pico.ceu"]
 
-pico-state-set-title("pico-Ceu: Parallel Across")
+pico-state-set-title <- "pico-Ceu: Parallel Across"
 
 coro F (pos:XY, vel:XY) {
     loop {

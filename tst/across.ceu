@@ -1,6 +1,6 @@
 ^["@/pico/pico.ceu"]
 
-pico-state-set-title("pico-Ceu: Across")
+pico-state-set-title <- "pico-Ceu: Across"
 
 loop i in {-25 => 25} {
     pico-output-draw-pixel([i,i])
