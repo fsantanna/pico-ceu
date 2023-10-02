@@ -4,40 +4,80 @@ pico-state-set-size([810,610])
 pico-state-set-title("pico-Ceu: Click, Drag, or Cancel")
 pico-state-set-font("tiny.ttf", 10)
 
-spawn {
+spawn task () {
     var text = " "
     var rect :Rect = [[0,0],[10,10]]
-    spawn {
-        every :Pico.Draw {
+    spawn task () {
+        xloop {
+            xloop { ;; AWAIT
+                xbreak if yield(nil) { as it =>
+                    is?(it, :Pico.Draw)
+                }
+            }
             pico-output-draw-rect(rect)
             pico-output-draw-text([0,-20], text)
         }
-    }
-    loop {
-        await :Pico.Mouse.Button.Dn, pico-point-vs-rect?(evt.pos,rect)
+    } ()
+    xloop {
+        val click :XY = xloop { ;; AWAIT
+            xbreak if yield(nil) { as it =>
+                is?(it, :Pico.Mouse.Button.Dn) && pico-point-vs-rect?(it.pos,rect) && copy(it.pos)
+            }
+        }
         set text = "... clicking ..."
         val orig  :Rect = copy(rect)
-        val click :XY   = copy(evt.pos)
-        par-or {
-            await :Pico.Key.Dn, (evt.key == :Key-Escape)
+
+        val t1 = spawn task () {
+            xloop { ;; AWAIT
+                xbreak if yield(nil) { as it =>
+                    is?(it, :Pico.Key.Dn) && (it.key == :Key-Escape)
+                }
+            }
             set rect = copy(orig)
             set text = "!!! CANCELLED !!!"
-        } with {
-            await :Pico.Mouse.Motion
+        } ()
+
+        val t2 = spawn task () {
+            val pos = xloop { ;; AWAIT
+                xbreak if yield(nil) { as it =>
+                    is?(it, :Pico.Mouse.Motion) && copy(it.pos)
+                }
+            }
             set text = "... dragging ..."
-            awaiting :Pico.Mouse.Button.Up {
-                loop {
-                    set rect.pos.x = orig.pos.x + (evt.pos.x - click.x)
-                    set rect.pos.y = orig.pos.y + (evt.pos.y - click.y)
-                    await :Pico.Mouse.Motion
+            spawn task () {
+                xloop {
+                    set rect.pos.x = orig.pos.x + (pos.x - click.x)
+                    set rect.pos.y = orig.pos.y + (pos.y - click.y)
+                    xloop { ;; AWAIT
+                        xbreak if yield(nil) { as it =>
+                            is?(it, :Pico.Mouse.Motion)
+                        }
+                    }
+                }
+            } ()
+            xloop { ;; AWAIT
+                xbreak if yield(nil) { as it =>
+                    is?(it, :Pico.Mouse.Button.Up)
                 }
             }
             set text = "!!! DRAGGED !!!"
-        } with {
-            await :Pico.Mouse.Button.Up
+        } ()
+
+        val t3 = spawn task () {
+            xloop { ;; AWAIT
+                xbreak if yield(nil) { as it =>
+                    is?(it, :Pico.Mouse.Button.Up)
+                }
+            }
             set text = "!!! CLICKED !!!"
+        } ()
+
+        xloop { ;; AWAIT
+            xbreak if yield(nil) { as it =>
+                (it==t1) || (it==t2) || (it==t3)
+            }
         }
     }
-}
+} ()
 
 pico-loop()
