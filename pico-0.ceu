@@ -88,7 +88,7 @@ val pico-event-sdl-ceu = func (sdl, type) {
                 break;
         }
     ```
-    if is? (tp, `:tag SDL_QUIT`) {
+    val e = if is? (tp, `:tag SDL_QUIT`) {
         tags([], :Pico.Quit, true)
     } else {
         if is? (tp, `:tag SDL_MOUSEMOTION`) {
@@ -106,6 +106,7 @@ val pico-event-sdl-ceu = func (sdl, type) {
                         if is? (tp, `:tag SDL_KEYUP`) {
                             tags([t1], :Pico.Key.Up, true)
                         } else {
+println("-=-=-=-=-");
                             throw(:error)
                         }
                     }
@@ -113,6 +114,8 @@ val pico-event-sdl-ceu = func (sdl, type) {
             }
         }
     }
+    println(:pico-event-sdl-ceu, e)
+    drop(e)
 }
 
 val pico-input-event = func (tag) {
@@ -144,7 +147,9 @@ val pico-input-event = func (tag) {
         pico_input_event(&sdl,type);
         $sdl.Pointer = &sdl;
     ```
-    pico-event-sdl-ceu(sdl, type)
+    val e = pico-event-sdl-ceu(sdl, type)
+    println(:pico-input-event, e)
+    drop(e)
 }
 
 val pico-input-event-timeout = func (type, time) {
@@ -155,7 +160,13 @@ val pico-input-event-timeout = func (type, time) {
         $ok.Bool = pico_input_event_timeout(&sdl,$type.Tag,$time.Number);
         $sdl.Pointer = &sdl;
     ```
-    ok && pico-event-sdl-ceu(sdl, type)
+    if ok {
+        val e = pico-event-sdl-ceu(sdl, type)
+        println(:pico-input-event-timeout, e)
+        drop(e)
+    } else {
+        false
+    }
 }
 
 ;; OUTPUT
@@ -424,25 +435,40 @@ val max = func (v1, v2) {
     ((v1 > v2) && v1) || v2
 }
 
-val pico-loop = func () {
+val pico-loop = coroutine(coro () {
     pico-state-set-auto(false)
     var old = `:number SDL_GetTicks()`
     xloop {
+println(:zzz)
         val now  = `:number SDL_GetTicks()`
         val togo = PICO-MPF - (now - old)
         if togo <= 0 {
-            ;;broadcast in :global, tags([PICO-MPF], :Pico.Frame, true)
-            ;;broadcast in :global, :frame [PICO-MPF]
+            do {
+                val e = tags([PICO-MPF], :Pico.Frame, true)
+                yield(e) { as it => nil }
+            }
+            do {
+                val e = tags([PICO-MPF], :frame, true)
+                yield(e) { as it => nil }
+            }
             pico-output-clear()
-            ;;broadcast in :global, tags([], :Pico.Draw, true)
+            do {
+                val e = tags([], :Pico.Draw, true)
+                yield(e) { as it => nil }
+            }
             pico-output-present()
             set old = togo + now
         } else {
             nil
         }
         val e = pico-input-event-timeout(`:tag SDL_ANY`, max(0,togo))
-        set pico-quit' = is? (e, :Pico.Quit)
-        ;;broadcast in :global, e
-        xbreak if pico-quit'
+println(:loop, e)
+        if e {
+println(:aaa)
+            yield(e) { as it => nil }
+        } else {
+println(:bbb)
+            nil
+        }
     }
-}
+})
