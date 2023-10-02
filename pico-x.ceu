@@ -1,0 +1,399 @@
+`pico_init(1);`
+defer {
+    `pico_init(0);`
+}
+
+var PICO-MPF = 40
+
+;; DATA / ENUM
+
+data :RGBA = [r,g,b,a]
+data :XY   = [x,y]
+data :WH   = [w,h]
+data :Rect = [pos:XY, dim:WH]
+
+data :Pico = [] {
+    :Any   = []
+    :Quit  = []
+    :Frame = [ms]
+    :Draw  = []
+    :Key = [key] {
+        :Dn = []
+        :Up = []
+    }
+    :Mouse = [pos:XY] {
+        :Motion = []
+        :Button = [but] {
+            :Dn = []
+            :Up = []
+        }
+    }
+}
+
+enum {
+    :HAnchor-Left  =`Left`,   :HAnchor-Center, :HAnchor-Right,
+    :VAnchor-Bottom=`Bottom`, :VAnchor-Middle, :VAnchor-Top,
+}
+
+enum {
+    :Mouse-Button-Left = `SDL_BUTTON_LEFT`,
+    :Mouse-Button-Middle, :Mouse-Button-Right,
+}
+
+enum {
+    :Key-A = `SDLK_a`,
+    :Key-B, :Key-C, :Key-D, :Key-E, :Key-F, :Key-G, :Key-H, :Key-I, :Key-J,
+    :Key-K, :Key-L, :Key-M, :Key-N, :Key-O, :Key-P, :Key-Q, :Key-R, :Key-S,
+    :Key-T ,:Key-U, :Key-V, :Key-W, :Key-X, :Key-Y, :Key-Z,
+
+    :Key-Right = `SDLK_RIGHT`,
+    :Key-Left, :Key-Down, :Key-Up,
+
+    :Key-Shift-Right = `SDLK_RSHIFT`,
+    :Key-Shift-Left  = `SDLK_LSHIFT`,
+
+	:Key-Escape = `SDLK_ESCAPE`,
+}
+
+;; INPUT
+
+func pico-input-delay (ms) {
+    `pico_input_delay($ms.Number);`
+}
+
+func pico-event-sdl-ceu (sdl, type) {
+    var tp = :nil
+    var t0 = :nil
+    var t1 = :nil
+    var t2 = :nil
+    var n0 = 0
+    var n1 = 0
+    var n2 = 0
+    ```
+        SDL_Event* evt = (SDL_Event*) $sdl.Pointer;
+        $tp.Tag = evt->type;
+        switch (evt->type) {
+            case SDL_KEYDOWN:
+            case SDL_KEYUP:
+                $t0.Tag  = evt->key.state;
+                $t1.Tag  = evt->key.keysym.sym;
+                break;
+            case SDL_MOUSEBUTTONDOWN:
+            case SDL_MOUSEBUTTONUP:
+                $n0.Number = evt->button.x;
+                $n1.Number = evt->button.y;
+                $t2.Tag    = evt->button.button;
+                break;
+            case SDL_MOUSEMOTION:
+                $n0.Number = evt->button.x;
+                $n1.Number = evt->button.y;
+                break;
+        }
+    ```
+    ifs tp {
+        is? `:tag SDL_QUIT`            => :Pico.Quit []
+        is? `:tag SDL_MOUSEMOTION`     => :Pico.Mouse.Motion [[n0,n1]]
+        is? `:tag SDL_MOUSEBUTTONDOWN` => :Pico.Mouse.Button.Dn [[n0,n1],t2]
+        is? `:tag SDL_MOUSEBUTTONUP`   => :Pico.Mouse.Button.Up [[n0,n1],t2]
+        is? `:tag SDL_KEYDOWN`         => :Pico.Key.Dn [t1]
+        is? `:tag SDL_KEYUP`           => :Pico.Key.Up [t1]
+        else => throw(:error)
+    }
+}
+
+func pico-input-event (tag) {
+    var sdl = `:pointer NULL`
+    ```
+        int tag_to_type (int tag) {
+            switch (tag) {
+                case CEU_TAG_Pico_Any:
+                    return SDL_ANY;
+                case CEU_TAG_Pico_Quit:
+                    return SDL_QUIT;
+                case CEU_TAG_Pico_Key_Dn:
+                    return SDL_KEYDOWN;
+                case CEU_TAG_Pico_Key_Up:
+                    return SDL_KEYUP;
+                case CEU_TAG_Pico_Mouse_Motion:
+                    return SDL_MOUSEMOTION;
+                case CEU_TAG_Pico_Mouse_Button_Dn:
+                    return SDL_MOUSEBUTTONDOWN;
+                case CEU_TAG_Pico_Mouse_Button_Up:
+                    return SDL_MOUSEBUTTONUP;
+                default:
+                    assert(0 && "bug found : missing tag -> type");
+            }
+        }
+
+        SDL_Event sdl;
+        int type = tag_to_type($tag.Tag);
+        pico_input_event(&sdl,type);
+        $sdl.Pointer = &sdl;
+    ```
+    pico-event-sdl-ceu(sdl, type)
+}
+
+func pico-input-event-timeout (type, time) {
+    var sdl = `:pointer NULL`
+    var ok = false
+    ```
+        SDL_Event sdl;
+        $ok.Bool = pico_input_event_timeout(&sdl,$type.Tag,$time.Number);
+        $sdl.Pointer = &sdl;
+    ```
+    ok and pico-event-sdl-ceu(sdl, type)
+}
+
+;; OUTPUT
+
+func pico-output-clear () {
+    `pico_output_clear();`
+}
+
+func pico-output-draw-image (pos:XY,img,cache) {
+    val x = pos.x
+    val y = pos.y
+    val xcache = cache or (cache == nil)
+    `_pico_output_draw_image_cache((SDL_Point){$x.Number,$y.Number}, (char*)$img.Dyn->Ncast.Vector.buf, $xcache.Bool);`
+}
+
+func pico-output-draw-line (p1:XY, p2:XY) {
+    val x1 = p1.x
+    val y1 = p1.y
+    val x2 = p2.x
+    val y2 = p2.y
+    `pico_output_draw_line((SDL_Point){$x1.Number,$y1.Number},
+                           (SDL_Point){$x2.Number,$y2.Number});`
+}
+
+func pico-output-draw-rect (r:Rect) {
+    val x = r.pos.x
+    val y = r.pos.y
+    val w = r.dim.w
+    val h = r.dim.h
+    `pico_output_draw_rect((SDL_Rect){$x.Number,$y.Number,$w.Number,$h.Number});`
+}
+
+func pico-output-draw-oval (r:Rect) {
+    val x = r.pos.x
+    val y = r.pos.y
+    val w = r.dim.w
+    val h = r.dim.h
+    `pico_output_draw_oval((SDL_Rect){$x.Number,$y.Number,$w.Number,$h.Number});`
+}
+
+func pico-output-draw-pixel (pos:XY) {
+    val x = pos.x
+    val y = pos.y
+    `pico_output_draw_pixel((SDL_Point){$x.Number,$y.Number});`
+}
+
+func pico-output-draw-text (pos:XY, txt) {
+    val x = pos.x
+    val y = pos.y
+    `pico_output_draw_text((SDL_Point){$x.Number,$y.Number}, $txt.Dyn->Ncast.Vector.buf);`
+}
+
+func pico-output-present () {
+    `pico_output_present();`
+}
+
+func pico-output-sound (path) {
+    `pico_output_sound($path.Dyn->Ncast.Vector.buf);`
+}
+
+func pico-output-write (txt) {
+    `pico_output_write($txt.Dyn->Ncast.Vector.buf);`
+}
+
+func pico-output-writeln (txt) {
+    `pico_output_writeln($txt.Dyn->Ncast.Vector.buf);`
+}
+
+;; STATE
+
+;; GET
+
+func pico-state-get-fps () {
+    1000 / PICO-MPF
+}
+
+func pico-state-get-size () {
+    var w = 0
+    var h = 0
+    ```
+        SDL_Point sz;
+        pico_state_get_size(&sz);
+        $w.Number = sz.x;
+        $h.Number = sz.y;
+    ```
+    [w,h]
+}
+
+func pico-state-get-size-image (img) {
+    var w = 0
+    var h = 0
+    ```
+        SDL_Point sz;
+        pico_state_get_size_image((char*)$img.Dyn->Ncast.Vector.buf, &sz);
+        $w.Number = sz.x;
+        $h.Number = sz.y;
+    ```
+    [w,h]
+}
+
+;; SET
+
+func pico-state-set-fps (fps) {
+    set PICO-MPF = 1000 / fps
+}
+
+func pico-state-set-anchor (h,v) {
+    `pico_state_set_anchor($h.Tag,$v.Tag);`
+}
+
+func pico-state-set-auto (on) {
+    `pico_state_set_auto($on.Bool);`
+}
+
+func pico-state-set-color-clear (clr:RGBA) {
+    val r = clr.r
+    val g = clr.g
+    val b = clr.b
+    val a = clr.a
+    `pico_state_set_color_clear((SDL_Color){$r.Number,$g.Number,$b.Number,$a.Number});`
+}
+
+func pico-state-set-color-draw (clr:RGBA) {
+    val r = clr.r
+    val g = clr.g
+    val b = clr.b
+    val a = clr.a
+    `pico_state_set_color_draw((SDL_Color){$r.Number,$g.Number,$b.Number,$a.Number});`
+}
+
+func pico-state-set-cursor (pos:XY) {
+    val x = pos.x
+    val y = pos.y
+    `pico_state_set_cursor((SDL_Point){$x.Number,$y.Number});`
+}
+
+func pico-state-set-font (file, h) {
+    `pico_state_set_font($file.Dyn->Ncast.Vector.buf,$h.Number);`
+}
+
+func pico-state-set-grid (on) {
+    `pico_state_set_grid($on.Bool);`
+}
+
+func pico-state-set-image-crop (r:Rect) {
+    if r == nil {
+        `pico_state_set_image_crop((SDL_Rect){0,0,0,0});`
+    } else {
+        val x = r.pos.x
+        val y = r.pos.y
+        val w = r.dim.w
+        val h = r.dim.h
+        `pico_state_set_image_crop((SDL_Rect){$x.Number,$y.Number,$w.Number,$h.Number});`
+    }
+}
+
+func pico-state-set-pan (pos:XY) {
+    val x = pos.x
+    val y = pos.y
+    `pico_state_set_pan((SDL_Point){$x.Number,$y.Number});`
+}
+
+func pico-state-set-size (dim:WH) {
+    val w = dim.w
+    val h = dim.h
+    `pico_state_set_size((SDL_Point){$w.Number,$h.Number});`
+}
+
+func pico-state-set-size-image (dim:WH) {
+    val w = dim.w
+    val h = dim.h
+    `pico_state_set_size_image((SDL_Point){$w.Number,$h.Number});`
+}
+
+func pico-state-set-size-pixel (dim:WH) {
+    val w = dim.w
+    val h = dim.h
+    `pico_state_set_size_pixel((SDL_Point){$w.Number,$h.Number});`
+}
+
+func pico-state-set-title (title) {
+    `pico_state_set_title($title.Dyn->Ncast.Vector.buf);`
+}
+
+;; AUX
+
+func pico-point-vs-rect? (pt:XY, r:Rect) {
+    ifs {
+        pt.x < (r.pos.x-(r.dim.w/2)) => false
+        pt.x > (r.pos.x+(r.dim.w/2)) => false
+        pt.y < (r.pos.y-(r.dim.h/2)) => false
+        pt.y > (r.pos.y+(r.dim.h/2)) => false
+        else                         => true
+    }
+}
+
+func pico-rect-vs-rect? (r1:Rect, r2:Rect) {
+    ifs {
+        pico-point-vs-rect?(p1,r1) => true
+        pico-point-vs-rect?(p2,r1) => true
+        pico-point-vs-rect?(p3,r1) => true
+        pico-point-vs-rect?(p4,r1) => true
+        else                       => false
+    } where {
+        val w2 = r2.dim.w / 2
+        val h2 = r2.dim.h / 2
+        val p1 = [r2.pos.x - w2, r2.pos.y - h2]
+        val p2 = [r2.pos.x - w2, r2.pos.y + h2]
+        val p3 = [r2.pos.x + w2, r2.pos.y + h2]
+        val p4 = [r2.pos.x + w2, r2.pos.y - h2]
+    }
+}
+
+func pico-collisions (trks, f-cmp) {
+    val ret = #[]
+    loop i in {0 => #trks{ {
+        loop j in {i+1 => #trks{ {
+            val r1 = trks[i]
+            val r2 = trks[j]
+            ;;val t2 = detrack(r2)
+            if f-cmp(detrack(r1).pub,detrack(r2).pub) {
+                set ret[+] = [r1, r2]
+            }
+        }
+    }
+    drop(ret)
+}
+
+;; LOOP
+
+var pico-quit' = false
+
+func pico-quit () {
+    set pico-quit' = true
+}
+
+func pico-loop () {
+    pico-state-set-auto(false)
+    var old = `:number SDL_GetTicks()`
+    loop {
+        val now  = `:number SDL_GetTicks()`
+        val togo = PICO-MPF - (now - old)
+        if togo <= 0 {
+            broadcast in :global, :Pico.Frame [PICO-MPF]
+            broadcast in :global, :frame [PICO-MPF]
+            pico-output-clear()
+            broadcast in :global, :Pico.Draw []
+            pico-output-present()
+            set old = togo + now
+        }
+        val e = pico-input-event-timeout(`:tag SDL_ANY`, max(0,togo))
+        set pico-quit' = (e is? :Pico.Quit)
+        broadcast in :global, e
+    } until pico-quit'
+}
