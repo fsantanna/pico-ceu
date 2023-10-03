@@ -88,7 +88,7 @@ val pico-event-sdl-ceu = func (sdl, type) {
                 break;
         }
     ```
-    val e = if is? (tp, `:tag SDL_QUIT`) {
+    if is? (tp, `:tag SDL_QUIT`) {
         tags([], :Pico.Quit, true)
     } else {
         if is? (tp, `:tag SDL_MOUSEMOTION`) {
@@ -106,7 +106,6 @@ val pico-event-sdl-ceu = func (sdl, type) {
                         if is? (tp, `:tag SDL_KEYUP`) {
                             tags([t1], :Pico.Key.Up, true)
                         } else {
-println("-=-=-=-=-");
                             throw(:error)
                         }
                     }
@@ -114,8 +113,6 @@ println("-=-=-=-=-");
             }
         }
     }
-    println(:pico-event-sdl-ceu, e)
-    drop(e)
 }
 
 val pico-input-event = func (tag) {
@@ -147,9 +144,7 @@ val pico-input-event = func (tag) {
         pico_input_event(&sdl,type);
         $sdl.Pointer = &sdl;
     ```
-    val e = pico-event-sdl-ceu(sdl, type)
-    println(:pico-input-event, e)
-    drop(e)
+    pico-event-sdl-ceu(sdl, type)
 }
 
 val pico-input-event-timeout = func (type, time) {
@@ -161,9 +156,7 @@ val pico-input-event-timeout = func (type, time) {
         $sdl.Pointer = &sdl;
     ```
     if ok {
-        val e = pico-event-sdl-ceu(sdl, type)
-        println(:pico-input-event-timeout, e)
-        drop(e)
+        pico-event-sdl-ceu(sdl, type)
     } else {
         false
     }
@@ -439,7 +432,6 @@ val pico-loop = coroutine(coro () {
     pico-state-set-auto(false)
     var old = `:number SDL_GetTicks()`
     xloop {
-println(:zzz)
         val now  = `:number SDL_GetTicks()`
         val togo = PICO-MPF - (now - old)
         if togo <= 0 {
@@ -461,13 +453,12 @@ println(:zzz)
         } else {
             nil
         }
+println(111)
         val e = pico-input-event-timeout(`:tag SDL_ANY`, max(0,togo))
-println(:loop, e)
+println(e)
         if e {
-println(:aaa)
             yield(e) { as it => nil }
         } else {
-println(:bbb)
             nil
         }
     }
