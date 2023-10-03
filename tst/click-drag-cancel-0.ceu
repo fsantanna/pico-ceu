@@ -4,6 +4,10 @@ pico-state-set-size([810,610])
 pico-state-set-title("pico-Ceu: Click, Drag, or Cancel")
 pico-state-set-font("tiny.ttf", 10)
 
+val t = tags([], :Pico.Draw, true)
+println(tags(t, :Pico.Draw), is?(t,:Pico.Draw))
+;;throw(:ok)
+
 spawn task () {
     var text = " "
     var rect :Rect = [[0,0],[10,10]]
@@ -11,17 +15,24 @@ spawn task () {
         xloop {
             xloop { ;; AWAIT
                 xbreak if yield(nil) { as it =>
+println(:x, it, type(:Pico.Draw), is?(it, :Pico.Draw), tags(it,:Pico.Draw))
                     is?(it, :Pico.Draw)
                 }
             }
+println(:okokok)
             pico-output-draw-rect(rect)
             pico-output-draw-text([0,-20], text)
         }
     } ()
     xloop {
         val click :XY = xloop { ;; AWAIT
-            xbreak if yield(nil) { as it =>
-                is?(it, :Pico.Mouse.Button.Dn) && pico-point-vs-rect?(it.pos,rect) && copy(it.pos)
+            xbreak if yield(nil) { as it :Pico.Mouse =>
+                if is?(it, :Pico.Mouse.Button.Dn) {
+                    pico-point-vs-rect?(it.pos,rect)
+                    copy(it.pos)
+                } else {
+                    false
+                }
             }
         }
         set text = "... clicking ..."
@@ -80,4 +91,48 @@ spawn task () {
     }
 } ()
 
-pico-loop()
+xloop {
+    val e = resume pico-coro ()
+    if e {
+        broadcast e
+    } else {
+        nil
+    }
+}
+
+;;;
+    pico-state-set-auto(false)
+    var old = `:number SDL_GetTicks()`
+    xloop {
+        val now  = `:number SDL_GetTicks()`
+        val togo = PICO-MPF - (now - old)
+        if togo <= 0 {
+            do {
+                val e = tags([PICO-MPF], :Pico.Frame, true)
+                nil
+                ;;broadcast e
+            }
+            do {
+                val e = tags([PICO-MPF], :frame, true)
+                nil
+                ;;broadcast e
+            }
+            pico-output-clear()
+            do {
+                val e = tags([], :Pico.Draw, true)
+                broadcast e
+            }
+            pico-output-present()
+            set old = togo + now
+        } else {
+            nil
+        }
+        val e = pico-input-event-timeout(`:tag SDL_ANY`, max(0,togo))
+        if e {
+            ;;broadcast e
+            nil
+        } else {
+            nil
+        }
+    }
+;;;

@@ -428,7 +428,7 @@ val max = func (v1, v2) {
     ((v1 > v2) && v1) || v2
 }
 
-val pico-loop = coroutine(coro () {
+val pico-coro = coroutine(coro () {
     pico-state-set-auto(false)
     var old = `:number SDL_GetTicks()`
     xloop {
@@ -436,30 +436,20 @@ val pico-loop = coroutine(coro () {
         val togo = PICO-MPF - (now - old)
         if togo <= 0 {
             do {
-                val e = tags([PICO-MPF], :Pico.Frame, true)
-                yield(e) { as it => nil }
+                yield(tags([PICO-MPF], :Pico.Frame, true)) { as it => nil }
             }
             do {
-                val e = tags([PICO-MPF], :frame, true)
-                yield(e) { as it => nil }
+                yield(tags([PICO-MPF], :frame, true)) { as it => nil }
             }
             pico-output-clear()
             do {
-                val e = tags([], :Pico.Draw, true)
-                yield(e) { as it => nil }
+                yield(tags([], :Pico.Draw, true)) { as it => nil }
             }
             pico-output-present()
             set old = togo + now
         } else {
             nil
         }
-println(111)
-        val e = pico-input-event-timeout(`:tag SDL_ANY`, max(0,togo))
-println(e)
-        if e {
-            yield(e) { as it => nil }
-        } else {
-            nil
-        }
+        yield(pico-input-event-timeout(`:tag SDL_ANY`, max(0,togo))) { as it => nil }
     }
 })
