@@ -14,7 +14,6 @@ spawn task () {
                     is?(it, :Pico.Draw)
                 }
             }
-println(rect, text)
             pico-output-draw-rect(rect)
             pico-output-draw-text([0,-20], text)
         }
@@ -23,8 +22,11 @@ println(rect, text)
         val click :XY = xloop { ;; AWAIT
             xbreak if yield(nil) { as it :Pico.Mouse =>
                 if is?(it, :Pico.Mouse.Button.Dn) {
-                    pico-point-vs-rect?(it.pos,rect)
-                    copy(it.pos)
+                    if pico-point-vs-rect?(it.pos,rect) {
+                        copy(it.pos)
+                    } else {
+                        false
+                    }
                 } else {
                     false
                 }
@@ -35,8 +37,12 @@ println(rect, text)
 
         val t1 = spawn task () {
             xloop { ;; AWAIT
-                xbreak if yield(nil) { as it =>
-                    is?(it, :Pico.Key.Dn) && (it.key == :Key-Escape)
+                xbreak if yield(nil) { as it :Pico.Key =>
+                    if is?(it, :Pico.Key.Dn) {
+                        (it.key == :Key-Escape)
+                    } else {
+                        false
+                    }
                 }
             }
             set rect = copy(orig)
@@ -44,9 +50,13 @@ println(rect, text)
         } ()
 
         val t2 = spawn task () {
-            val pos = xloop { ;; AWAIT
-                xbreak if yield(nil) { as it =>
-                    is?(it, :Pico.Mouse.Motion) && copy(it.pos)
+            var pos :XY = xloop { ;; AWAIT
+                xbreak if yield(nil) { as it :Pico.Mouse =>
+                    if is?(it, :Pico.Mouse.Motion) {
+                        copy(it.pos)
+                    } else {
+                        false
+                    }
                 }
             }
             set text = "... dragging ..."
@@ -54,9 +64,13 @@ println(rect, text)
                 xloop {
                     set rect.pos.x = orig.pos.x + (pos.x - click.x)
                     set rect.pos.y = orig.pos.y + (pos.y - click.y)
-                    xloop { ;; AWAIT
-                        xbreak if yield(nil) { as it =>
-                            is?(it, :Pico.Mouse.Motion)
+                    set pos = xloop { ;; AWAIT
+                        xbreak if yield(nil) { as it :Pico.Mouse =>
+                            if is?(it, :Pico.Mouse.Motion) {
+                                copy(it.pos)
+                            } else {
+                                false
+                            }
                         }
                     }
                 }
@@ -88,9 +102,12 @@ println(rect, text)
 
 xloop {
     val e = resume pico-coro ()
-    if e {
-        broadcast e
-    } else {
-        nil
+    xbreak if do {
+        if e {
+            broadcast(e)
+            is?(e, :Pico.Quit)
+        } else {
+            nil
+        }
     }
 }
