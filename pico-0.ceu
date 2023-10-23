@@ -395,15 +395,15 @@ val pico-rect-vs-rect? = func (r1:Rect, r2:Rect) {
 val pico-collisions = func (trks, f-cmp) {
     val ret = #[]
     var i = 0
-    xloop {
-        xbreak if (i == #trks)
+    loop {
+        break if (i == #trks)
         var j = 0
-        xloop {
-            xbreak if (j == #trks)
+        loop {
+            break if (j == #trks)
             val r1 = trks[i]
             val r2 = trks[j]
-            detrack(r1) { as x1 =>
-                detrack(r2) { as x2 =>
+            detrack(r1) thus { as x1 =>
+                detrack(r2) thus { as x2 =>
                     if f-cmp(pub(x1), pub(x2)) {
                         set ret[#ret] = [r1, r2]
                     } else {
@@ -431,25 +431,25 @@ val max = func (v1, v2) {
 val pico-coro = coroutine(coro () {
     pico-state-set-auto(false)
     var old = `:number SDL_GetTicks()`
-    xloop {
+    loop {
         val now  = `:number SDL_GetTicks()`
         val togo = PICO-MPF - (now - old)
         if togo <= 0 {
             do {
-                yield(tags([PICO-MPF], :Pico.Frame, true)) { as it => nil }
+                yield(tags([PICO-MPF], :Pico.Frame, true))
             }
             do {
-                yield(tags([PICO-MPF], :frame, true)) { as it => nil }
+                yield(tags([PICO-MPF], :frame, true))
             }
             pico-output-clear()
             do {
-                yield(tags([], :Pico.Draw, true)) { as it => nil }
+                yield(tags([], :Pico.Draw, true))
             }
             pico-output-present()
             set old = togo + now
         } else {
             nil
         }
-        yield(pico-input-event-timeout(`:tag SDL_ANY`, max(0,togo))) { as it => nil }
+        yield(pico-input-event-timeout(`:tag SDL_ANY`, max(0,togo)))
     }
 })
