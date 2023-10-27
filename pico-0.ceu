@@ -402,8 +402,8 @@ val pico-collisions = func (trks, f-cmp) {
             break if (j == #trks)
             val r1 = trks[i]
             val r2 = trks[j]
-            detrack(r1) thus { as x1 =>
-                detrack(r2) thus { as x2 =>
+            detrack(r1) thus { x1 =>
+                detrack(r2) thus { x2 =>
                     if f-cmp(pub(x1), pub(x2)) {
                         set ret[#ret] = [r1, r2]
                     } else {
