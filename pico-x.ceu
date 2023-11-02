@@ -154,7 +154,7 @@ func pico-output-draw-image (pos:XY,img,cache) {
     val x = pos.x
     val y = pos.y
     val xcache = cache or (cache == nil)
-    `_pico_output_draw_image_cache((SDL_Point){$x.Number,$y.Number}, (char*)$img.Dyn->Ncast.Vector.buf, $xcache.Bool);`
+    `_pico_output_draw_image_cache((SDL_Point){$x.Number,$y.Number}, (char*)$img.Dyn->Vector.buf, $xcache.Bool);`
 }
 
 func pico-output-draw-line (p1:XY, p2:XY) {
@@ -191,7 +191,7 @@ func pico-output-draw-pixel (pos:XY) {
 func pico-output-draw-text (pos:XY, txt) {
     val x = pos.x
     val y = pos.y
-    `pico_output_draw_text((SDL_Point){$x.Number,$y.Number}, $txt.Dyn->Ncast.Vector.buf);`
+    `pico_output_draw_text((SDL_Point){$x.Number,$y.Number}, $txt.Dyn->Vector.buf);`
 }
 
 func pico-output-present () {
@@ -199,15 +199,15 @@ func pico-output-present () {
 }
 
 func pico-output-sound (path) {
-    `pico_output_sound($path.Dyn->Ncast.Vector.buf);`
+    `pico_output_sound($path.Dyn->Vector.buf);`
 }
 
 func pico-output-write (txt) {
-    `pico_output_write($txt.Dyn->Ncast.Vector.buf);`
+    `pico_output_write($txt.Dyn->Vector.buf);`
 }
 
 func pico-output-writeln (txt) {
-    `pico_output_writeln($txt.Dyn->Ncast.Vector.buf);`
+    `pico_output_writeln($txt.Dyn->Vector.buf);`
 }
 
 ;; STATE
@@ -235,7 +235,7 @@ func pico-state-get-size-image (img) {
     var h = 0
     ```
         SDL_Point sz;
-        pico_state_get_size_image((char*)$img.Dyn->Ncast.Vector.buf, &sz);
+        pico_state_get_size_image((char*)$img.Dyn->Vector.buf, &sz);
         $w.Number = sz.x;
         $h.Number = sz.y;
     ```
@@ -279,7 +279,7 @@ func pico-state-set-cursor (pos:XY) {
 }
 
 func pico-state-set-font (file, h) {
-    `pico_state_set_font($file.Dyn->Ncast.Vector.buf,$h.Number);`
+    `pico_state_set_font($file.Dyn->Vector.buf,$h.Number);`
 }
 
 func pico-state-set-grid (on) {
@@ -323,7 +323,7 @@ func pico-state-set-size-pixel (dim:WH) {
 }
 
 func pico-state-set-title (title) {
-    `pico_state_set_title($title.Dyn->Ncast.Vector.buf);`
+    `pico_state_set_title($title.Dyn->Vector.buf);`
 }
 
 ;; AUX
@@ -357,13 +357,14 @@ func pico-rect-vs-rect? (r1:Rect, r2:Rect) {
 
 func pico-collisions (trks, f-cmp) {
     val ret = #[]
-    loop i in {0 => #trks{ {
-        loop j in {i+1 => #trks{ {
-            val r1 = trks[i]
-            val r2 = trks[j]
-            ;;val t2 = detrack(r2)
-            if f-cmp(detrack(r1).pub,detrack(r2).pub) {
-                set ret[+] = [r1, r2]
+    loop r1 in trks {
+        loop r2 in trks {
+            detrack(r1) as { x1 =>
+                detrack(r2) as { x2 =>
+                    if f-cmp(pub(x1), pub(x2)) {
+                        set ret[+] = [r1, r2]
+                    }
+                }
             }
         }
     }
@@ -378,24 +379,20 @@ func pico-quit () {
     set pico-quit' = true
 }
 
-func pico-loop () {
+val pico-coro = coroutine(coro () {
     pico-state-set-auto(false)
     var old = `:number SDL_GetTicks()`
     loop {
         val now  = `:number SDL_GetTicks()`
         val togo = PICO-MPF - (now - old)
         if togo <= 0 {
-            broadcast in :global, :Pico.Frame [PICO-MPF]
-            broadcast in :global, :frame [PICO-MPF]
+            yield(:Pico.Frame [PICO-MPF])
+            yield(:clock [PICO-MPF])
             pico-output-clear()
-            broadcast in :global, :Pico.Draw []
+            yield(:Pico.Draw [])
             pico-output-present()
             set old = togo + now
         }
-        val e = pico-input-event-timeout(`:tag SDL_ANY`, max(0,togo))
-        if e {
-            set pico-quit' = (e is? :Pico.Quit)
-            broadcast in :global, e
-        }
-    } until pico-quit'
-}
+        yield(pico-input-event-timeout(`:tag SDL_ANY`, max(0,togo)))
+    }
+})
