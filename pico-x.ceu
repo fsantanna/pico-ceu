@@ -387,7 +387,7 @@ val pico-coro = coroutine(coro () {
         val togo = PICO-MPF - (now - old)
         if togo <= 0 {
             yield(:Pico.Frame [PICO-MPF])
-            yield(:clock [PICO-MPF])
+            yield(:Clock [PICO-MPF])
             pico-output-clear()
             yield(:Pico.Draw [])
             pico-output-present()
