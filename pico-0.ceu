@@ -418,38 +418,35 @@ val pico-collisions = func (trks, f-cmp) {
 
 ;; LOOP
 
+val max = func (v1, v2) {
+    ((v1 > v2) && v1) || v2
+}
+
 var pico-quit' = false
 
 val pico-quit = func () {
     set pico-quit' = true
 }
 
-val max = func (v1, v2) {
-    ((v1 > v2) && v1) || v2
-}
-
-val pico-coro = coroutine(coro () {
+val pico-loop = func () {
     pico-state-set-auto(false)
     var old = `:number SDL_GetTicks()`
     loop {
         val now  = `:number SDL_GetTicks()`
         val togo = PICO-MPF - (now - old)
         if togo <= 0 {
-            do {
-                yield(tags([PICO-MPF], :Pico.Frame, true))
-            }
-            do {
-                yield(tags([PICO-MPF], :frame, true))
-            }
+            broadcast(tags([PICO-MPF], :Pico.Frame, true))
+            broadcast(tags([PICO-MPF], :Clock, true))
             pico-output-clear()
-            do {
-                yield(tags([], :Pico.Draw, true))
-            }
+            broadcast(tags([], :Pico.Draw, true))
             pico-output-present()
             set old = togo + now
         } else {
             nil
         }
-        yield(pico-input-event-timeout(`:tag SDL_ANY`, max(0,togo)))
+        val e = pico-input-event-timeout(`:tag SDL_ANY`, max(0,togo))
+        set pico-quit' = is? (e, :Pico.Quit)
+        broadcast(e)
+        break if pico-quit'
     }
-})
+}
