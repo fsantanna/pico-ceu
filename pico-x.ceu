@@ -379,20 +379,23 @@ func pico-quit () {
     set pico-quit' = true
 }
 
-val pico-coro = coroutine(coro () {
+func pico-loop () {
     pico-state-set-auto(false)
     var old = `:number SDL_GetTicks()`
     loop {
         val now  = `:number SDL_GetTicks()`
         val togo = PICO-MPF - (now - old)
         if togo <= 0 {
-            yield(:Pico.Frame [PICO-MPF])
-            yield(:Clock [PICO-MPF])
+            broadcast(:Pico.Frame [PICO-MPF])
+            broadcast(:Clock [PICO-MPF])
             pico-output-clear()
-            yield(:Pico.Draw [])
+            broadcast(:Pico.Draw [])
             pico-output-present()
             set old = togo + now
         }
-        yield(pico-input-event-timeout(`:tag SDL_ANY`, max(0,togo)))
+        val e = pico-input-event-timeout(`:tag SDL_ANY`, max(0,togo))
+        set pico-quit' = (e is? :Pico.Quit)
+        broadcast(e)
+        until pico-quit'
     }
-})
+}
