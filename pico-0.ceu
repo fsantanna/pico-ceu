@@ -59,7 +59,7 @@ val pico-input-delay = func (ms) {
     `pico_input_delay($ms.Number);`
 }
 
-val pico-event-sdl-ceu = func (sdl, type) {
+val pico-event-sdl-ceu = func (sdl) {
     var tp = :nil
     var t0 = :nil
     var t1 = :nil
@@ -144,19 +144,19 @@ val pico-input-event = func (tag) {
         pico_input_event(&sdl,type);
         $sdl.Pointer = &sdl;
     ```
-    pico-event-sdl-ceu(sdl, type)
+    pico-event-sdl-ceu(sdl)
 }
 
-val pico-input-event-timeout = func (type, time) {
+val pico-input-event-timeout = func (tp, time) {
     var sdl = `:pointer NULL`
     var ok = false
     ```
         SDL_Event sdl;
-        $ok.Bool = pico_input_event_timeout(&sdl,$type.Tag,$time.Number);
+        $ok.Bool = pico_input_event_timeout(&sdl,$tp.Tag,$time.Number);
         $sdl.Pointer = &sdl;
     ```
     if ok {
-        pico-event-sdl-ceu(sdl, type)
+        pico-event-sdl-ceu(sdl, tp)
     } else {
         false
     }
@@ -402,8 +402,8 @@ val pico-collisions = func (trks, f-cmp) {
             break if (j == #trks)
             val r1 = trks[i]
             val r2 = trks[j]
-            detrack(r1) thus { x1 =>
-                detrack(r2) thus { x2 =>
+            detrack(r1) { x1 =>
+                detrack(r2) { x2 =>
                     if f-cmp(pub(x1), pub(x2)) {
                         set ret[#ret] = [r1, r2]
                     } else {

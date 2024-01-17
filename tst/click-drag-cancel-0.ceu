@@ -10,9 +10,8 @@ spawn (task () {
     spawn (task () {
         loop {
             loop { ;; AWAIT
-                break if yield(nil) thus { as it =>
-                    is?(it, :Pico.Draw)
-                }
+                yield(nil)
+                break if is?(evt, :Pico.Draw)
             }
             pico-output-draw-rect(rect)
             pico-output-draw-text([0,-20], text)
@@ -20,7 +19,8 @@ spawn (task () {
     }) ()
     loop {
         val click :XY = loop { ;; AWAIT
-            break if yield(nil) thus { as it :Pico.Mouse =>
+            yield(nil)
+            break if (func (it :Pico.Mouse) {
                 if is?(it, :Pico.Mouse.Button.Dn) {
                     if pico-point-vs-rect?(it.pos,rect) {
                         copy(it.pos)
@@ -30,20 +30,21 @@ spawn (task () {
                 } else {
                     false
                 }
-            }
+            }) (evt)
         }
         set text = "... clicking ..."
         val orig  :Rect = copy(rect)
 
         val t1 = spawn (task () {
             loop { ;; AWAIT
-                break if yield(nil) thus { as it :Pico.Key =>
+                yield(nil)
+                break if (func (it :Pico.Key) {
                     if is?(it, :Pico.Key.Dn) {
                         (it.key == :Key-Escape)
                     } else {
                         false
                     }
-                }
+                }) (evt)
             }
             set rect = copy(orig)
             set text = "!!! CANCELLED !!!"
@@ -51,63 +52,53 @@ spawn (task () {
 
         val t2 = spawn (task () {
             var pos :XY = loop { ;; AWAIT
-                break if yield(nil) thus { as it :Pico.Mouse =>
+                yield(nil)
+                break if (func (it :Pico.Mouse) {
                     if is?(it, :Pico.Mouse.Motion) {
                         copy(it.pos)
                     } else {
                         false
                     }
-                }
+                }) (evt)
             }
+println(:pos, pos)
             set text = "... dragging ..."
             spawn (task () {
                 loop {
                     set rect.pos.x = orig.pos.x + (pos.x - click.x)
                     set rect.pos.y = orig.pos.y + (pos.y - click.y)
                     set pos = loop { ;; AWAIT
-                        break if yield(nil) thus { as it :Pico.Mouse =>
+                        yield(nil)
+                        break if (func (it :Pico.Mouse) {
                             if is?(it, :Pico.Mouse.Motion) {
                                 copy(it.pos)
                             } else {
                                 false
                             }
-                        }
+                        }) (evt)
                     }
                 }
             }) ()
             loop { ;; AWAIT
-                break if yield(nil) thus { as it =>
-                    is?(it, :Pico.Mouse.Button.Up)
-                }
+                yield(nil)
+                break if is?(evt, :Pico.Mouse.Button.Up)
             }
             set text = "!!! DRAGGED !!!"
         }) ()
 
         val t3 = spawn (task () {
             loop { ;; AWAIT
-                break if yield(nil) thus { as it =>
-                    is?(it, :Pico.Mouse.Button.Up)
-                }
+                yield(nil)
+                break if is?(evt, :Pico.Mouse.Button.Up)
             }
             set text = "!!! CLICKED !!!"
         }) ()
 
         loop { ;; AWAIT
-            break if yield(nil) thus { as it =>
-                (it==t1) || (it==t2) || (it==t3)
-            }
+            yield(nil)
+            break if (evt==t1) || (evt==t2) || (evt==t3)
         }
     }
 }) ()
 
-loop {
-    val e = resume pico-coro ()
-    break if do {
-        if e {
-            broadcast(e)
-            is?(e, :Pico.Quit)
-        } else {
-            nil
-        }
-    }
-}
+pico-loop()
