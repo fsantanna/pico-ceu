@@ -11,8 +11,10 @@ coro F (pos:XY, vel:XY) {
     }
 }
 
-val x = spawn F ([-25,25],[1,-1])
-val y = spawn F ([-25,-25],[1,1])
+val x = coroutine(F)
+val y = coroutine(F)
+resume x ([-25,25],[1,-1])
+resume y ([-25,-25],[1,1])
 resume x()
 resume y()
 
