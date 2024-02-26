@@ -7,11 +7,11 @@ pico-state-set-font("tiny.ttf", 10)
 spawn (task () {
     var text = " "
     var rect :Rect = [[0,0],[10,10]]
-    spawn (task () {
+    spawn (task :nested () {
         loop {
             loop { ;; AWAIT
-                yield(nil)
-                break if is?(evt, :Pico.Draw)
+                val e = yield(nil)
+                break if is?(e, :Pico.Draw)
             }
             pico-output-draw-rect(rect)
             pico-output-draw-text([0,-20], text)
@@ -19,84 +19,84 @@ spawn (task () {
     }) ()
     loop {
         val click :XY = loop { ;; AWAIT
-            yield(nil)
-            break if (func (it :Pico.Mouse) {
-                if is?(it, :Pico.Mouse.Button.Dn) {
-                    if pico-point-vs-rect?(it.pos,rect) {
-                        copy(it.pos)
+            val e :Pico.Mouse = yield(nil)
+            break if do {
+                if is?(e, :Pico.Mouse.Button.Dn) {
+                    if pico-point-vs-rect?(e.pos,rect) {
+                        copy(e.pos)
                     } else {
                         false
                     }
                 } else {
                     false
                 }
-            }) (evt)
+            }
         }
         set text = "... clicking ..."
         val orig  :Rect = copy(rect)
 
-        val t1 = spawn (task () {
+        val t1 = spawn (task :nested () {
             loop { ;; AWAIT
-                yield(nil)
-                break if (func (it :Pico.Key) {
-                    if is?(it, :Pico.Key.Dn) {
-                        (it.key == :Key-Escape)
+                val e :Pico.Key = yield(nil)
+                break if do {
+                    if is?(e, :Pico.Key.Dn) {
+                        (e.key == :Key-Escape)
                     } else {
                         false
                     }
-                }) (evt)
+                }
             }
             set rect = copy(orig)
             set text = "!!! CANCELLED !!!"
         }) ()
 
-        val t2 = spawn (task () {
+        val t2 = spawn (task :nested () {
             var pos :XY = loop { ;; AWAIT
-                yield(nil)
-                break if (func (it :Pico.Mouse) {
-                    if is?(it, :Pico.Mouse.Motion) {
-                        copy(it.pos)
+                val e :Pico.Mouse = yield(nil)
+                break if do {
+                    if is?(e, :Pico.Mouse.Motion) {
+                        copy(e.pos)
                     } else {
                         false
                     }
-                }) (evt)
+                }
             }
 println(:pos, pos)
             set text = "... dragging ..."
-            spawn (task () {
+            spawn (task :nested () {
                 loop {
                     set rect.pos.x = orig.pos.x + (pos.x - click.x)
                     set rect.pos.y = orig.pos.y + (pos.y - click.y)
                     set pos = loop { ;; AWAIT
-                        yield(nil)
-                        break if (func (it :Pico.Mouse) {
-                            if is?(it, :Pico.Mouse.Motion) {
-                                copy(it.pos)
+                        val e :Pico.Mouse = yield(nil)
+                        break if do {
+                            if is?(e, :Pico.Mouse.Motion) {
+                                copy(e.pos)
                             } else {
                                 false
                             }
-                        }) (evt)
+                        }
                     }
                 }
             }) ()
             loop { ;; AWAIT
-                yield(nil)
-                break if is?(evt, :Pico.Mouse.Button.Up)
+                val e = yield(nil)
+                break if is?(e, :Pico.Mouse.Button.Up)
             }
             set text = "!!! DRAGGED !!!"
         }) ()
 
-        val t3 = spawn (task () {
+        val t3 = spawn (task :nested () {
             loop { ;; AWAIT
-                yield(nil)
-                break if is?(evt, :Pico.Mouse.Button.Up)
+                val e = yield(nil)
+                break if is?(e, :Pico.Mouse.Button.Up)
             }
             set text = "!!! CLICKED !!!"
         }) ()
 
         loop { ;; AWAIT
-            yield(nil)
-            break if (evt==t1) || (evt==t2) || (evt==t3)
+            val e = yield(nil)
+            break if (e==t1) || (e==t2) || (e==t3)
         }
     }
 }) ()
