@@ -3,7 +3,8 @@ defer {
     `pico_init(0);`
 }
 
-var PICO-MPF = 40
+data :PICO = [quit,mpf]
+val PICO :PICO = [false, 40]
 
 ;; DATA / ENUM
 
@@ -62,47 +63,34 @@ func pico-input-delay (ms) {
 }
 
 func pico-event-sdl-ceu (sdl) {
-    var tp = :nil
-    var t0 = :nil
-    var t1 = :nil
-    var t2 = :nil
-    var n0 = 0
-    var n1 = 0
-    var n2 = 0
-    ```
-        SDL_Event* evt = (SDL_Event*) $sdl.Pointer;
-        $tp.Tag = evt->type;
-        switch (evt->type) {
-            case SDL_KEYDOWN:
-            case SDL_KEYUP:
-                $t0.Tag  = evt->key.state;
-                $t1.Tag  = evt->key.keysym.sym;
-                break;
-            case SDL_MOUSEBUTTONDOWN:
-            case SDL_MOUSEBUTTONUP:
-                $n0.Number = evt->button.x;
-                $n1.Number = evt->button.y;
-                $t2.Tag    = evt->button.button;
-                break;
-            case SDL_MOUSEMOTION:
-                $n0.Number = evt->button.x;
-                $n1.Number = evt->button.y;
-                break;
-        }
-    ```
+    `SDL_Event* evt = (SDL_Event*) $sdl.Pointer;`
+    val tp = `:tag evt->type`
     ifs tp {
-        is? `:tag SDL_QUIT`            => :Pico.Quit []
-        is? `:tag SDL_MOUSEMOTION`     => :Pico.Mouse.Motion [[n0,n1]]
-        is? `:tag SDL_MOUSEBUTTONDOWN` => :Pico.Mouse.Button.Dn [[n0,n1],t2]
-        is? `:tag SDL_MOUSEBUTTONUP`   => :Pico.Mouse.Button.Up [[n0,n1],t2]
-        is? `:tag SDL_KEYDOWN`         => :Pico.Key.Dn [t1]
-        is? `:tag SDL_KEYUP`           => :Pico.Key.Up [t1]
-        else => throw(:error)
+        is? `:tag SDL_QUIT` =>
+            :Pico.Quit []
+        is? `:tag SDL_MOUSEMOTION` =>
+            :Pico.Mouse.Motion [
+                [`:number evt->button.x`, `:number evt->button.y`]
+            ]
+        is? `:tag SDL_MOUSEBUTTONDOWN` =>
+            :Pico.Mouse.Button.Dn [
+                [`:number evt->button.x`, `:number evt->button.y`],
+                `:tag evt->button.button`
+            ]
+        is? `:tag SDL_MOUSEBUTTONUP` =>
+            :Pico.Mouse.Button.Up [
+                [`:number evt->button.x`, `:number evt->button.y`],
+                `:tag evt->button.button`
+            ]
+        is? `:tag SDL_KEYDOWN` =>
+            :Pico.Key.Dn [`:tag evt->key.keysym.sym`]
+        is? `:tag SDL_KEYUP` =>
+            :Pico.Key.Up [`:tag evt->key.keysym.sym`]
+        else => error(:error)
     }
 }
 
 func pico-input-event (tag) {
-    var sdl = `:pointer NULL`
     ```
         int tag_to_type (int tag) {
             switch (tag) {
@@ -128,20 +116,15 @@ func pico-input-event (tag) {
         SDL_Event sdl;
         int type = tag_to_type($tag.Tag);
         pico_input_event(&sdl,type);
-        $sdl.Pointer = &sdl;
     ```
-    pico-event-sdl-ceu(sdl, type)
+    pico-event-sdl-ceu(`:pointer &sdl`)
 }
 
 func pico-input-event-timeout (tp, time) {
-    var sdl = `:pointer NULL`
-    var ok = false
-    ```
-        SDL_Event sdl;
-        $ok.Bool = pico_input_event_timeout(&sdl,$tp.Tag,$time.Number);
-        $sdl.Pointer = &sdl;
-    ```
-    ok and pico-event-sdl-ceu(sdl)
+    `SDL_Event sdl;`
+    val ok = `:bool pico_input_event_timeout(&sdl,$tp.Tag,$time.Number)`
+    val sdl = `:pointer &sdl`
+    ok and pico-event-sdl-ceu(sdl, tp)
 }
 
 ;; OUTPUT
@@ -215,37 +198,29 @@ func pico-output-writeln (txt) {
 ;; GET
 
 func pico-state-get-fps () {
-    1000 / PICO-MPF
+    1000 / PICO.mpf
 }
 
 func pico-state-get-size () {
-    var w = 0
-    var h = 0
     ```
         SDL_Point sz;
         pico_state_get_size(&sz);
-        $w.Number = sz.x;
-        $h.Number = sz.y;
     ```
-    [w,h]
+    [`:number sz.x`, `:number sz.y`]
 }
 
 func pico-state-get-size-image (img) {
-    var w = 0
-    var h = 0
     ```
         SDL_Point sz;
         pico_state_get_size_image((char*)$img.Dyn->Vector.buf, &sz);
-        $w.Number = sz.x;
-        $h.Number = sz.y;
     ```
-    [w,h]
+    [`:number sz.x`, `:number sz.y`]
 }
 
 ;; SET
 
 func pico-state-set-fps (fps) {
-    set PICO-MPF = 1000 / fps
+    set PICO.mpf = 1000 / fps
 }
 
 func pico-state-set-anchor (h,v) {
@@ -359,24 +334,18 @@ func pico-collisions (trks, f-cmp) {
     val ret = #[]
     loop r1 in trks {
         loop r2 in trks {
-            detrack(r1) { x1 =>
-                detrack(r2) { x2 =>
-                    if f-cmp(pub(x1), pub(x2)) {
-                        set ret[+] = [r1, r2]
-                    }
-                }
+            if f-cmp(pub(r1), pub(r2)) {
+                set ret[+] = [r1, r2]
             }
         }
     }
-    drop(ret)
+    ret
 }
 
 ;; LOOP
 
-var pico-quit' = false
-
 func pico-quit () {
-    set pico-quit' = true
+    set PICO.quit = true
 }
 
 func pico-loop () {
@@ -384,18 +353,18 @@ func pico-loop () {
     var old = `:number SDL_GetTicks()`
     loop {
         val now  = `:number SDL_GetTicks()`
-        val togo = PICO-MPF - (now - old)
+        val togo = PICO.mpf - (now - old)
         if togo <= 0 {
-            broadcast(:Pico.Frame [PICO-MPF])
-            broadcast(:Clock [PICO-MPF])
+            broadcast(:Pico.Frame [PICO.mpf])
+            broadcast(:Clock [PICO.mpf])
             pico-output-clear()
             broadcast(:Pico.Draw [])
             pico-output-present()
             set old = togo + now
         }
         val e = pico-input-event-timeout(`:tag SDL_ANY`, max(0,togo))
-        set pico-quit' = (e is? :Pico.Quit)
+        set PICO.quit = (e is? :Pico.Quit)
         broadcast(e)
-        until pico-quit'
+        until PICO.quit
     }
 }

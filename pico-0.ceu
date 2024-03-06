@@ -130,8 +130,7 @@ val pico-input-event = func (tag) {
         int type = tag_to_type($tag.Tag);
         pico_input_event(&sdl,type);
     ```
-    val sdl = `:pointer &sdl`
-    pico-event-sdl-ceu(sdl)
+    pico-event-sdl-ceu(`:pointer &sdl`)
 }
 
 val pico-input-event-timeout = func (tp, time) {
