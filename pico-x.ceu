@@ -330,13 +330,16 @@ func pico-rect-vs-rect? (r1:Rect, r2:Rect) {
     }
 }
 
-func pico-collisions (trks, f-cmp) {
+func pico-collisions (tsks, f-cmp) {
     val ret = #[]
-    loop r1 in trks {
-        loop r2 in trks {
-            if f-cmp(pub(r1), pub(r2)) {
-                set ret[+] = [r1, r2]
+    loop tsk1 in tsks {
+        loop tsk2 in tsks {
+            ;;println(status(tsk1), status(tsk2), tsk1, tsk2)
+            val ok? = (tsk1 /= tsk2) and f-cmp(pub(tsk1), pub(tsk2))
+            if ok? {
+                set ret[+] = [tsk1, tsk2]
             }
+            break if ok?
         }
     }
     ret
