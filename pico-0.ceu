@@ -379,7 +379,7 @@ val pico-collisions = func (trks, f-cmp) {
             val r2 = trks[j]
             detrack(r1) { x1 =>
                 detrack(r2) { x2 =>
-                    if f-cmp(pub(x1), pub(x2)) {
+                    if f-cmp(x1.pub, x2.pub) {
                         set ret[#ret] = [r1, r2]
                     } else {
                         nil

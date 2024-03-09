@@ -335,7 +335,7 @@ func pico-collisions (tsks, f-cmp) {
     loop tsk1 in tsks {
         loop tsk2 in tsks {
             ;;println(status(tsk1), status(tsk2), tsk1, tsk2)
-            val ok? = (tsk1 /= tsk2) and f-cmp(pub(tsk1), pub(tsk2))
+            val ok? = (tsk1 /= tsk2) and f-cmp(tsk1.pub, tsk2.pub)
             if ok? {
                 set ret[+] = [tsk1, tsk2]
             }
