@@ -4,23 +4,23 @@ pico-state-set-size([810,610])
 pico-state-set-title("pico-Ceu: Click, Drag, or Cancel")
 pico-state-set-font("tiny.ttf", 10)
 
-spawn task {
+spawn {
     var text = " "
     var rect :Rect = [[0,0],[10,10]]
-    spawn task {
+    spawn {
         every :Pico.Draw {
             pico-output-draw-rect(rect)
             pico-output-draw-text([0,-20], text)
         }
     }
     loop {
-        val click :XY = await(:Pico.Mouse.Button.Dn => pico-point-vs-rect?(it.pos,rect)) {
+        val click :XY = await(:Pico.Mouse.Button.Dn, pico-point-vs-rect?(it.pos,rect)) {
             copy(it.pos)
         }
         val orig :Rect = copy(rect)
         set text = "... clicking ..."
         par-or {
-            await(:Pico.Key.Dn => it.key==:Key-Escape)
+            await(:Pico.Key.Dn, it.key==:Key-Escape)
             set rect = copy(orig)
             set text = "!!! CANCELLED !!!"
         } with {
