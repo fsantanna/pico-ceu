@@ -90,7 +90,7 @@ func pico-event-sdl-ceu (sdl) {
     }
 }
 
-func pico-input-event (tag) {
+func pico-input-event (evt) {
     ```
         int tag_to_type (int tag) {
             switch (tag) {
@@ -114,7 +114,7 @@ func pico-input-event (tag) {
         }
 
         SDL_Event sdl;
-        int type = tag_to_type($tag.Tag);
+        int type = tag_to_type($evt.Tag);
         pico_input_event(&sdl,type);
     ```
     pico-event-sdl-ceu(`:pointer &sdl`)
