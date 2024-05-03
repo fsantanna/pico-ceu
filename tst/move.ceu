@@ -12,10 +12,10 @@ loop {
     pico-state-set-color-draw([0,0,0,255])
     pico-output-draw-pixel(pos)
 
-    ifs e.key {
-        is? :Key-Left  => set pos.x = pos.x - 1
-        is? :Key-Right => set pos.x = pos.x + 1
-        is? :Key-Down  => set pos.y = pos.y - 1
-        is? :Key-Up    => set pos.y = pos.y + 1
+    match e.key {
+        :Key-Left  => set pos.x = pos.x - 1
+        :Key-Right => set pos.x = pos.x + 1
+        :Key-Down  => set pos.y = pos.y - 1
+        :Key-Up    => set pos.y = pos.y + 1
     }
 }

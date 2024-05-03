@@ -65,7 +65,7 @@ func pico-input-delay (ms) {
 func pico-event-sdl-ceu (sdl) {
     `SDL_Event* evt = (SDL_Event*) $sdl.Pointer;`
     val tp = `:tag evt->type`
-    ifs tp {
+    match tp {
         is? `:tag SDL_QUIT` =>
             :Pico.Quit []
         is? `:tag SDL_MOUSEMOTION` =>
