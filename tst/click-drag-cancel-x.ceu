@@ -1,20 +1,20 @@
 ^["@/pico/pico.ceu"]
 
-pico-state-set-size([810,610])
-pico-state-set-title("pico-Ceu: Click, Drag, or Cancel")
-pico-state-set-font("tiny.ttf", 10)
+pico.state.set.size.window([810,610])
+pico.state.set.title("pico-Ceu: Click, Drag, or Cancel")
+pico.state.set.font("tiny.ttf", 10)
 
 spawn {
     var text = " "
     var rect :Rect = [[0,0],[10,10]]
     spawn {
         every :Pico.Draw {
-            pico-output-draw-rect(rect)
-            pico-output-draw-text([0,-20], text)
+            pico.output.draw.rect(rect)
+            pico.output.draw.text([0,-20], text)
         }
     }
     loop {
-        val click :XY = await(:Pico.Mouse.Button.Dn, pico-point-vs-rect?(it.pos,rect)) {
+        val click :XY = await(:Pico.Mouse.Button.Dn, pico.point-vs-rect?(it.pos,rect)) {
             copy(it.pos)
         }
         val orig :Rect = copy(rect)
@@ -42,4 +42,4 @@ spawn {
     }
 }
 
-pico-loop()
+pico.loop()

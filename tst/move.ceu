@@ -1,16 +1,16 @@
 ^["@/pico/pico.ceu"]
 
-pico-state-set-title("pico-Ceu: Moving Around")
+pico.state.set.title("pico-Ceu: Moving Around")
 
 val pos:XY = [0,0]
 
 loop {
-    pico-state-set-color-draw([255,255,255,255])
-    pico-output-draw-pixel(pos)
+    pico.state.set.color.draw([255,255,255,255])
+    pico.output.draw.pixel(pos)
 
-    val e :Pico.Key.Dn = pico-input-event(:Pico.Key.Dn)
-    pico-state-set-color-draw([0,0,0,255])
-    pico-output-draw-pixel(pos)
+    val e :Pico.Key.Dn = pico.input.event(:Pico.Key.Dn)
+    pico.state.set.color.draw([0,0,0,255])
+    pico.output.draw.pixel(pos)
 
     match e.key {
         :Key-Left  => set pos.x = pos.x - 1
