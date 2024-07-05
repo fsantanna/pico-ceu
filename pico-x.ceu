@@ -313,7 +313,7 @@ val pico :PICO = do {
         [x-get, x-set]
     }
 
-    val (x-point-vs-rect?, x-rect-vs-rect?, x-collisions) = do {
+    val [x-point-vs-rect?, x-rect-vs-rect?, x-collisions] = group {
         func xx-point-vs-rect? (pt:XY, r:Rect) {
             ifs {
                 pt.x < (r.pos.x-(r.dim.w/2)) => false
@@ -348,15 +348,15 @@ val pico :PICO = do {
                     if ok? {
                         set ret[+] = [tsk1, tsk2]
                     }
-                    break if ok?
+                    until ok?
                 }
             }
             ret
         }
-        (xx-point-vs-rect?, xx-rect-vs-rect?, xx-collisions)
+        [xx-point-vs-rect?, xx-rect-vs-rect?, xx-collisions]
     }
 
-    val (x-quit, x-loop) = do {
+    val [x-quit, x-loop] = group {
         func xx-quit () {
             set x-v.QUIT = true
         }
@@ -380,7 +380,7 @@ val pico :PICO = do {
                 until x-v.QUIT
             }
         }
-        (xx-quit, xx-loop)
+        [xx-quit, xx-loop]
     }
 
     [

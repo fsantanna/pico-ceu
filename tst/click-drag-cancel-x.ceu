@@ -14,13 +14,13 @@ spawn {
         }
     }
     loop {
-        val click :XY = await(:Pico.Mouse.Button.Dn, pico.point-vs-rect?(it.pos,rect)) {
+        val click :XY = await(:Pico.Mouse.Button.Dn | pico.point-vs-rect?(it.pos,rect)) {
             copy(it.pos)
         }
         val orig :Rect = copy(rect)
         set text = "... clicking ..."
         par-or {
-            await(:Pico.Key.Dn, it.key==:Key-Escape)
+            await(:Pico.Key.Dn | it.key==:Key-Escape)
             set rect = copy(orig)
             set text = "!!! CANCELLED !!!"
         } with {
