@@ -1,10 +1,10 @@
 ^["@/pico/pico.ceu"]
 
-pico-state-set-title <- "pico-Ceu: Across"
+pico.state.set.title <- "pico-Ceu: Across"
 
 loop i in {-25 => 25} {
-    pico-output-draw-pixel([i,i])
-    pico-input-delay(100)
+    pico.output.draw.pixel([i,i])
+    pico.input.delay(100)
 }
 
-pico-input-event(:Pico.Any)
+pico.input.event(:Pico.Any)

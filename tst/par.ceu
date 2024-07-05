@@ -1,10 +1,10 @@
 ^["@/pico/pico.ceu"]
 
-pico-state-set-title <- "pico-Ceu: Parallel Across"
+pico.state.set.title <- "pico-Ceu: Parallel Across"
 
 coro F (pos:XY, vel:XY) {
     loop {
-        pico-output-draw-pixel(pos)
+        pico.output.draw.pixel(pos)
         yield ()
         set pos.x = pos.x + vel.x
         set pos.y = pos.y + vel.y
@@ -19,7 +19,7 @@ resume x()
 resume y()
 
 loop {
-    pico-input-delay(100)
+    pico.input.delay(100)
     resume x()
     resume y()
 }
