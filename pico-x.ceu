@@ -62,8 +62,8 @@ data :PICO = [
     quit, loop,
 ]
 
-func c-to-tag (t, c, v) {
-    to.tag(to.number(t) + 1 + (v - c))
+func tag-c-to-ceu (c, c1, ceu1) {
+    to.tag(ceu1 + (c - c1))
 }
 
 val pico :PICO = do {
@@ -73,17 +73,15 @@ val pico :PICO = do {
         func x-delay (ms) {
             `pico_input_delay($ms.Number);`
         }
-        func keys-c-to-tag (c) {
+        func keys-c-to-ceu (c) {
             match c {
-                | (c >= `:number SDLK_a`) and (c <= `:number SDLK_z`)
-                    => c-to-tag(:Key, `:number SDLK_a`, c)
-                == `:number SDLK_RIGHT`  => :Key-Right
-                == `:number SDLK_LEFT`   => :Key-Left
-                == `:number SDLK_DOWN`   => :Key-Down
-                == `:number SDLK_UP`     => :Key-Up
-                == `:number SDLK_RSHIFT` => :Key-Shift-Right
-                == `:number SDLK_LSHIFT` => :Key-Shift-Left
-                == `:number SDLK_ESCAPE` => :Key-Escape
+                | (c >= `:tag SDLK_a`)  and (c <= `:tag SDLK_z`)
+                    => tag-c-to-ceu(c, `:tag SDLK_a`, :Key-A)
+                | (c >= `:tag SDLK_RIGHT`) and (c <= `:tag SDLK_UP`)
+                    => tag-c-to-ceu(c, `:tag SDLK_RIGHT`, :Key-Right)
+                == `:tag SDLK_RSHIFT` => :Key-Shift-Right
+                == `:tag SDLK_LSHIFT` => :Key-Shift-Left
+                == `:tag SDLK_ESCAPE` => :Key-Escape
             }
         }
         func x-sdl-ceu (sdl) {
@@ -99,25 +97,25 @@ val pico :PICO = do {
                 is? `:tag SDL_MOUSEBUTTONDOWN` =>
                     :Pico.Mouse.Button.Dn [
                         [`:number evt->button.x`, `:number evt->button.y`],
-                        c-to-tag (
-                            :Mouse-Button,
-                            `:number SDL_BUTTON_LEFT`,
-                            `:number evt->button.button`
+                        tag-c-to-ceu (
+                            `:tag evt->button.button`,
+                            `:tag SDL_BUTTON_LEFT`,
+                            :Mouse-Button-Left
                         )
                     ]
                 is? `:tag SDL_MOUSEBUTTONUP` =>
                     :Pico.Mouse.Button.Up [
                         [`:number evt->button.x`, `:number evt->button.y`],
-                        c-to-tag (
-                            :Mouse-Button,
-                            `:number SDL_BUTTON_LEFT`,
-                            `:number  evt->button.button`
+                        tag-c-to-ceu (
+                            `:tag evt->button.button`,
+                            `:tag SDL_BUTTON_LEFT`,
+                            :Mouse-Button-Left
                         )
                     ]
                 is? `:tag SDL_KEYDOWN` =>
-                    :Pico.Key.Dn [keys-c-to-tag(`:number evt->key.keysym.sym`)]
+                    :Pico.Key.Dn [keys-c-to-ceu(`:tag evt->key.keysym.sym`)]
                 is? `:tag SDL_KEYUP` =>
-                    :Pico.Key.Up [keys-c-to-tag(`:number evt->key.keysym.sym`)]
+                    :Pico.Key.Up [keys-c-to-ceu(`:tag evt->key.keysym.sym`)]
                 else => error(:error)
             }
         }
@@ -248,9 +246,9 @@ val pico :PICO = do {
                 set x-v.MPF = 1000 / fps
             }
             func x-anchor (h,v) {
-                val hh = (to.number(h) - to.number(:HAnchor-Left)  ) + `:number Left`
-                val vv = (to.number(v) - to.number(:VAnchor-Bottom)) + `:number Bottom`
-                `pico_state_set_anchor($hh.Number,$vv.Number);`
+                val hh = (h - :HAnchor-Left  ) + `:tag Left`
+                val vv = (v - :VAnchor-Bottom) + `:tag Bottom`
+                `pico_state_set_anchor($hh.Tag,$vv.Tag);`
             }
             func x-auto (on) {
                 `pico_state_set_auto($on.Bool);`
