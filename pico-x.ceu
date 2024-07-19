@@ -43,7 +43,7 @@ enum :Key {
 }
 
 data :PICO = [
-    v :PICO-V = [QUIT, MPF],
+    v :PICO-V = [MPF],
     input :PICO-Input = [delay, event, event-timeout],
     output :PICO-Output = [
         clear, present, sound, write, writeln,
@@ -67,7 +67,7 @@ func c-to-tag (t, c, v) {
 }
 
 val pico :PICO = do {
-    val x-v :PICO-V = [false, 40]
+    val x-v :PICO-V = [40]
 
     val x-input :PICO-Input = do {
         func x-delay (ms) {
@@ -79,6 +79,8 @@ val pico :PICO = do {
                     => c-to-tag(:Key, `:number SDLK_a`, c)
                 == `:number SDLK_RIGHT`  => :Key-Right
                 == `:number SDLK_LEFT`   => :Key-Left
+                == `:number SDLK_DOWN`   => :Key-Down
+                == `:number SDLK_UP`     => :Key-Up
                 == `:number SDLK_RSHIFT` => :Key-Shift-Right
                 == `:number SDLK_LSHIFT` => :Key-Shift-Left
                 == `:number SDLK_ESCAPE` => :Key-Escape
@@ -372,7 +374,10 @@ val pico :PICO = do {
 
     val [x-quit, x-loop] = group {
         func xx-quit () {
-            set x-v.QUIT = true
+            ```
+            SDL_Event e = { SDL_QUIT };
+            assert(1 == SDL_PushEvent(&e));
+            ```
         }
         func xx-loop () {
             x-state.set.auto(false)
@@ -389,9 +394,8 @@ val pico :PICO = do {
                     set old = togo + now
                 }
                 val e = x-input.event-timeout(`:tag SDL_ANY`, math.max(0,togo))
-                set x-v.QUIT = (e is? :Pico.Quit)
                 broadcast(e)
-                until x-v.QUIT
+                until (e is? :Pico.Quit)
             }
         }
         [xx-quit, xx-loop]

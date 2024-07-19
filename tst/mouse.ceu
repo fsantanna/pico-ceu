@@ -10,7 +10,6 @@ loop {
             pico.output.draw.pixel(e.pos)
         }
         :Mouse-Button-Right {
-            println(:right)
             pico.state.set.color.draw([0,0,0,255])
             pico.output.draw.pixel(e.pos)
         }
