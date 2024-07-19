@@ -246,7 +246,9 @@ val pico :PICO = do {
                 set x-v.MPF = 1000 / fps
             }
             func x-anchor (h,v) {
-                `pico_state_set_anchor($h.Tag,$v.Tag);`
+                val hh = (to.number(h) - to.number(:HAnchor-Left)  ) + `:number Left`
+                val vv = (to.number(v) - to.number(:VAnchor-Bottom)) + `:number Bottom`
+                `pico_state_set_anchor($hh.Number,$vv.Number);`
             }
             func x-auto (on) {
                 `pico_state_set_auto($on.Bool);`
