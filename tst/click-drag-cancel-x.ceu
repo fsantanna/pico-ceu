@@ -24,17 +24,15 @@ spawn {
             set rect = copy(orig)
             set text = "!!! CANCELLED !!!"
         } with {
-            par-or {
-                await(:Pico.Mouse.Motion)
-                set text = "... dragging ..."
-                await(:Pico.Mouse.Button.Up)
-                set text = "!!! DRAGGED !!!"
-            } with {
+            await(:Pico.Mouse.Motion)
+            set text = "... dragging ..."
+            watching :Pico.Mouse.Button.Up {
                 every :Pico.Mouse.Motion {
                     set rect.pos.x = orig.pos.x + (it.pos.x - click.x)
                     set rect.pos.y = orig.pos.y + (it.pos.y - click.y)
                 }
             }
+            set text = "!!! DRAGGED !!!"
         } with {
             await(:Pico.Mouse.Button.Up)
             set text = "!!! CLICKED !!!"
