@@ -26,7 +26,7 @@ git clone https://github.com/fsantanna/pico-sdl sdl/
 
 ```
 cd tst/
-../../ceu --lib=pico all.ceu
+ceu --lib=pico all.ceu
 ```
 
 - Your directory hierarchy should become as follows:
@@ -41,7 +41,7 @@ cd tst/
 
 - A toy Problem: Drag, Click, or Cancel
     - https://fsantanna.github.io/toy.html
-    - `../../ceu --lib=pico click-drag-cancel-x.ceu`
+    - `ceu --lib=pico click-drag-cancel-x.ceu`
 - A simple, but complete, 2D game in Ceu:
     - https://github.com/fsantanna/pico-ceu-rocks
 
