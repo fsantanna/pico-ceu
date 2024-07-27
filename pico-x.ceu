@@ -43,13 +43,13 @@ enum :Key {
 }
 
 data :PICO = [
-    v :PICO-V = [MPF],
+    v :PICO-V = [MPF, CPU],
     input :PICO-Input = [delay, event, event-timeout],
     output :PICO-Output = [
         clear, present, sound, write, writeln,
         draw = [image, line, rect, oval, pixel, text]
     ],
-    get :PICO-Get = [fps, fullscreen, image=[size], size],
+    get :PICO-Get = [fps, fullscreen, image=[size], size, ticks],
     set :PICO-Set = [
         fps, anchor, cursor, font,
         grid, image=[crop,size], pan, show, title,
@@ -65,7 +65,7 @@ func tag-c-to-ceu (c, c1, ceu1) {
 }
 
 val pico :PICO = do {
-    val x-v :PICO-V = [40]
+    val x-v :PICO-V = [40, nil]
 
     val x-input :PICO-Input = do {
         func x-delay (ms) {
@@ -242,7 +242,10 @@ val pico :PICO = do {
                 [`:number log.x`, `:number log.y`],
             ]
         }
-        [x-fps, x-fullscreen, x-image, x-size]
+        func x-ticks () {
+            `:number pico_get_ticks()`
+        }
+        [x-fps, x-fullscreen, x-image, x-size, x-ticks]
     }
 
     val x-set :PICO-Set = do {
@@ -384,9 +387,11 @@ val pico :PICO = do {
             ```
         }
         func xx-loop () {
-            var old = `:number SDL_GetTicks()`
+            var old = x-get.ticks()
+            data :CPU = [cycs, sum, prv]
+            val cpu :CPU = [0, 0, nil]
             loop {
-                val now  = `:number SDL_GetTicks()`
+                val now  = x-get.ticks()
                 val togo = x-v.MPF - (now - old)
                 if togo <= 0 {
                     broadcast(:Pico.Frame [x-v.MPF])
@@ -396,7 +401,20 @@ val pico :PICO = do {
                     x-output.present()
                     set old = togo + now
                 }
+
+                do {
+                    set cpu.cycs = cpu.cycs + 1
+                    if cpu.cycs > (1000/x-v.MPF) {
+                        set x-v.CPU = cpu.sum / 10
+                        set cpu.cycs = 0
+                        set cpu.sum  = 0
+                    }
+                    val t = x-get.ticks()
+                    set cpu.sum = cpu.sum + (t - (cpu.prv or t))
+                }
+
                 val e = x-input.event-timeout(`:tag SDL_ANY`, math.max(0,togo))
+                set cpu.prv = x-get.ticks()
                 broadcast(e)
                 until (e is? :Pico.Quit)
             }
