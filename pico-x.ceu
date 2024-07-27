@@ -313,8 +313,11 @@ val pico :PICO = do {
             [x-clear, x-draw]
         }
         func x-size (phy:WH, log:WH) {
-            val [pw,ph] = phy or [0,0]
-            val [lw,lh] = log or [0,0]
+            val [[pw,ph],[lw,lh]] = ifs {
+                (log == nil)  => [phy,  phy]
+                (phy == true) => [[0,0],log]
+                (log == true) => [phy,[0,0]]
+            }
             `pico_set_size((SDL_Point){$pw.Number,$ph.Number}, (SDL_Point){$lw.Number,$lh.Number});`
         }
         [
