@@ -49,16 +49,14 @@ data :PICO = [
         clear, present, sound, write, writeln,
         draw = [image, line, rect, oval, pixel, text]
     ],
-    state :PICO-State = [
-        get = [fps, size=[window,image]],
-        set = [
-            fps, anchor, auto, cursor, font,
-            grid, image-crop, pan, title,
-            color = [clear, draw],
-            size  = [window, image, pixel],
-        ],
+    get :PICO-Get = [fps, fullscreen, image=[size], size],
+    set :PICO-Set = [
+        fps, anchor, cursor, font,
+        grid, image=[crop,size], pan, show, title,
+        color = [clear, draw],
+        size,
     ],
-    point-vs-rect?, rect-vs-rect?, collisions,
+    pct-to-pos, point-vs-rect?, rect-vs-rect?, collisions,
     quit, loop,
 ]
 
@@ -217,117 +215,122 @@ val pico :PICO = do {
         [x-clear, x-present, x-sound, x-write, x-writeln, x-draw]
     }
 
-    val x-state :PICO-State = do {
-        val x-get = do {
-            func x-fps () {
-                1000 / x-v.MPF
-            }
-            val x-size = do {
-                func x-window () {
-                    ```
-                        SDL_Point sz;
-                        pico_state_get_size(&sz);
-                    ```
-                    [`:number sz.x`, `:number sz.y`]
-                }
-                func x-image (img) {
-                    ```
-                        SDL_Point sz;
-                        pico_state_get_size_image((char*)$img.Dyn->Vector.buf, &sz);
-                    ```
-                    [`:number sz.x`, `:number sz.y`]
-                }
-                [x-window, x-image]
-            }
-            [x-fps, x-size]
+    val x-get :PICO-Get = do {
+        func x-fps () {
+            1000 / x-v.MPF
         }
-        val x-set = do {
-            func x-fps (fps) {
-                set x-v.MPF = 1000 / fps
+        func x-fullscreen () {
+            `:number pico_get_fullscreen()`
+        }
+        val x-image = do {
+            func x-size (img) {
+                ```
+                SDL_Point sz;
+                pico_get_image_size((char*)$img.Dyn->Vector.buf, &sz);
+                ```
+                [`:number sz.x`, `:number sz.y`]
             }
-            func x-anchor (h,v) {
-                val hh = (h - :HAnchor-Left  ) + `:tag Left`
-                val vv = (v - :VAnchor-Bottom) + `:tag Bottom`
-                `pico_state_set_anchor($hh.Tag,$vv.Tag);`
-            }
-            func x-auto (on) {
-                `pico_state_set_auto($on.Bool);`
-            }
-            func x-cursor (pos:XY) {
-                val x = pos.x
-                val y = pos.y
-                `pico_state_set_cursor((SDL_Point){$x.Number,$y.Number});`
-            }
-            func x-font (file, h) {
-                `pico_state_set_font($file.Dyn->Vector.buf,$h.Number);`
-            }
-            func x-grid (on) {
-                `pico_state_set_grid($on.Bool);`
-            }
-            func x-image-crop (r:Rect) {
+            [x-size]
+        }
+        func x-size () {
+            ```
+            SDL_Point phy, log;
+            pico_get_size(&phy, &log);
+            ```
+            [
+                [`:number phy.x`, `:number phy.y`],
+                [`:number log.x`, `:number log.y`],
+            ]
+        }
+        [x-fps, x-fullscreen, x-image, x-size]
+    }
+
+    val x-set :PICO-Set = do {
+        func x-fps (fps) {
+            set x-v.MPF = 1000 / fps
+        }
+        func x-anchor (h,v) {
+            val hh = (h - :HAnchor-Left  ) + `:tag Left`
+            val vv = (v - :VAnchor-Bottom) + `:tag Bottom`
+            `pico_set_anchor($hh.Tag,$vv.Tag);`
+        }
+        func x-cursor (pos:XY) {
+            val x = pos.x
+            val y = pos.y
+            `pico_set_cursor((SDL_Point){$x.Number,$y.Number});`
+        }
+        func x-font (file, h) {
+            `pico_set_font($file.Dyn->Vector.buf,$h.Number);`
+        }
+        func x-grid (on) {
+            `pico_set_grid($on.Bool);`
+        }
+        val x-image = do {
+            func x-crop (r:Rect) {
                 if r == nil {
-                    `pico_state_set_image_crop((SDL_Rect){0,0,0,0});`
+                    `pico_set_image_crop((SDL_Rect){0,0,0,0});`
                 } else {
                     val x = r.pos.x
                     val y = r.pos.y
                     val w = r.dim.w
                     val h = r.dim.h
-                    `pico_state_set_image_crop((SDL_Rect){$x.Number,$y.Number,$w.Number,$h.Number});`
+                    `pico_set_image_crop((SDL_Rect){$x.Number,$y.Number,$w.Number,$h.Number});`
                 }
             }
-            func x-pan (pos:XY) {
-                val x = pos.x
-                val y = pos.y
-                `pico_state_set_pan((SDL_Point){$x.Number,$y.Number});`
+            func x-size (dim:WH) {
+                val w = dim.w
+                val h = dim.h
+                `pico_set_image_size((SDL_Point){$w.Number,$h.Number});`
             }
-            func x-title (title) {
-                `pico_state_set_title($title.Dyn->Vector.buf);`
-            }
-            val x-color = do {
-                func x-clear (clr:RGBA) {
-                    val r = clr.r
-                    val g = clr.g
-                    val b = clr.b
-                    val a = clr.a
-                    `pico_state_set_color_clear((SDL_Color){$r.Number,$g.Number,$b.Number,$a.Number});`
-                }
-                func x-draw (clr:RGBA) {
-                    val r = clr.r
-                    val g = clr.g
-                    val b = clr.b
-                    val a = clr.a
-                    `pico_state_set_color_draw((SDL_Color){$r.Number,$g.Number,$b.Number,$a.Number});`
-                }
-                [x-clear, x-draw]
-            }
-            val x-size = do {
-                func x-window (dim:WH) {
-                    val w = dim.w
-                    val h = dim.h
-                    `pico_state_set_size((SDL_Point){$w.Number,$h.Number});`
-                }
-                func x-image (dim:WH) {
-                    val w = dim.w
-                    val h = dim.h
-                    `pico_state_set_size_image((SDL_Point){$w.Number,$h.Number});`
-                }
-                func x-pixel (dim:WH) {
-                    val w = dim.w
-                    val h = dim.h
-                    `pico_state_set_size_pixel((SDL_Point){$w.Number,$h.Number});`
-                }
-                [x-window, x-image, x-pixel]
-            }
-            [
-                x-fps, x-anchor, x-auto, x-cursor, x-font,
-                x-grid, x-image-crop, x-pan, x-title,
-                x-color, x-size,
-            ]
+            [x-crop, x-size]
         }
-        [x-get, x-set]
+        func x-pan (pos:XY) {
+            val x = pos.x
+            val y = pos.y
+            `pico_set_pan((SDL_Point){$x.Number,$y.Number});`
+        }
+        func x-show (on) {
+            `pico_set_show($on.Bool);`
+        }
+        func x-title (title) {
+            `pico_set_title($title.Dyn->Vector.buf);`
+        }
+        val x-color = do {
+            func x-clear (clr:RGBA) {
+                val r = clr.r
+                val g = clr.g
+                val b = clr.b
+                val a = clr.a
+                `pico_set_color_clear((SDL_Color){$r.Number,$g.Number,$b.Number,$a.Number});`
+            }
+            func x-draw (clr:RGBA) {
+                val r = clr.r
+                val g = clr.g
+                val b = clr.b
+                val a = clr.a
+                `pico_set_color_draw((SDL_Color){$r.Number,$g.Number,$b.Number,$a.Number});`
+            }
+            [x-clear, x-draw]
+        }
+        func x-size (phy:WH, log:WH) {
+            val [pw,ph] = phy or [0,0]
+            val [lw,lh] = log or [0,0]
+            `pico_set_size((SDL_Point){$pw.Number,$ph.Number}, (SDL_Point){$lw.Number,$lh.Number});`
+        }
+        [
+            x-fps, x-anchor, x-cursor, x-font,
+            x-grid, x-image, x-pan, x-show,
+            x-title, x-color, x-size,
+        ]
     }
 
-    val [x-point-vs-rect?, x-rect-vs-rect?, x-collisions] = group {
+    val [x-pct-to-pos, x-point-vs-rect?, x-rect-vs-rect?, x-collisions] = group {
+        func xx-pct-to-pos (x, y) {
+            ```
+            SDL_Point pt = pico_pct_to_pos($x.Number, $y.Number);
+            ```
+            [`:number pt.x`, `:number pt.y`]
+        }
         func xx-point-vs-rect? (pt:XY, r:Rect) {
             ifs {
                 pt.x < (r.pos.x-(r.dim.w/2)) => false
@@ -367,7 +370,7 @@ val pico :PICO = do {
             }
             ret
         }
-        [xx-point-vs-rect?, xx-rect-vs-rect?, xx-collisions]
+        [xx-pct-to-pos, xx-point-vs-rect?, xx-rect-vs-rect?, xx-collisions]
     }
 
     val [x-quit, x-loop] = group {
@@ -378,7 +381,6 @@ val pico :PICO = do {
             ```
         }
         func xx-loop () {
-            x-state.set.auto(false)
             var old = `:number SDL_GetTicks()`
             loop {
                 val now  = `:number SDL_GetTicks()`
@@ -401,8 +403,9 @@ val pico :PICO = do {
 
     [
         x-v,
-        x-input, x-output, x-state,
-        x-point-vs-rect?, x-rect-vs-rect?, x-collisions,
+        x-input, x-output,
+        x-get, x-set,
+        x-pct-to-pos, x-point-vs-rect?, x-rect-vs-rect?, x-collisions,
         x-quit, x-loop
     ]
 }

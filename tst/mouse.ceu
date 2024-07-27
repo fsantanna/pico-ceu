@@ -1,17 +1,20 @@
 ^["@/pico/pico.ceu"]
 
-pico.state.set.title("pico-Ceu: Mouse")
+pico.set.title("pico-Ceu: Mouse")
+
+;; TODO: invalid after double buffering
 
 loop {
     val e :Pico.Mouse.Button.Dn = pico.input.event(:Pico.Mouse.Button.Dn)
     match e.but {
         :Mouse-Button-Left {
-            pico.state.set.color.draw([255,255,255,255])
+            pico.set.color.draw([255,255,255,255])
             pico.output.draw.pixel(e.pos)
         }
         :Mouse-Button-Right {
-            pico.state.set.color.draw([0,0,0,255])
+            pico.set.color.draw([0,0,0,255])
             pico.output.draw.pixel(e.pos)
         }
     }
+    pico.output.present()
 }

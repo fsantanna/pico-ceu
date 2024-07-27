@@ -1,6 +1,7 @@
 ^["@/pico/pico.ceu"]
 
-pico.state.set.title <- "pico-Ceu: Parallel Across"
+pico.set.title <- "pico-Ceu: Parallel Across"
+pico.set.size([200,200], [20,20])
 
 coro F (pos:XY, vel:XY) {
     loop {
@@ -13,13 +14,14 @@ coro F (pos:XY, vel:XY) {
 
 val x = coroutine(F)
 val y = coroutine(F)
-resume x([-25,25],[1,-1])
-resume y([-25,-25],[1,1])
-resume x()
-resume y()
+resume x(pico.pct-to-pos(0,0),[1,1])
+resume y(pico.pct-to-pos(0,1),[1,-1])
 
-loop {
-    pico.input.delay(100)
+loop in {1 => 20} {
+    pico.output.present()
+    pico.input.delay(500)
     resume x()
     resume y()
 }
+
+pico.input.delay(1000)

@@ -1,10 +1,20 @@
 ^["@/pico/pico.ceu"]
 
-pico.state.set.title <- "pico-Ceu: Across"
+pico.set.title <- "pico-Ceu: Across"
 
-loop i in {-25 => 25} {
-    pico.output.draw.pixel([i,i])
+;;;
+func dist (pt1:XY, pt2:XY) {
+    ((pt2.x-pt1.x)**2 + (pt2.y-pt1.y)**2) ** 0.5
+}
+;;;
+
+val pt1 :XY = pico.pct-to-pos(0,0)
+val pt2 :XY = pico.pct-to-pos(1,1)
+
+val dy = (pt2.y - pt1.y) / (pt2.x - pt1.x)
+
+loop i in {pt1.x => pt2.x} {
+    pico.output.draw.pixel([i,i*dy])
+    pico.output.present()
     pico.input.delay(100)
 }
-
-pico.input.event(:Pico.Any)
