@@ -4,39 +4,6 @@ pico.set.font("tiny.ttf", 10)
 
 val {{||}} = pico.pct-to-pos
 
-func f (lay, n, t :Lim) {
-    assert(lay[t.p1.l][t.p1.c] == n)
-    val COL = #lay[0]
-    val LIN = #lay
-    loop l in {t.p1.l+1 => LIN{ {
-        until lay[l][t.p1.c] /= n
-        set t.p2.l = l
-    }
-    loop c in {t.p1.c+1 => COL{ {
-        until lay[t.p1.l][c] /= n
-        set t.p2.c = c
-    }
-    ;;println(n, t)
-    loop l in {t.p1.l => t.p2.l} {
-        loop c in {t.p1.c => t.p2.c} {
-            assert(lay[l][c] == n)
-        }
-    }
-    #[t] ++ ifs {
-        (t.p2.c+1) < COL => f(lay, n+1, [[l',t.p2.c+1],[l',t.p2.c+1]]) where {
-            val l' = loop l in {0 => LIN{ {
-                until (lay[l][t.p2.c+1] == (n+1)) and l
-            }
-        }
-        (t.p2.l+1) < LIN => f(lay, n+1, [[t.p2.l+1,c'],[t.p2.l+1,c']]) where {
-            val c' = loop c in {0 => COL{ {
-                until (lay[t.p2.l+1][c] == (n+1)) and c
-            }
-        }
-        else => #[] ;; done
-    }
-}
-
 task Layout (lay) {
     set pub = #[]
 
@@ -66,13 +33,13 @@ task Layout (lay) {
 
     spawn {
         every :Pico.Draw {
-println("-=-=-")
+;;println("-=-=-")
             loop [i,t:Lim] in pub->to.iter([:idx,:val]) {
                 val dx  = t.p1.c + (((t.p2.c + 1) - t.p1.c) / 2)
                 val dy  = t.p1.l + (((t.p2.l + 1) - t.p1.l) / 2)
                 val px  = dx / COL
                 val py  = dy / LIN
-println(i, t, dx, dy, px, py, px||py)
+;;println(i, t, dx, dy, px, py, px||py)
                 pico.output.draw.text(px||py, to.string(i))
             }
         }
