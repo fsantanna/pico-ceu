@@ -4,29 +4,36 @@ pico.set.font("tiny.ttf", 10)
 
 val {{||}} = pico.pct-to-pos
 
+func layout-to-rects (lay) {
+    val COL = #lay[0]
+    val LIN = #lay
+    val ret = #[]
+    loop l in {0 => LIN{ {
+        loop c in {0 => COL{ {
+            if lay[l][c] == #ret {
+                val r :Rect = [[c,l],[nil,nil]]
+                loop c' in {c => COL{ {
+                    until lay[l][c'] /= #ret
+                    set r.dim.w = (c' - r.pos.x) + 1
+                }
+                loop l' in {l => LIN{ {
+                    until lay[l'][c] /= #ret
+                    set r.dim.h = (l' - r.pos.y) + 1
+                }
+                set ret[+] = r
+            }
+        }
+    }
+    ret
+}
+
 task Layout (lay) {
     set pub = #[]
 
     val COL = #lay[0]
     val LIN = #lay
    
-    set pub = #[]
-    loop l in {0 => LIN{ {
-        loop c in {0 => COL{ {
-            if lay[l][c] == #pub {
-                val r :Rect = [[c,l],[nil,nil]]
-                loop c' in {c => COL{ {
-                    until lay[l][c'] /= #pub
-                    set r.dim.w = (c' - r.pos.x) + 1
-                }
-                loop l' in {l => LIN{ {
-                    until lay[l'][c] /= #pub
-                    set r.dim.h = (l' - r.pos.y) + 1
-                }
-                set pub[+] = r
-            }
-        }
-    }
+    set pub = layout-to-rects(lay)
 
     spawn {
         every :Pico.Draw {
