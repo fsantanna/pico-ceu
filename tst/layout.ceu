@@ -1,0 +1,12 @@
+^["@/pico/pico.ceu"]
+^["@/pico/layout.ceu"]
+
+val lay = [
+    [0,0,1],
+    [0,0,1],
+    [2,2,3],
+    [4,5,3],
+]
+val t = spawn Layout(lay)
+
+pico.loop()

@@ -1,5 +1,3 @@
-^["@/pico/pico.ceu"]
-
 pico.set.font("tiny.ttf", 10)
 
 val {{||}} = pico.pct-to-pos
@@ -27,31 +25,29 @@ func layout-to-rects (lay) {
     ret
 }
 
+func rects-to-real (rs, lin-col, parent) {
+    val [px,py] = [w/c, h/l] where {
+        val [l,c] = lin-col
+        val [w,h] = parent or pico.get.size()[1]
+    }
+    val rets = #[]
+    loop [i,r:Rect] in rs->to.iter([:idx,:val]) {
+        set rets[+] = [[r.pos.x*px, r.pos.y*py], [r.dim.w*px, r.dim.h*py]]
+    }
+    rets
+}
+
 task Layout (lay) {
-    set pub = #[]
-
-    val COL = #lay[0]
-    val LIN = #lay
-   
     set pub = layout-to-rects(lay)
-
     spawn {
+        val rs = rects-to-real(pub, [#lay,#lay[0]])
         every :Pico.Draw {
-;;println("-=-=-")
-            val [_,[W,H]] = pico.get.size()
             pico.set.anchor(:HAnchor-Left, :VAnchor-Top)
-            loop [i,t:Rect] in pub->to.iter([:idx,:val]) {
-;;println(i, t, dx, dy, px, py, px||py)
-                val px = W / COL
-                val py = H / LIN
-                val r = [[t.pos.x*px, t.pos.y*py], [t.dim.w*px, t.dim.h*py]]
-;;println(i, px, py, r)
+            loop r in rs {
                 pico.output.draw.rect(r)
             }
         }
     }
-
-    ;;set pub = f(lay, 0, [[0,0],[0,0]])
     await(|false)
 }
 
@@ -88,13 +84,3 @@ test {
         ])
     }
 }
-
-val lay = [
-    [0,0,1],
-    [0,0,1],
-    [2,2,3],
-    [4,5,3],
-]
-val t = spawn Layout(lay)
-
-pico.loop()
