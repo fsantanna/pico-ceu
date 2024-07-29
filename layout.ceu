@@ -2,53 +2,50 @@ pico.set.font("tiny.ttf", 10)
 
 val {{||}} = pico.pct-to-pos
 
-func layout-to-rects (lay) {
+func layout-to-rects (lay, parent) {
     val COL = #lay[0]
     val LIN = #lay
-    val ret = #[]
+
+    val rs1 = #[]
     loop l in {0 => LIN{ {
         loop c in {0 => COL{ {
-            if lay[l][c] == #ret {
+            if lay[l][c] == #rs1 {
                 val r :Rect = [[c,l],[nil,nil]]
                 loop c' in {c => COL{ {
-                    until lay[l][c'] /= #ret
+                    until lay[l][c'] /= #rs1
                     set r.dim.w = (c' - c) + 1
                 }
                 loop l' in {l => LIN{ {
-                    until lay[l'][c] /= #ret
+                    until lay[l'][c] /= #rs1
                     set r.dim.h = (l' - l) + 1
                 }
-                set ret[+] = r
+                set rs1[+] = r
             }
         }
     }
-    ret
-}
 
-func rects-to-real (rs, lin-col, parent) {
-    val [px,py] = [w/c, h/l] where {
-        val [l,c] = lin-col
-        val [w,h] = parent or pico.get.size(:internal)
-    }
-    val rets = #[]
-    loop [i,r:Rect] in rs->to.iter([:idx,:val]) {
-        set rets[+] = [[x,y], [w,h]] where {
-            val w = r.dim.w * px
-            val h = r.dim.h * py
-            val x = (r.pos.x * px) + (w/2)
-            val y = (r.pos.y * py) + (h/2)
+    val rs2 = #[]
+    do {
+        val [W,H] = parent or pico.get.size(:internal)
+        val [px,py] = [W/COL, H/LIN]
+        loop [i,r:Rect] in rs1->to.iter([:idx,:val]) {
+            set rs2[+] = [[x,y], [w,h]] where {
+                val w = r.dim.w * px
+                val h = r.dim.h * py
+                val x = (r.pos.x * px) + (w/2)
+                val y = (r.pos.y * py) + (h/2)
+            }
         }
     }
-    rets
+    rs2
+
 }
 
-task Layout (lay) {
-    set pub = layout-to-rects(lay)
+task Grid (rs) {
     spawn {
-        val rs = rects-to-real(pub, [#lay,#lay[0]])
         every :Pico.Draw {
+            pico.set.style(:Style.Stroke)
             loop r in rs {
-                pico.set.style(:Style.Stroke)
                 pico.output.draw.rect(r)
             }
         }
@@ -62,11 +59,11 @@ test {
         val lay = [
             [0, 1]
         ]
-        val t = spawn Layout(lay)
-        println(t.pub)
-        assert(t.pub === #[
-            [[0,0], [1,1]],
-            [[1,0], [1,1]],
+        val rs = layout-to-rects(lay, [#lay[0],#lay])
+        ;;println(rs)
+        assert(rs === #[
+            [[0.5,0.5], [1,1]],
+            [[1.5,0.5], [1,1]],
         ])
     }
     do {
@@ -77,15 +74,15 @@ test {
             [2,2,3],
             [4,5,3],
         ]
-        val t = spawn Layout(lay)
-        println(t.pub)
-        assert(t.pub === #[
-            [[0,0],[2,2]],
-            [[2,0],[1,2]],
-            [[0,2],[2,1]],
-            [[2,2],[1,2]],
-            [[0,3],[1,1]],
-            [[1,3],[1,1]]
+        val rs = layout-to-rects(lay, [#lay[0],#lay])
+        println(rs)
+        assert(rs === #[
+            [[1.0,1.0],[2,2]],
+            [[2.5,1.0],[1,2]],
+            [[1.0,2.5],[2,1]],
+            [[2.5,3.0],[1,2]],
+            [[0.5,3.5],[1,1]],
+            [[1.5,3.5],[1,1]]
         ])
     }
 }

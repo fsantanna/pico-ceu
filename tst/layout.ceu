@@ -12,6 +12,7 @@ val lay = [
     [4,5,3],
 ]
 
-val t = spawn Layout(lay)
+val rs = lay -> layout-to-rects
+val t = spawn Grid(rs)
 
 pico.loop()
