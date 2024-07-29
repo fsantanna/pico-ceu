@@ -1,0 +1,25 @@
+^["@/pico/pico.ceu"]
+
+pico.set.show(false)
+
+spawn {
+    watching :done {
+        par {
+            every :tick {
+                println(:tick-A)        ;; always awakes first
+            }
+        } with {
+            every :tick {
+                println(:tick-B)        ;; always awakes last
+            }
+        }
+    }
+    println(:done)
+    pico.quit()
+}
+broadcast(:tick)                        ;; --> :tick-A, :tick-B
+broadcast(:tick)                        ;; --> :tick-A, :tick-B
+broadcast(:done)                        ;; --> :done
+println(:the-end)                       ;; --> :the-end
+
+pico.loop()

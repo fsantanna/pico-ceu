@@ -266,6 +266,23 @@ val pico :PICO = do {
             val vv = (v - :VAnchor-Bottom) + `:tag PICO_BOTTOM`
             `pico_set_anchor($hh.Tag,$vv.Tag);`
         }
+        val x-color = do {
+            func x-clear (clr:RGBA) {
+                val r = clr.r
+                val g = clr.g
+                val b = clr.b
+                val a = clr.a
+                `pico_set_color_clear((SDL_Color){$r.Number,$g.Number,$b.Number,$a.Number});`
+            }
+            func x-draw (clr:RGBA) {
+                val r = clr.r
+                val g = clr.g
+                val b = clr.b
+                val a = clr.a
+                `pico_set_color_draw((SDL_Color){$r.Number,$g.Number,$b.Number,$a.Number});`
+            }
+            [x-clear, x-draw]
+        }
         func x-cursor (pos:XY) {
             val x = pos.x
             val y = pos.y
@@ -304,32 +321,6 @@ val pico :PICO = do {
         func x-show (on) {
             `pico_set_show($on.Bool);`
         }
-        func x-title (title) {
-            `pico_set_title($title.Dyn->Vector.buf);`
-        }
-        val x-color = do {
-            func x-clear (clr:RGBA) {
-                val r = clr.r
-                val g = clr.g
-                val b = clr.b
-                val a = clr.a
-                `pico_set_color_clear((SDL_Color){$r.Number,$g.Number,$b.Number,$a.Number});`
-            }
-            func x-draw (clr:RGBA) {
-                val r = clr.r
-                val g = clr.g
-                val b = clr.b
-                val a = clr.a
-                `pico_set_color_draw((SDL_Color){$r.Number,$g.Number,$b.Number,$a.Number});`
-            }
-            [x-clear, x-draw]
-        }
-        func x-style (style) {
-            match style {
-                :Style.Fill   => `pico_set_style(PICO_FILL);`
-                :Style.Stroke => `pico_set_style(PICO_STROKE);`
-            }
-        }
         func x-size (a, b) {
             match a {
                 :fullscreen => `pico_set_size_external((SDL_Point){0,0});`
@@ -341,6 +332,10 @@ val pico :PICO = do {
                     val [w,h] = b
                     `pico_set_size_internal((SDL_Point){$w.Number,$h.Number});`
                 }
+                |(b == nil) {
+                    val [w,h] = a
+                    `pico_set_size((SDL_Point){$w.Number,$h.Number});`
+                }
                 else {
                     val [w1,h1] = a
                     val [w2,h2] = b or a
@@ -348,6 +343,15 @@ val pico :PICO = do {
                     `pico_set_size_external((SDL_Point){$w1.Number,$h1.Number});`
                 }
             }
+        }
+        func x-style (style) {
+            match style {
+                :Style.Fill   => `pico_set_style(PICO_FILL);`
+                :Style.Stroke => `pico_set_style(PICO_STROKE);`
+            }
+        }
+        func x-title (title) {
+            `pico_set_title($title.Dyn->Vector.buf);`
         }
         [
             x-fps, x-anchor, x-color, x-cursor, x-font, x-grid,
