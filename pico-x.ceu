@@ -28,10 +28,10 @@ data :Pico = [] {
     }
 }
 
-enum :HAnchor { Left,   Center, Right }
-enum :VAnchor { Bottom, Middle, Top   }
-
-enum :Mouse-Button { Left, Middle, Right }
+enum :Style         { Fill, Stroke }
+enum :HAnchor       { Left,   Center, Right }
+enum :VAnchor       { Bottom, Middle, Top   }
+enum :Mouse-Button  { Left, Middle, Right }
 
 enum :Key {
     A, B, C, D, E, F, G, H, I,
@@ -49,12 +49,15 @@ data :PICO = [
         clear, present, sound, write, writeln,
         draw = [image, line, rect, oval, pixel, text]
     ],
-    get :PICO-Get = [fps, fullscreen, image=[size], size, ticks],
+    get :PICO-Get = [fps, image=[size], size=[external,internal], ticks],
     set :PICO-Set = [
-        fps, anchor, cursor, font,
-        grid, image=[crop,size], pan, show, title,
+        fps, anchor,
         color = [clear, draw],
-        size,
+        cursor, font, grid,
+        image = [crop,size],
+        pan, show,
+        size = [external,internal],
+        style, title,
     ],
     pct-to-pos, point-vs-rect?, rect-vs-rect?, collisions,
     quit, loop,
@@ -219,33 +222,34 @@ val pico :PICO = do {
         func x-fps () {
             1000 / x-v.MPF
         }
-        func x-fullscreen () {
-            `:number pico_get_fullscreen()`
-        }
         val x-image = do {
             func x-size (img) {
                 ```
-                SDL_Point sz;
-                pico_get_image_size((char*)$img.Dyn->Vector.buf, &sz);
+                SDL_Point sz = pico_get_image_size((char*)$img.Dyn->Vector.buf);
                 ```
                 [`:number sz.x`, `:number sz.y`]
             }
             [x-size]
         }
-        func x-size () {
-            ```
-            SDL_Point phy, log;
-            pico_get_size(&phy, &log);
-            ```
-            [
-                [`:number phy.x`, `:number phy.y`],
-                [`:number log.x`, `:number log.y`],
-            ]
+        val x-size = do {
+            func x-external () {
+                ```
+                SDL_Point phy = pico_get_size_external();
+                ```
+                [`:number phy.x`, `:number phy.y`]
+            }
+            func x-internal () {
+                ```
+                SDL_Point log = pico_get_size_internal();
+                ```
+                [`:number log.x`, `:number log.y`]
+            }
+            [x-external, x-internal]
         }
         func x-ticks () {
             `:number pico_get_ticks()`
         }
-        [x-fps, x-fullscreen, x-image, x-size, x-ticks]
+        [x-fps, x-image, x-size, x-ticks]
     }
 
     val x-set :PICO-Set = do {
@@ -315,18 +319,26 @@ val pico :PICO = do {
             }
             [x-clear, x-draw]
         }
-        func x-size (phy:WH, log:WH) {
-            val [[pw,ph],[lw,lh]] = ifs {
-                (log == nil)  => [phy,  phy]
-                (phy == true) => [[0,0],log]
-                (log == true) => [phy,[0,0]]
+        func x-style (style) {
+            match style {
+                :Style.Fill   => `pico_set_style(Fill);`
+                :Style.Stroke => `pico_set_style(Stroke);`
             }
-            `pico_set_size((SDL_Point){$pw.Number,$ph.Number}, (SDL_Point){$lw.Number,$lh.Number});`
+        }
+        val x-size = do {
+            func x-external (phy :WH) {
+                val [w,h] = phy
+                `pico_set_size_external((SDL_Point){$w.Number,$h.Number});`
+            }
+            func x-internal (log :WH) {
+                val [w,h] = log
+                `pico_set_size_internal((SDL_Point){$w.Number,$h.Number});`
+            }
+            [x-external, x-internal]
         }
         [
-            x-fps, x-anchor, x-cursor, x-font,
-            x-grid, x-image, x-pan, x-show,
-            x-title, x-color, x-size,
+            x-fps, x-anchor, x-color, x-cursor, x-font, x-grid,
+            x-image, x-pan, x-show, x-size, x-style, x-title,
         ]
     }
 

@@ -12,11 +12,11 @@ func layout-to-rects (lay) {
                 val r :Rect = [[c,l],[nil,nil]]
                 loop c' in {c => COL{ {
                     until lay[l][c'] /= #ret
-                    set r.dim.w = (c' - r.pos.x) + 1
+                    set r.dim.w = (c' - c) + 1
                 }
                 loop l' in {l => LIN{ {
                     until lay[l'][c] /= #ret
-                    set r.dim.h = (l' - r.pos.y) + 1
+                    set r.dim.h = (l' - l) + 1
                 }
                 set ret[+] = r
             }
@@ -28,11 +28,16 @@ func layout-to-rects (lay) {
 func rects-to-real (rs, lin-col, parent) {
     val [px,py] = [w/c, h/l] where {
         val [l,c] = lin-col
-        val [w,h] = parent or pico.get.size()[1]
+        val [w,h] = parent or pico.get.size.internal()
     }
     val rets = #[]
     loop [i,r:Rect] in rs->to.iter([:idx,:val]) {
-        set rets[+] = [[r.pos.x*px, r.pos.y*py], [r.dim.w*px, r.dim.h*py]]
+        set rets[+] = [[x,y], [w,h]] where {
+            val w = r.dim.w * px
+            val h = r.dim.h * py
+            val x = (r.pos.x * px) + (w/2)
+            val y = (r.pos.y * py) + (h/2)
+        }
     }
     rets
 }
@@ -42,8 +47,8 @@ task Layout (lay) {
     spawn {
         val rs = rects-to-real(pub, [#lay,#lay[0]])
         every :Pico.Draw {
-            pico.set.anchor(:HAnchor-Left, :VAnchor-Top)
             loop r in rs {
+                pico.set.style(:Style.Stroke)
                 pico.output.draw.rect(r)
             }
         }
