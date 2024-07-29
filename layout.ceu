@@ -28,7 +28,7 @@ func layout-to-rects (lay) {
 func rects-to-real (rs, lin-col, parent) {
     val [px,py] = [w/c, h/l] where {
         val [l,c] = lin-col
-        val [w,h] = parent or pico.get.size.internal()
+        val [w,h] = parent or pico.get.size(:internal)
     }
     val rets = #[]
     loop [i,r:Rect] in rs->to.iter([:idx,:val]) {

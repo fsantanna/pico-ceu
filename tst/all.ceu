@@ -7,7 +7,7 @@ pico.set.title("pico-Ceu")
 pico.output.sound("start.wav")
 
 ;; GET-SIZE
-val log:XY = pico.get.size.internal()
+val log:XY = pico.get.size(:internal)
 println(log)
 
 val cnt = pico.pct-to-pos(1/2, 1/2)
@@ -102,27 +102,27 @@ pico.input.delay(2000)
 
 ;; SET-ZOOM
 
-pico.set.size.internal([log.x*0.9,log.y*0.9])
+pico.set.size(:internal, [log.x*0.9,log.y*0.9])
 pico.output.draw.pixel(pico.pct-to-pos(1/2,1/2))
 pico.output.present()
 pico.input.delay(500)
 
-pico.set.size.internal([log.x*0.8,log.y*0.8])
+pico.set.size(:internal, [log.x*0.8,log.y*0.8])
 pico.output.draw.pixel(pico.pct-to-pos(1/2,1/2))
 pico.output.present()
 pico.input.delay(500)
 
-pico.set.size.internal([log.x*0.7,log.y*0.7])
+pico.set.size(:internal, [log.x*0.7,log.y*0.7])
 pico.output.draw.pixel(pico.pct-to-pos(1/2,1/2))
 pico.output.present()
 pico.input.delay(500)
 
-pico.set.size.internal([log.x*0.6,log.y*0.6])
+pico.set.size(:internal, [log.x*0.6,log.y*0.6])
 pico.output.draw.pixel(pico.pct-to-pos(1/2,1/2))
 pico.output.present()
 pico.input.delay(500)
 
-pico.set.size.internal([log.x*0.5,log.y*0.5])
+pico.set.size(:internal, [log.x*0.5,log.y*0.5])
 pico.output.draw.pixel(pico.pct-to-pos(1/2,1/2))
 pico.output.present()
 pico.input.delay(500)
@@ -158,7 +158,7 @@ pico.input.delay(500)
 
 pico.input.delay(2000)
 
-pico.set.size.internal(nil, [64,36])
+pico.set.size(:internal, [64,36])
 pico.output.draw.pixel(pico.pct-to-pos(1/2,1/2))
 pico.output.present()
 
