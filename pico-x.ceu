@@ -28,10 +28,10 @@ data :Pico = [] {
     }
 }
 
-enum :Style         { Fill, Stroke }
+enum :Style         { Fill,   Stroke }
 enum :HAnchor       { Left,   Center, Right }
 enum :VAnchor       { Bottom, Middle, Top   }
-enum :Mouse-Button  { Left, Middle, Right }
+enum :Mouse-Button  { Left,   Middle, Right }
 
 enum :Key {
     A, B, C, D, E, F, G, H, I,
@@ -257,8 +257,8 @@ val pico :PICO = do {
             set x-v.MPF = 1000 / fps
         }
         func x-anchor (h,v) {
-            val hh = (h - :HAnchor-Left  ) + `:tag Left`
-            val vv = (v - :VAnchor-Bottom) + `:tag Bottom`
+            val hh = (h - :HAnchor-Left  ) + `:tag PICO_LEFT`
+            val vv = (v - :VAnchor-Bottom) + `:tag PICO_BOTTOM`
             `pico_set_anchor($hh.Tag,$vv.Tag);`
         }
         func x-cursor (pos:XY) {
@@ -321,8 +321,8 @@ val pico :PICO = do {
         }
         func x-style (style) {
             match style {
-                :Style.Fill   => `pico_set_style(Fill);`
-                :Style.Stroke => `pico_set_style(Stroke);`
+                :Style.Fill   => `pico_set_style(PICO_FILL);`
+                :Style.Stroke => `pico_set_style(PICO_STROKE);`
             }
         }
         val x-size = do {
