@@ -2,7 +2,7 @@ pico.set.font("tiny.ttf", 10)
 
 val {{||}} = pico.pct-to-pos
 
-func layout-to-rects (lay, parent) {
+func layout-to-rects (lay, parent :Rect) {
     val COL = #lay[0]
     val LIN = #lay
 
@@ -26,14 +26,21 @@ func layout-to-rects (lay, parent) {
 
     val rs2 = #[]
     do {
-        val [W,H] = parent or pico.get.size(:internal)
+        val [[X,Y],[W,H]] =
+            if parent {
+                [[x,y], parent.dim] where {
+                    val [x,y] = [parent.pos.x-(parent.dim.w/2), parent.pos.y-(parent.dim.h/2)]
+                }
+            } else {
+                [[0,0], pico.get.size(:internal)]
+            }
         val [px,py] = [W/COL, H/LIN]
         loop [i,r:Rect] in rs1->to.iter([:idx,:val]) {
             set rs2[+] = [[x,y], [w,h]] where {
                 val w = r.dim.w * px
                 val h = r.dim.h * py
-                val x = (r.pos.x * px) + (w/2)
-                val y = (r.pos.y * py) + (h/2)
+                val x = X + (r.pos.x * px) + (w/2)
+                val y = Y + (r.pos.y * py) + (h/2)
             }
         }
     }
