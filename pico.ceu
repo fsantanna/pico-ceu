@@ -1,1 +1,468 @@
-pico-x.ceu
+`pico_init(1);`
+defer {
+    `pico_init(0);`
+}
+
+;; DATA / ENUM
+
+data :RGBA = [r,g,b,a]
+data :XY   = [x,y]
+data :WH   = [w,h]
+data :Rect = [pos:XY, dim:WH]
+
+data :Pico = [] {
+    :Any   = []
+    :Quit  = []
+    :Frame = [ms]
+    :Draw  = []
+    :Key = [key] {
+        :Dn = []
+        :Up = []
+    }
+    :Mouse = [pos:XY] {
+        :Motion = []
+        :Button = [but] {
+            :Dn = []
+            :Up = []
+        }
+    }
+}
+
+enum :Style         { Fill,   Stroke }
+enum :HAnchor       { Left,   Center, Right }
+enum :VAnchor       { Bottom, Middle, Top   }
+enum :Mouse-Button  { Left,   Middle, Right }
+
+enum :Key {
+    A, B, C, D, E, F, G, H, I,
+    J, K, L, M, N, O, P, Q, R,
+    S, T, U, V, W, X, Y, Z,
+    Right, Left, Down, Up,
+    Shift-Right, Shift-Left,
+	Escape,
+}
+
+data :PICO = [
+    v :PICO-V = [MPF, CPU],
+    input :PICO-Input = [delay, event, event-timeout],
+    output :PICO-Output = [
+        clear, present, sound, write, writeln,
+        draw = [image, line, rect, oval, pixel, text]
+    ],
+    get :PICO-Get = [fps, image=[size], size, ticks],
+    set :PICO-Set = [
+        fps, anchor,
+        color = [clear, draw],
+        cursor, font, grid,
+        image = [crop,size],
+        pan, show, size, style, title,
+    ],
+    pct-to-pos, point-vs-rect?, rect-vs-rect?, collisions,
+    quit, loop,
+]
+
+func tag-c-to-ceu (c, c1, ceu1) {
+    to.tag(ceu1 + (c - c1))
+}
+
+val pico :PICO = group {
+    val x-v :PICO-V = [40, nil]
+
+    val x-input :PICO-Input = group {
+        func x-input-delay (ms) {
+            `pico_input_delay($ms.Number);`
+        }
+        func keys-c-to-ceu (c) {
+            match c {
+                | (c >= `:tag SDLK_a`)  and (c <= `:tag SDLK_z`)
+                    => tag-c-to-ceu(c, `:tag SDLK_a`, :Key-A)
+                | (c >= `:tag SDLK_RIGHT`) and (c <= `:tag SDLK_UP`)
+                    => tag-c-to-ceu(c, `:tag SDLK_RIGHT`, :Key-Right)
+                == `:tag SDLK_RSHIFT` => :Key-Shift-Right
+                == `:tag SDLK_LSHIFT` => :Key-Shift-Left
+                == `:tag SDLK_ESCAPE` => :Key-Escape
+            }
+        }
+        func x-input-sdl-ceu (sdl) {
+            `SDL_Event* evt = (SDL_Event*) $sdl.Pointer;`
+            val tp = `:tag evt->type`
+            match tp {
+                is? `:tag SDL_QUIT` =>
+                    :Pico.Quit []
+                is? `:tag SDL_MOUSEMOTION` =>
+                    :Pico.Mouse.Motion [
+                        [`:number evt->button.x`, `:number evt->button.y`]
+                    ]
+                is? `:tag SDL_MOUSEBUTTONDOWN` =>
+                    :Pico.Mouse.Button.Dn [
+                        [`:number evt->button.x`, `:number evt->button.y`],
+                        tag-c-to-ceu (
+                            `:tag evt->button.button`,
+                            `:tag SDL_BUTTON_LEFT`,
+                            :Mouse-Button-Left
+                        )
+                    ]
+                is? `:tag SDL_MOUSEBUTTONUP` =>
+                    :Pico.Mouse.Button.Up [
+                        [`:number evt->button.x`, `:number evt->button.y`],
+                        tag-c-to-ceu (
+                            `:tag evt->button.button`,
+                            `:tag SDL_BUTTON_LEFT`,
+                            :Mouse-Button-Left
+                        )
+                    ]
+                is? `:tag SDL_KEYDOWN` =>
+                    :Pico.Key.Dn [keys-c-to-ceu(`:tag evt->key.keysym.sym`)]
+                is? `:tag SDL_KEYUP` =>
+                    :Pico.Key.Up [keys-c-to-ceu(`:tag evt->key.keysym.sym`)]
+                else => error(:error)
+            }
+        }
+        func x-input-event (evt) {
+            ```
+                int tag_to_type (int tag) {
+                    switch (tag) {
+                        case CEU_TAG_Pico_Any:
+                            return SDL_ANY;
+                        case CEU_TAG_Pico_Quit:
+                            return SDL_QUIT;
+                        case CEU_TAG_Pico_Key_Dn:
+                            return SDL_KEYDOWN;
+                        case CEU_TAG_Pico_Key_Up:
+                            return SDL_KEYUP;
+                        case CEU_TAG_Pico_Mouse_Motion:
+                            return SDL_MOUSEMOTION;
+                        case CEU_TAG_Pico_Mouse_Button_Dn:
+                            return SDL_MOUSEBUTTONDOWN;
+                        case CEU_TAG_Pico_Mouse_Button_Up:
+                            return SDL_MOUSEBUTTONUP;
+                        default:
+                            assert(0 && "bug found : missing tag -> type");
+                    }
+                }
+
+                SDL_Event sdl;
+                int type = tag_to_type($evt.Tag);
+                pico_input_event(&sdl,type);
+            ```
+            x-input-sdl-ceu(`:pointer &sdl`)
+        }
+        func x-input-event-timeout (tp, time) {
+            `SDL_Event sdl;`
+            val ok = `:bool pico_input_event_timeout(&sdl,$tp.Tag,$time.Number)`
+            val sdl = `:pointer &sdl`
+            ok and x-input-sdl-ceu(sdl, tp)
+        }
+        [x-input-delay, x-input-event, x-input-event-timeout]
+    }
+
+    val x-output :PICO-Output = group {
+        func x-output-clear () {
+            `pico_output_clear();`
+        }
+        func x-output-present () {
+            `pico_output_present();`
+        }
+        func x-output-sound (path) {
+            `pico_output_sound($path.Dyn->Vector.buf);`
+        }
+        func x-output-write (txt) {
+            `pico_output_write($txt.Dyn->Vector.buf);`
+        }
+        func x-output-writeln (txt) {
+            `pico_output_writeln($txt.Dyn->Vector.buf);`
+        }
+        val x-output-draw = group {
+            func x-output-draw-image (pos:XY,img,cache) {
+                val x = pos.x
+                val y = pos.y
+                val xcache = cache or (cache == nil)
+                `_pico_output_draw_image_cache((SDL_Point){$x.Number,$y.Number}, (char*)$img.Dyn->Vector.buf, $xcache.Bool);`
+            }
+            func x-output-draw-line (p1:XY, p2:XY) {
+                val x1 = p1.x
+                val y1 = p1.y
+                val x2 = p2.x
+                val y2 = p2.y
+                `pico_output_draw_line((SDL_Point){$x1.Number,$y1.Number},
+                                       (SDL_Point){$x2.Number,$y2.Number});`
+            }
+            func x-output-draw-rect (r:Rect) {
+                val x = r.pos.x
+                val y = r.pos.y
+                val w = r.dim.w
+                val h = r.dim.h
+                `pico_output_draw_rect((SDL_Rect){$x.Number,$y.Number,$w.Number,$h.Number});`
+            }
+            func x-output-draw-oval (r:Rect) {
+                val x = r.pos.x
+                val y = r.pos.y
+                val w = r.dim.w
+                val h = r.dim.h
+                `pico_output_draw_oval((SDL_Rect){$x.Number,$y.Number,$w.Number,$h.Number});`
+            }
+            func x-output-draw-pixel (pos:XY) {
+                val x = pos.x
+                val y = pos.y
+                `pico_output_draw_pixel((SDL_Point){$x.Number,$y.Number});`
+            }
+            func x-output-draw-text (pos:XY, txt) {
+                val x = pos.x
+                val y = pos.y
+                `pico_output_draw_text((SDL_Point){$x.Number,$y.Number}, $txt.Dyn->Vector.buf);`
+            }
+            [x-output-draw-image, x-output-draw-line, x-output-draw-rect,
+             x-output-draw-oval, x-output-draw-pixel, x-output-draw-text]
+        }
+        [x-output-clear, x-output-present, x-output-sound,
+         x-output-write, x-output-writeln, x-output-draw]
+    }
+
+    val x-get :PICO-Get = group {
+        func x-get-fps () {
+            1000 / x-v.MPF
+        }
+        val x-get-image = group {
+            func x-get-image-size (img) {
+                ```
+                SDL_Point sz = pico_get_image_size((char*)$img.Dyn->Vector.buf);
+                ```
+                [`:number sz.x`, `:number sz.y`]
+            }
+            [x-get-image-size]
+        }
+        func x-get-size (t) {
+            match t {
+                :external {
+                    ```
+                    SDL_Point phy = pico_get_size_external();
+                    ```
+                    [`:number phy.x`, `:number phy.y`]
+                }
+                :internal {
+                    ```
+                    SDL_Point log = pico_get_size_internal();
+                    ```
+                    [`:number log.x`, `:number log.y`]
+                }
+                else {
+                    ```
+                    SDL_Point siz = pico_get_size();
+                    ```
+                    [`:number siz.x`, `:number siz.y`]
+                }
+            }
+        }
+        func x-get-ticks () {
+            `:number pico_get_ticks()`
+        }
+        [x-get-fps, x-get-image, x-get-size, x-get-ticks]
+    }
+
+    val x-set :PICO-Set = group {
+        func x-set-fps (fps) {
+            set x-v.MPF = 1000 / fps
+        }
+        func x-set-anchor (h,v) {
+            val hh = (h - :HAnchor-Left  ) + `:tag PICO_LEFT`
+            val vv = (v - :VAnchor-Bottom) + `:tag PICO_BOTTOM`
+            `pico_set_anchor($hh.Tag,$vv.Tag);`
+        }
+        val x-set-color = group {
+            func x-set-color-clear (clr:RGBA) {
+                val r = clr.r
+                val g = clr.g
+                val b = clr.b
+                val a = clr.a
+                `pico_set_color_clear((SDL_Color){$r.Number,$g.Number,$b.Number,$a.Number});`
+            }
+            func x-set-color-draw (clr:RGBA) {
+                val r = clr.r
+                val g = clr.g
+                val b = clr.b
+                val a = clr.a
+                `pico_set_color_draw((SDL_Color){$r.Number,$g.Number,$b.Number,$a.Number});`
+            }
+            [x-set-color-clear, x-set-color-draw]
+        }
+        func x-set-cursor (pos:XY) {
+            val x = pos.x
+            val y = pos.y
+            `pico_set_cursor((SDL_Point){$x.Number,$y.Number});`
+        }
+        func x-set-font (file, h) {
+            `pico_set_font($file.Dyn->Vector.buf,$h.Number);`
+        }
+        func x-set-grid (on) {
+            `pico_set_grid($on.Bool);`
+        }
+        val x-set-image = group {
+            func x-set-image-crop (r:Rect) {
+                if r == nil {
+                    `pico_set_image_crop((SDL_Rect){0,0,0,0});`
+                } else {
+                    val x = r.pos.x or 0
+                    val y = r.pos.y or 0
+                    val w = r.dim.w or 0
+                    val h = r.dim.h or 0
+                    `pico_set_image_crop((SDL_Rect){$x.Number,$y.Number,$w.Number,$h.Number});`
+                }
+            }
+            func x-set-image-size (dim:WH) {
+                if dim == nil {
+                    `pico_set_image_size((SDL_Point){0,0});`
+                } else {
+                    val w = dim.w or 0
+                    val h = dim.h or 0
+                    `pico_set_image_size((SDL_Point){$w.Number,$h.Number});`
+                }
+            }
+            [x-set-image-crop, x-set-image-size]
+        }
+        func x-set-pan (pos:XY) {
+            val x = pos.x
+            val y = pos.y
+            `pico_set_pan((SDL_Point){$x.Number,$y.Number});`
+        }
+        func x-set-show (on) {
+            `pico_set_show($on.Bool);`
+        }
+        func x-set-size (a, b) {
+            match a {
+                :fullscreen => `pico_set_size_external((SDL_Point){0,0});`
+                :external {
+                    val [w,h] = b
+                    `pico_set_size_external((SDL_Point){$w.Number,$h.Number});`
+                }
+                :internal {
+                    val [w,h] = b
+                    `pico_set_size_internal((SDL_Point){$w.Number,$h.Number});`
+                }
+                |(b == nil) {
+                    val [w,h] = a
+                    `pico_set_size((SDL_Point){$w.Number,$h.Number});`
+                }
+                else {
+                    val [w1,h1] = a
+                    val [w2,h2] = b or a
+                    `pico_set_size_internal((SDL_Point){$w2.Number,$h2.Number});`
+                    `pico_set_size_external((SDL_Point){$w1.Number,$h1.Number});`
+                }
+            }
+        }
+        func x-set-style (style) {
+            match style {
+                :Style.Fill   => `pico_set_style(PICO_FILL);`
+                :Style.Stroke => `pico_set_style(PICO_STROKE);`
+            }
+        }
+        func x-set-title (title) {
+            `pico_set_title($title.Dyn->Vector.buf);`
+        }
+        [
+            x-set-fps, x-set-anchor, x-set-color, x-set-cursor, x-set-font, x-set-grid,
+            x-set-image, x-set-pan, x-set-show, x-set-size, x-set-style, x-set-title,
+        ]
+    }
+
+    val [x-pct-to-pos, x-point-vs-rect?, x-rect-vs-rect?, x-collisions] = group {
+        func xx-pct-to-pos (x, y) {
+            ```
+            SDL_Point pt = pico_pct_to_pos($x.Number, $y.Number);
+            ```
+            [`:number pt.x`, `:number pt.y`]
+        }
+        func xx-point-vs-rect? (pt:XY, r:Rect) {
+            ifs {
+                pt.x < (r.pos.x-(r.dim.w/2)) => false
+                pt.x > (r.pos.x+(r.dim.w/2)) => false
+                pt.y < (r.pos.y-(r.dim.h/2)) => false
+                pt.y > (r.pos.y+(r.dim.h/2)) => false
+                else                         => true
+            }
+        }
+        func xx-rect-vs-rect? (r1:Rect, r2:Rect) {
+            ifs {
+                xx-point-vs-rect?(p1,r1) => true
+                xx-point-vs-rect?(p2,r1) => true
+                xx-point-vs-rect?(p3,r1) => true
+                xx-point-vs-rect?(p4,r1) => true
+                else                     => false
+            } where {
+                val w2 = r2.dim.w / 2
+                val h2 = r2.dim.h / 2
+                val p1 = [r2.pos.x - w2, r2.pos.y - h2]
+                val p2 = [r2.pos.x - w2, r2.pos.y + h2]
+                val p3 = [r2.pos.x + w2, r2.pos.y + h2]
+                val p4 = [r2.pos.x + w2, r2.pos.y - h2]
+            }
+        }
+        func xx-collisions (tsks, f-cmp) {
+            val ret = #[]
+            loop tsk1 in tsks {
+                loop tsk2 in tsks {
+                    ;;println(tsk1, status(tsk1), tsk1.pub)
+                    ;;println(tsk2, status(tsk2), tsk2.pub)
+                    val ok? = (tsk1 /= tsk2) and f-cmp(tsk1.pub, tsk2.pub)
+                    if ok? {
+                        set ret[+] = [tsk1, tsk2]
+                    }
+                    until ok?
+                }
+            }
+            drop(ret)
+        }
+        [xx-pct-to-pos, xx-point-vs-rect?, xx-rect-vs-rect?, xx-collisions]
+    }
+
+    val [x-quit, x-loop] = group {
+        func xx-quit () {
+            ```
+            SDL_Event e = { SDL_QUIT };
+            assert(1 == SDL_PushEvent(&e));
+            ```
+        }
+        func xx-loop () {
+            var old = x-get.ticks()
+            data :CPU = [cycs, sum, prv]
+            val cpu :CPU = [0, 0, nil]
+            loop {
+                val now  = x-get.ticks()
+                val togo = x-v.MPF - (now - old)
+                if togo <= 0 {
+                    broadcast(:Pico.Frame [x-v.MPF])
+                    broadcast(:Clock [x-v.MPF])
+                    x-output.clear()
+                    broadcast(:Pico.Draw [])
+                    x-output.present()
+                    set old = togo + now
+                }
+
+                do {
+                    set cpu.cycs = cpu.cycs + 1
+                    if cpu.cycs > (1000/x-v.MPF) {
+                        set x-v.CPU = cpu.sum / 10
+                        set cpu.cycs = 0
+                        set cpu.sum  = 0
+                    }
+                    val t = x-get.ticks()
+                    set cpu.sum = cpu.sum + (t - (cpu.prv or t))
+                }
+
+                val' e = x-input.event-timeout(`:tag SDL_ANY`, math.max(0,togo))
+                set cpu.prv = x-get.ticks()
+                broadcast(e)
+                until (e is? :Pico.Quit)
+            }
+        }
+        [xx-quit, xx-loop]
+    }
+
+    [
+        x-v,
+        x-input, x-output,
+        x-get, x-set,
+        x-pct-to-pos, x-point-vs-rect?, x-rect-vs-rect?, x-collisions,
+        x-quit, x-loop
+    ]
+}
